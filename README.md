@@ -28,7 +28,10 @@ Sign in with a demo account (password `sevasetu-demo`, buttons on the login page
 
 | Screen | Path |
 |---|---|
-| Facility view: urgent flags, queues, staff actions | `/facility` |
+| District overview: impact, all hospitals, load balancing, forecast, outbreak signal (district officer) | `/district` |
+| Facility view: urgent flags, queues, staff actions (triage) | `/facility` |
+| My patients: patient with you, Health Journey, record status and follow-up (doctor) | `/doctor` |
+| Follow-ups: missed and due follow-ups, call / SMS / community actions (triage) | `/followups` |
 | Registration counter + printable QR slip | `/counter` |
 | Waiting-room board (public, no login) | `/board/H01` |
 | Patient flow: crowd map from QR scans, wrong-turn hotspots, visitor simulator | `/flow` |
@@ -51,3 +54,5 @@ Routing lives in `web/src/lib/graph.ts`. See `docs/CONTRACT.md` section 7.
 - `*_demo.sql`: demo clock, seed generator, autopilot.
 - `*_dashboard.sql`: dashboard read models.
 - `*_flow.sql`: patient flow from anonymous scans (`get_flow`) and its live broadcast.
+- `*_roles.sql`: Health Journey, follow-ups, the doctor's desk, the district overview (forecast, outbreak, impact),
+  six weeks of synthetic history, and returning patients for the demo (`demo_reset_all`).

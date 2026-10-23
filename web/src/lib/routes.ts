@@ -4,16 +4,19 @@ import type { StaffRole } from "./types";
 export const ROLE_HOME: Record<StaffRole, string> = {
   counter: "/counter",
   triage: "/facility",
-  doctor: "/facility",
-  admin: "/facility",
+  doctor: "/doctor",
+  admin: "/district",
   demo: "/demo",
 };
 
 /** The staff screens, who may open them, and their tab titles. Order is the sidebar order. */
 export const STAFF_ROUTES: { href: string; label: string; roles: StaffRole[] }[] = [
-  { href: "/facility", label: "Facility", roles: ["triage", "doctor", "admin", "demo"] },
+  { href: "/district", label: "District overview", roles: ["admin", "demo"] },
+  { href: "/facility", label: "Facility", roles: ["triage", "admin", "demo"] },
+  { href: "/doctor", label: "My patients", roles: ["doctor", "admin", "demo"] },
   { href: "/counter", label: "Counter", roles: ["counter", "triage", "admin", "demo"] },
   { href: "/flow", label: "Patient flow", roles: ["triage", "admin", "demo"] },
+  { href: "/followups", label: "Follow-ups", roles: ["triage", "admin", "demo"] },
   { href: "/log", label: "Transparency log", roles: ["triage", "admin", "demo"] },
   { href: "/demo", label: "Demo controls", roles: ["demo", "admin"] },
 ];

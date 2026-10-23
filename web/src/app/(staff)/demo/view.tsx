@@ -108,7 +108,7 @@ function DemoControls({ hospitalId, now, speed }: ShellContext) {
           danger
           disabled={busy}
           onClick={() => {
-            if (window.confirm("Reset all demo data?")) void run("Reset", "demo_reset");
+            if (window.confirm("Reset all demo data?")) void run("Reset", "demo_reset_all");
           }}
         >
           Reset demo data

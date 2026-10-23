@@ -150,6 +150,20 @@ For outcomes that don't create a visit (`emergency`, `help_desk`). Fields: `id, 
 
 Send only with movement consent. Batch freely; duplicates are ignored.
 
+### `get_my_journey({ p_visit_id })` → Health Journey (read-only)
+
+```json
+{ "first_name": "Kamla",
+  "journey": [ { "day": "2026-08-13", "hospital": "Chinar DH", "department": "General Medicine",
+                 "doctor": "Dr. Aamir Lone", "status": "red", "follow_up_on": "2026-09-03",
+                 "consult_ok": false, "notes": "…" } ],
+  "next_follow_up": { "on": "2026-11-23", "consult_ok": true, "state": "due" } }
+```
+
+For the patient's *My Health Journey* tile (PRD 11.1). Statuses are set only by doctors and nurses; show them with the
+word and icon (`red` Emergency now, `yellow` Priority, `green` Routine), oldest first, large type with Listen.
+`next_follow_up.state` is `due`, `done` (they came back) or `defaulted` (missed). Cache it for offline reading.
+
 ### `get_board({ p_hospital_id })`, `get_clock()`
 
 Public read models. `get_clock` returns `{ now, speed, today }`.

@@ -66,4 +66,4 @@ begin
   end loop;
 end $$;
 
-select public.demo_reset();
+select public.demo_reset_all();

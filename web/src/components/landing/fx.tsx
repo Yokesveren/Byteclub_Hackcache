@@ -30,8 +30,24 @@ export function scrollToY(y: number) {
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    lenis = new Lenis({ autoRaf: true, anchors: { offset: 0, duration: 1.2 }, lerp: 0.1 });
+    lenis = new Lenis({ autoRaf: true, lerp: 0.1 });
+    // In-page links: one smooth scroll, never the browser's jump plus ours (they raced and overshot).
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.("a[href^='#']") as HTMLAnchorElement | null;
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const id = a.getAttribute("href")!.slice(1);
+      const el = id ? document.getElementById(id) : null;
+      if (!el) return;
+      e.preventDefault();
+      // Absolute page position from the real scroll offset: Lenis's own offset can lag after a native jump
+      // (scrollbar drag, keyboard), which made it land a few hundred pixels off.
+      lenis?.resize();
+      lenis?.scrollTo(el.getBoundingClientRect().top + window.scrollY, { duration: 1.2, force: true });
+      history.replaceState(null, "", `#${id}`);
+    };
+    document.addEventListener("click", onClick);
     return () => {
+      document.removeEventListener("click", onClick);
       lenis?.destroy();
       lenis = null;
     };
