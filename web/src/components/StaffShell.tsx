@@ -13,7 +13,7 @@ import type { Staff } from "@/lib/types";
 // Shell in the landing page's language: a night field holds the sidebar (black capitals, a mustard
 // pill that slides to the active page); the work sits on a white sheet inset 8px, 20px corners.
 
-const NAV_ICON: Record<string, keyof typeof ICONS> = { "/facility": "queue", "/counter": "slip", "/log": "log", "/demo": "clock" };
+const NAV_ICON: Record<string, keyof typeof ICONS> = { "/facility": "queue", "/counter": "slip", "/flow": "map", "/log": "log", "/demo": "clock" };
 const NAV = STAFF_ROUTES.map((r) => ({ ...r, icon: NAV_ICON[r.href] }));
 
 const HOSPITALS = [
@@ -28,6 +28,7 @@ const ICONS = {
   log: "M5 4h14v16H5zM9 9h6M9 13h6M9 17h3",
   clock: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18",
   board: "M3 5h18v12H3zM8 21h8M12 17v4",
+  map: "M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14",
   out: "M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10",
 };
 

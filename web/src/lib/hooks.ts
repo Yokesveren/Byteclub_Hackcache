@@ -133,9 +133,9 @@ export function useRealNow(tickMs = 1000): number {
  */
 export function useLiveData<T>(
   load: () => Promise<T>,
-  opts: { hospitalId: string | null; tables?: string[]; pollMs?: number; enabled?: boolean },
+  opts: { hospitalId: string | null; tables?: string[]; pollMs?: number; enabled?: boolean; events?: string[] },
 ) {
-  const { hospitalId, tables = [], pollMs = 15000, enabled = true } = opts;
+  const { hospitalId, tables = [], pollMs = 15000, enabled = true, events = ["queue_changed"] } = opts;
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
@@ -164,6 +164,7 @@ export function useLiveData<T>(
   }, [refresh]);
 
   const tablesKey = tables.join(",");
+  const eventsKey = events.join(",");
 
   useEffect(() => {
     if (!enabled || !hospitalId) return;
@@ -171,10 +172,10 @@ export function useLiveData<T>(
     const channels: RealtimeChannel[] = [];
 
     // Public broadcast from database triggers (works for every viewer).
-    const bc = supabase
-      .channel(`hospital:${hospitalId}`)
-      .on("broadcast", { event: "queue_changed" }, schedule)
-      .subscribe((status) => setConnected(status === "SUBSCRIBED"));
+    // Database triggers broadcast on the public topic "hospital:<id>"; listen for the events this view cares about.
+    const bc = supabase.channel(`hospital:${hospitalId}`);
+    for (const ev of eventsKey.split(",")) bc.on("broadcast", { event: ev }, schedule);
+    bc.subscribe((status) => setConnected(status === "SUBSCRIBED"));
     channels.push(bc);
 
     // Staff-only table changes (urgent flags have no public broadcast).
@@ -198,7 +199,7 @@ export function useLiveData<T>(
       if (timer.current) clearTimeout(timer.current);
       channels.forEach((c) => supabase.removeChannel(c));
     };
-  }, [enabled, hospitalId, tablesKey, pollMs, refresh, schedule]);
+  }, [enabled, hospitalId, tablesKey, eventsKey, pollMs, refresh, schedule]);
 
   return { data, error, connected, updatedAt, refresh };
 }

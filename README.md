@@ -31,11 +31,18 @@ Sign in with a demo account (password `sevasetu-demo`, buttons on the login page
 | Facility view: urgent flags, queues, staff actions | `/facility` |
 | Registration counter + printable QR slip | `/counter` |
 | Waiting-room board (public, no login) | `/board/H01` |
+| Patient flow: crowd map from QR scans, wrong-turn hotspots, visitor simulator | `/flow` |
 | Transparency log | `/log` |
 | Demo controls: clock speed, autopilot, add patients, urgent flag, reset | `/demo` |
 
 `npx supabase db reset` rebuilds the database and the 10:30 AM demo scenario. If live updates stall after a reset,
 run `docker restart supabase_realtime_sevasetu`.
+
+## The hospital map
+
+`web/public/graph/H01.json` is the indoor map shared with the patient app (QR waypoints, corridors, lift, stairs,
+areas with capacities). Edit `web/scripts/build_h01_graph.py` and run `python scripts/build_h01_graph.py` from `web/`.
+Routing lives in `web/src/lib/graph.ts`. See `docs/CONTRACT.md` section 7.
 
 ## Where the rules live
 
@@ -43,3 +50,4 @@ run `docker restart supabase_realtime_sevasetu`.
   fairness guard (10.4), patient RPCs, staff actions with mandatory reasons (S10), realtime broadcasts, RLS.
 - `*_demo.sql`: demo clock, seed generator, autopilot.
 - `*_dashboard.sql`: dashboard read models.
+- `*_flow.sql`: patient flow from anonymous scans (`get_flow`) and its live broadcast.
