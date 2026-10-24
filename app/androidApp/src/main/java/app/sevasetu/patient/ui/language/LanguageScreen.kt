@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.language
 
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,7 @@ fun LanguageScreen(
     var selected by rememberSaveable { mutableStateOf(app.prefs.current.language) }
 
     SevaScaffold(
-        title = "SevaSetu",
+        title = tr("SevaSetu"),
         onListen = { app.speaker.speak("Choose your language.", "अपनी भाषा चुनें।", "اپنی زبان منتخب کریں۔") },
         onEmergencyClick = onEmergencyClick
     ) {
@@ -70,7 +71,7 @@ fun LanguageScreen(
                 .padding(16.dp)
         ) {
             ScreenBand(
-                title = "Choose your language",
+                title = tr("Choose your language"),
                 tone = "mint",
                 lead = "अपनी भाषा चुनें · اپنی زبان منتخب کریں"
             )
@@ -108,19 +109,19 @@ fun LanguageScreen(
                             )
                         }
                     }
-                    if (on) Icon(Icons.Default.CheckCircle, contentDescription = "Selected", tint = Mint, modifier = Modifier.size(30.dp))
+                    if (on) Icon(Icons.Default.CheckCircle, contentDescription = tr("Selected"), tint = Mint, modifier = Modifier.size(30.dp))
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Screens are in English with Hindi help for now. Listen reads them aloud in your language where a voice is installed.",
+                text = tr("Dogri is shown in Hindi and Kashmiri in Urdu until their own translations are ready. Listen reads the screen aloud where your phone has a voice for the language."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(20.dp))
             BigButton(
-                text = "Continue",
+                text = tr("Continue"),
                 icon = Icons.AutoMirrored.Filled.ArrowForward,
                 onClick = { onContinue(selected) }
             )

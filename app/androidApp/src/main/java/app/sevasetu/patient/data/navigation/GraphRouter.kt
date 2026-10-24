@@ -37,7 +37,8 @@ data class GraphAreaDto(
     @SerialName("w") val w: Int,
     @SerialName("h") val h: Int,
     @SerialName("capacity") val capacity: Int = 10,
-    @SerialName("waypoints") val waypoints: List<String> = emptyList()
+    @SerialName("waypoints") val waypoints: List<String> = emptyList(),
+    @SerialName("label_i18n") val labelI18n: Map<String, String> = emptyMap()
 )
 
 @Serializable
@@ -45,7 +46,8 @@ data class FloorDto(
     @SerialName("floor") val floor: Int,
     @SerialName("name") val name: String,
     @SerialName("width") val width: Int,
-    @SerialName("height") val height: Int
+    @SerialName("height") val height: Int,
+    @SerialName("name_i18n") val nameI18n: Map<String, String> = emptyMap()
 )
 
 @Serializable

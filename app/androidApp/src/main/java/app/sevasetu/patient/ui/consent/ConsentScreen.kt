@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.consent
 
 import androidx.compose.foundation.layout.Column
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +43,7 @@ fun ConsentScreen(
     var movement by rememberSaveable { mutableStateOf(app.prefs.current.movementConsent) }
 
     SevaScaffold(
-        title = "Your privacy",
+        title = tr("Your privacy"),
         onBack = onBack,
         onListen = {
             app.speaker.speak(
@@ -61,31 +62,31 @@ fun ConsentScreen(
                 .padding(16.dp)
         ) {
             ScreenBand(
-                title = "Your details stay yours",
+                title = tr("Your details stay yours"),
                 tone = "ward",
-                lead = "No Aadhaar. First name only. Your slip shows your token, first name and department, nothing about your health."
+                lead = tr("No Aadhaar. First name only. Your slip shows your token, first name and department, nothing about your health.")
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             ConsentRow(
-                title = "Use my details for my token",
+                title = tr("Use my details for my token"),
                 required = true,
-                text = "The hospital gets your first name, age group, the help you need and a short note for the doctor. Needed to register.",
+                text = tr("The hospital gets your first name, age group, the help you need and a short note for the doctor. Needed to register."),
                 checked = terms,
                 onChecked = { terms = it }
             )
             Spacer(modifier = Modifier.height(12.dp))
             ConsentRow(
-                title = "Share the stickers I scan",
+                title = tr("Share the stickers I scan"),
                 required = false,
-                text = "Helps the hospital see crowded corridors. Sent under a random code, never your name or token. Directions work either way.",
+                text = tr("Helps the hospital see crowded corridors. Sent under a random code, never your name or token. Directions work either way."),
                 checked = movement,
                 onChecked = { movement = it }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
             BigButton(
-                text = if (terms) "Agree and continue" else "Turn on the first switch to continue",
+                text = if (terms) tr("Agree and continue") else tr("Turn on the first switch to continue"),
                 enabled = terms,
                 icon = if (terms) Icons.AutoMirrored.Filled.ArrowForward else null,
                 onClick = {
@@ -95,7 +96,7 @@ fun ConsentScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "You can change the second choice any time in Settings.",
+                tr("You can change the second choice any time in Settings."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -108,7 +109,7 @@ private fun ConsentRow(title: String, required: Boolean, text: String, checked: 
     InfoCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(if (required) "REQUIRED" else "OPTIONAL", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(if (required) tr("REQUIRED") else tr("OPTIONAL"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(title, style = MaterialTheme.typography.titleMedium)
             }
             Spacer(modifier = Modifier.width(12.dp))

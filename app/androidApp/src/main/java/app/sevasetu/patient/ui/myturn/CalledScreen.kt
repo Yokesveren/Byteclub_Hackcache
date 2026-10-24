@@ -1,6 +1,8 @@
 package app.sevasetu.patient.ui.myturn
 
+import app.sevasetu.patient.ui.i18n.floorLabel
 import android.content.Context
+import app.sevasetu.patient.ui.i18n.tr
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -99,8 +101,8 @@ fun CalledScreen(
                 Box(modifier = Modifier.align(androidx.compose.ui.Alignment.CenterEnd)) { ListenButton(onClick = { announce() }) }
             }
             Spacer(modifier = Modifier.height(24.dp))
-            Text("■ CALLED", style = MaterialTheme.typography.labelLarge, color = Ink)
-            Text("IT'S YOUR TURN.", style = MaterialTheme.typography.displayMedium, color = Ink)
+            Text(tr("■ CALLED"), style = MaterialTheme.typography.labelLarge, color = Ink)
+            Text(tr("IT'S YOUR TURN."), style = MaterialTheme.typography.displayMedium, color = Ink)
             Spacer(modifier = Modifier.height(20.dp))
             Column(
                 modifier = Modifier
@@ -109,25 +111,25 @@ fun CalledScreen(
                     .background(Color.White)
                     .padding(24.dp)
             ) {
-                Text("GO TO", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("GO TO"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(myTurn.doctor.room.uppercase(), style = MaterialTheme.typography.displayLarge, color = Ink)
                 Text(
-                    "${myTurn.doctor.name} · ${if (myTurn.doctor.floor == 0) "ground floor" else "floor ${myTurn.doctor.floor}"}",
+                    "${myTurn.doctor.name} · ${floorLabel(myTurn.doctor.floor)}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Ink
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("TOKEN", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("TOKEN"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(myTurn.token, style = MaterialTheme.typography.headlineLarge, color = Ink)
             }
             Spacer(modifier = Modifier.height(20.dp))
             myTurn.doctor.roomWaypointId?.let { room ->
-                BigButton(text = "Take me there", onClick = { onNavigateToRoom(room) }, icon = Icons.Default.Navigation)
+                BigButton(text = tr("Take me there"), onClick = { onNavigateToRoom(room) }, icon = Icons.Default.Navigation)
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            BigButton(text = "Home", onClick = onHome, type = ButtonType.SECONDARY, icon = Icons.Default.Home)
+            BigButton(text = tr("Home"), onClick = onHome, type = ButtonType.SECONDARY, icon = Icons.Default.Home)
             Spacer(modifier = Modifier.height(12.dp))
-            BigButton(text = "Feeling worse? Urgent help", onClick = onEmergencyClick, type = ButtonType.DANGER, icon = Icons.Default.Warning)
+            BigButton(text = tr("Feeling worse? Urgent help"), onClick = onEmergencyClick, type = ButtonType.DANGER, icon = Icons.Default.Warning)
         }
     }
 }

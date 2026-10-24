@@ -1,6 +1,10 @@
 package app.sevasetu.patient.ui.navigation
 
+import app.sevasetu.patient.ui.i18n.LocalLang
+import app.sevasetu.patient.ui.i18n.floorLabel
 import android.graphics.Paint
+import app.sevasetu.patient.ui.i18n.tr
+import app.sevasetu.patient.ui.i18n.trNow
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -70,6 +74,7 @@ import app.sevasetu.patient.data.navigation.RouteStep
 import app.sevasetu.patient.data.navigation.ScanResult
 import app.sevasetu.patient.data.navigation.Turn
 import app.sevasetu.patient.data.navigation.displayName
+import app.sevasetu.patient.data.navigation.displayLabel
 import app.sevasetu.patient.data.navigation.landmarkText
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
@@ -114,11 +119,11 @@ fun IndoorNavigationScreen(
     var choosing by remember { mutableStateOf(false) }
 
     if (graph == null) {
-        SevaScaffold(title = "Find your way", onBack = onBack, onEmergencyClick = onEmergencyClick) {
+        SevaScaffold(title = tr("Find your way"), onBack = onBack, onEmergencyClick = onEmergencyClick) {
             EmptyState(
-                "The indoor map for ${visit?.hospital?.name ?: "this hospital"} is not ready yet.\n\n" +
-                    (visit?.let { "Your doctor is in ${it.doctor.room}, floor ${it.doctor.floor}. " } ?: "") +
-                    "Please ask at the help desk."
+                tr("The indoor map for {hospital} is not ready yet.", "hospital" to (visit?.hospital?.name ?: tr("this hospital"))) + "\n\n" +
+                    (visit?.let { tr("Your doctor is in {room}, floor {floor}.", "room" to it.doctor.room, "floor" to it.doctor.floor) + " " } ?: "") +
+                    tr("Please ask at the help desk.")
             )
         }
         return
@@ -140,9 +145,10 @@ fun IndoorNavigationScreen(
         return
     }
 
+    val lang = LocalLang.current
     val start = position ?: graph.entrance
     val path = remember(start, dest, settings.avoidStairs) { app.nav.plan(graph, start, dest) }
-    val steps = remember(path) { path?.let { Directions.steps(graph, it) }.orEmpty() }
+    val steps = remember(path, lang) { path?.let { Directions.steps(graph, it, lang) }.orEmpty() }
     val byId = remember(graph) { graph.nodes.associateBy { it.id } }
     val destNode = byId[dest]!!
     val arrived = position == dest
@@ -160,9 +166,9 @@ fun IndoorNavigationScreen(
 
     fun speakStep() {
         val text = when {
-            arrived -> "You have arrived at ${destNode.displayName()}."
-            step == null -> "Scan the nearest sticker to start."
-            else -> step.instruction + (step.landmark?.let { " Look for: $it." } ?: "") + " Then scan the sticker there."
+            arrived -> trNow("You have arrived at {place}.", "place" to destNode.displayName(lang))
+            step == null -> trNow("Scan the nearest sticker to start.")
+            else -> step.instruction + (step.landmark?.let { " " + trNow("Look for: {landmark}", "landmark" to it) + "." } ?: "") + trNow(" Then scan the sticker there.")
         }
         app.speaker.speak(text)
     }
@@ -174,7 +180,7 @@ fun IndoorNavigationScreen(
     }
 
     SevaScaffold(
-        title = "Find your way",
+        title = tr("Find your way"),
         onBack = onBack,
         onListen = { speakStep() },
         onEmergencyClick = onEmergencyClick
@@ -191,30 +197,30 @@ fun IndoorNavigationScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
                     .background(LocalExtraColors.current.field)
-                    .clickable(onClickLabel = "Change destination") { choosing = true }
+                    .clickable(onClickLabel = tr("Change destination")) { choosing = true }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Default.Flag, contentDescription = null, tint = Accent)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("GOING TO", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(destNode.displayName(), style = MaterialTheme.typography.titleMedium)
+                    Text(tr("GOING TO"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(destNode.displayName(lang), style = MaterialTheme.typography.titleMedium)
                 }
-                Text("CHANGE", style = MaterialTheme.typography.labelLarge, color = Accent)
+                Text(tr("CHANGE"), style = MaterialTheme.typography.labelLarge, color = Accent)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            lastResult?.let { ScanBanner(it, byId[position]?.displayName()) }
+            lastResult?.let { ScanBanner(it, byId[position]?.displayName(lang)) }
 
             // The one thing to do now
             NowCard(
                 arrived = arrived,
                 started = position != null,
                 step = step,
-                destName = destNode.displayName(),
-                entranceName = byId[graph.entrance]?.displayName() ?: "the main gate",
+                destName = destNode.displayName(lang),
+                entranceName = byId[graph.entrance]?.displayName(lang) ?: tr("the main gate"),
                 remainingM = totalM,
                 noRoute = path == null
             )
@@ -228,9 +234,9 @@ fun IndoorNavigationScreen(
                         .background(ColorPriorityContainer)
                         .padding(18.dp)
                 ) {
-                    Text("ARE YOU LOST?", style = MaterialTheme.typography.titleLarge, color = ColorPriorityContent)
+                    Text(tr("ARE YOU LOST?"), style = MaterialTheme.typography.titleLarge, color = ColorPriorityContent)
                     Text(
-                        "Scan the nearest sticker and we will find a new route, or ask a helper at the help desk.",
+                        tr("Scan the nearest sticker and we will find a new route, or ask a helper at the help desk."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = ColorPriorityContent
                     )
@@ -241,7 +247,7 @@ fun IndoorNavigationScreen(
 
             if (!arrived) {
                 BigButton(
-                    text = if (position == null) "Scan a sticker to start" else "Scan the next sticker",
+                    text = if (position == null) tr("Scan a sticker to start") else tr("Scan the next sticker"),
                     onClick = onOpenScanner,
                     icon = Icons.Default.QrCodeScanner
                 )
@@ -263,7 +269,7 @@ fun IndoorNavigationScreen(
             // The whole route
             if (steps.size > 1 && !arrived) {
                 InfoCard {
-                    Text("THE WAY", style = MaterialTheme.typography.titleLarge)
+                    Text(tr("THE WAY"), style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                     steps.forEachIndexed { i, s ->
                         StepRow(index = i + 1, step = s, current = i == 0)
@@ -275,9 +281,9 @@ fun IndoorNavigationScreen(
             InfoCard {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Avoid stairs", style = MaterialTheme.typography.titleMedium)
+                        Text(tr("Avoid stairs"), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "Use the lift and ramps only.",
+                            tr("Use the lift and ramps only."),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -289,7 +295,7 @@ fun IndoorNavigationScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             BigButton(
-                text = "I'm lost: take me to the help desk",
+                text = tr("I'm lost: take me to the help desk"),
                 type = ButtonType.SECONDARY,
                 icon = Icons.Default.SupportAgent,
                 onClick = {
@@ -304,7 +310,7 @@ fun IndoorNavigationScreen(
 @Composable
 private fun ScanBanner(result: ScanResult, here: String?) {
     val (text, bg, ink) = when (result) {
-        ScanResult.STARTED -> Triple("You are at ${here ?: "this sticker"}.", Mint, Ink)
+        ScanResult.STARTED -> Triple(tr("You are at {place}.", "place" to (here ?: tr("this sticker"))), Mint, Ink)
         ScanResult.ON_ROUTE -> Triple("Good, you are on the right way.", Mint, Ink)
         ScanResult.REROUTED -> Triple("No problem. Let's take a new route.", ColorPriorityContainer, ColorPriorityContent)
         ScanResult.ARRIVED -> Triple("You have arrived.", Mint, Ink)
@@ -346,21 +352,21 @@ private fun NowCard(
             arrived -> {
                 Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Ink, modifier = Modifier.size(44.dp))
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("YOU HAVE ARRIVED", style = MaterialTheme.typography.headlineMedium, color = ink)
-                Text("This is $destName.", style = MaterialTheme.typography.bodyLarge, color = ink)
+                Text(tr("YOU HAVE ARRIVED"), style = MaterialTheme.typography.headlineMedium, color = ink)
+                Text(tr("This is {place}.", "place" to destName), style = MaterialTheme.typography.bodyLarge, color = ink)
             }
             noRoute -> {
-                Text("NO ROUTE FOUND", style = MaterialTheme.typography.headlineMedium, color = ink)
+                Text(tr("NO ROUTE FOUND"), style = MaterialTheme.typography.headlineMedium, color = ink)
                 Text(
-                    "There is no way there without stairs. Turn off \"Avoid stairs\" or ask a staff member to help you.",
+                    tr("There is no way there without stairs. Turn off \"Avoid stairs\" or ask a staff member to help you."),
                     style = MaterialTheme.typography.bodyLarge, color = ink
                 )
             }
             !started -> {
-                Text("START AT A STICKER", style = MaterialTheme.typography.headlineMedium, color = ink)
+                Text(tr("START AT A STICKER"), style = MaterialTheme.typography.headlineMedium, color = ink)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    "Scan the QR sticker at $entranceName, or the nearest sticker on a wall. About $remainingM m from the gate to $destName.",
+                    tr("Scan the QR sticker at {gate}, or the nearest sticker on a wall. About {m} m from the gate to {place}.", "gate" to entranceName, "m" to remainingM, "place" to destName),
                     style = MaterialTheme.typography.bodyLarge, color = ink
                 )
             }
@@ -374,7 +380,7 @@ private fun NowCard(
                     }
                     Spacer(modifier = Modifier.width(14.dp))
                     Text(
-                        if (remainingM > 0) "$remainingM M TO GO" else "NEARLY THERE",
+                        if (remainingM > 0) tr("{m} M TO GO", "m" to remainingM) else tr("NEARLY THERE"),
                         style = MaterialTheme.typography.labelLarge,
                         color = Mint
                     )
@@ -383,10 +389,10 @@ private fun NowCard(
                 Text(step.instruction, style = MaterialTheme.typography.headlineMedium, color = ink)
                 step.landmark?.let {
                     Spacer(modifier = Modifier.height(6.dp))
-                    Text("Look for: $it", style = MaterialTheme.typography.bodyLarge, color = Color(0xFFC9ECE6))
+                    Text(tr("Look for: {landmark}", "landmark" to it), style = MaterialTheme.typography.bodyLarge, color = Color(0xFFC9ECE6))
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("Then scan the sticker at ${step.targetName}.", style = MaterialTheme.typography.bodyMedium, color = Color(0xFFC9ECE6))
+                Text(tr("Then scan the sticker at {place}.", "place" to step.targetName), style = MaterialTheme.typography.bodyMedium, color = Color(0xFFC9ECE6))
             }
         }
     }
@@ -434,6 +440,7 @@ private fun FloorPlan(
     destination: String
 ) {
     val byId = remember(graph) { graph.nodes.associateBy { it.id } }
+    val lang = LocalLang.current
     val plan = graph.floors.firstOrNull { it.floor == floor }
     val mapW = (plan?.width ?: 1000).toFloat()
     val mapH = (plan?.height ?: 560).toFloat()
@@ -453,11 +460,11 @@ private fun FloorPlan(
             .padding(14.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("FLOOR PLAN", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            Text(tr("FLOOR PLAN"), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
             graph.floors.forEach { f ->
                 val on = f.floor == floor
                 Text(
-                    text = if (f.floor == 0) "GROUND" else "FLOOR ${f.floor}",
+                    text = if (f.floor == 0) tr("GROUND") else tr("FLOOR {n}", "n" to f.floor),
                     style = MaterialTheme.typography.labelMedium,
                     color = if (on) Color.White else Ink,
                     modifier = Modifier
@@ -492,7 +499,8 @@ private fun FloorPlan(
                     drawRoundRect(Control, Offset(a.x * s, a.y * s), Size(a.w * s, a.h * s), CornerRadius(6f * s), style = Stroke(1.5f))
                     if (a.kind != "corridor" && a.w * s > 40) {
                         drawIntoCanvas { c ->
-                            val label = if (labelPaint.measureText(a.label) > a.w * s - 8) a.label.substringBefore(" (") else a.label
+                            val full = a.displayLabel(lang)
+                            val label = if (labelPaint.measureText(full) > a.w * s - 8) full.substringBefore(" (") else full
                             c.nativeCanvas.drawText(label, a.x * s + 6 * s, a.y * s + 14 * s * 1.6f, labelPaint)
                         }
                     }
@@ -525,9 +533,9 @@ private fun FloorPlan(
         }
         Spacer(modifier = Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Legend(Frame, "You")
-            Legend(Accent, "Route")
-            Legend(ColorEmergency, "Destination")
+            Legend(Frame, tr("You"))
+            Legend(Accent, tr("Route"))
+            Legend(ColorEmergency, tr("Destination"))
         }
     }
 }
@@ -537,7 +545,7 @@ private fun Legend(color: Color, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
         Spacer(modifier = Modifier.width(6.dp))
-        Text(label, style = MaterialTheme.typography.labelMedium)
+        Text(tr(label), style = MaterialTheme.typography.labelMedium)
     }
 }
 
@@ -555,9 +563,9 @@ private fun DestinationPicker(
             .sortedWith(compareBy({ it.floor }, { it.displayName() }))
     }
     val x = LocalExtraColors.current
-    SevaScaffold(title = "Where to?", onBack = onBack, onEmergencyClick = onEmergencyClick) {
+    SevaScaffold(title = tr("Where to?"), onBack = onBack, onEmergencyClick = onEmergencyClick) {
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-            Text("WHERE DO YOU WANT TO GO?", style = MaterialTheme.typography.headlineMedium)
+            Text(tr("WHERE DO YOU WANT TO GO?"), style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(14.dp))
             if (doctorRoom != null && graph.nodes.any { it.id == doctorRoom }) {
                 Row(
@@ -570,8 +578,8 @@ private fun DestinationPicker(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("YOUR DOCTOR", style = MaterialTheme.typography.labelMedium, color = Ink)
-                        Text(doctorLabel ?: "Doctor's room", style = MaterialTheme.typography.titleLarge, color = Ink)
+                        Text(tr("YOUR DOCTOR"), style = MaterialTheme.typography.labelMedium, color = Ink)
+                        Text(doctorLabel ?: tr("Doctor's room"), style = MaterialTheme.typography.titleLarge, color = Ink)
                     }
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Ink)
                 }
@@ -582,7 +590,7 @@ private fun DestinationPicker(
                 if (n.floor != lastFloor) {
                     lastFloor = n.floor
                     Text(
-                        (graph.floors.firstOrNull { it.floor == n.floor }?.name ?: "Floor ${n.floor}").uppercase(),
+                        floorLabel(n.floor).uppercase(),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 10.dp, bottom = 6.dp)
@@ -609,8 +617,8 @@ private fun PlaceRow(n: GraphNodeDto, field: Color, onPick: (String) -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(n.displayName(), style = MaterialTheme.typography.titleMedium, color = if (emergency) ColorEmergency else Ink)
-            n.landmarkText()?.let {
+            Text(n.displayName(LocalLang.current), style = MaterialTheme.typography.titleMedium, color = if (emergency) ColorEmergency else Ink)
+            n.landmarkText(LocalLang.current)?.let {
                 Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Start)
             }
         }

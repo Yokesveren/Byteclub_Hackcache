@@ -4,3 +4,6 @@ supabase/.temp/
 supabase/.branches/
 web/.taste-skill/
 .playwright-cli/
+
+# Python bytecode from the map and translation builders
+__pycache__/

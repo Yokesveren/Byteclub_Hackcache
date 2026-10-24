@@ -1,6 +1,9 @@
 package app.sevasetu.patient.ui.register
 
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.deptName
+import app.sevasetu.patient.ui.i18n.tr
+import app.sevasetu.patient.ui.i18n.trNow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,6 +73,11 @@ import java.time.Instant
 import java.util.UUID
 
 private const val STEPS = 6
+
+private val NEED_LABELS = mapOf(
+    "walking" to "Difficulty walking", "wheelchair" to "Uses a wheelchair", "sight" to "Low vision",
+    "hearing" to "Hard of hearing", "pregnant" to "Pregnant",
+)
 
 /**
  * OPD registration (PRD 8.2), one question per screen: who, which hospital, name, age, special needs, then the
@@ -180,7 +188,7 @@ fun RegistrationScreen(
                 app.outboxManager.enqueueRegisterVisit(offline, priority)
                 provisional(offline, app.directory).also { app.visits.save(it, confirmed = false) }
             } catch (e: Exception) {
-                error = e.localizedMessage ?: "The hospital could not register this visit. Please ask at the help desk."
+                error = e.localizedMessage ?: trNow("The hospital could not register this visit. Please ask at the help desk.")
                 submitting = false
                 return@launch
             }
@@ -195,7 +203,7 @@ fun RegistrationScreen(
     }
 
     SevaScaffold(
-        title = if (forSomeoneElse) "Register someone" else "Register for OPD",
+        title = if (forSomeoneElse) tr("Register someone") else tr("Register for OPD"),
         onBack = { if (step > 1) step-- else onBack() },
         onListen = {
             app.speaker.speak(
@@ -226,16 +234,16 @@ fun RegistrationScreen(
             val stepShown = if (step == 6) 6 else step
             when (step) {
                 1 -> {
-                    StepHeader(stepShown, STEPS, "Who is this for?")
+                    StepHeader(stepShown, STEPS, tr("Who is this for?"))
                     Spacer(Modifier.height(20.dp))
-                    PictureCard("Myself", Icons.Default.Person, !forSomeoneElse, { forSomeoneElse = false })
-                    PictureCard("Someone else (I am helping them)", Icons.Default.PersonAdd, forSomeoneElse, { forSomeoneElse = true })
+                    PictureCard(tr("Myself"), Icons.Default.Person, !forSomeoneElse, { forSomeoneElse = false })
+                    PictureCard(tr("Someone else (I am helping them)"), Icons.Default.PersonAdd, forSomeoneElse, { forSomeoneElse = true })
                     Spacer(Modifier.height(20.dp))
-                    BigButton("Next", { step = 2 }, icon = Icons.AutoMirrored.Filled.ArrowForward)
+                    BigButton(tr("Next"), { step = 2 }, icon = Icons.AutoMirrored.Filled.ArrowForward)
                 }
 
                 2 -> {
-                    StepHeader(stepShown, STEPS, "Which hospital?")
+                    StepHeader(stepShown, STEPS, tr("Which hospital?"))
                     Spacer(Modifier.height(16.dp))
                     directory.hospitals.forEach { h ->
                         ChoiceRow(
@@ -247,14 +255,14 @@ fun RegistrationScreen(
                         )
                     }
                     Spacer(Modifier.height(20.dp))
-                    BigButton("Next", { step = 3 }, icon = Icons.AutoMirrored.Filled.ArrowForward)
+                    BigButton(tr("Next"), { step = 3 }, icon = Icons.AutoMirrored.Filled.ArrowForward)
                 }
 
                 3 -> {
-                    StepHeader(stepShown, STEPS, if (forSomeoneElse) "Their first name" else "Your first name")
+                    StepHeader(stepShown, STEPS, if (forSomeoneElse) tr("Their first name") else tr("Your first name"))
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        "First name is enough. Phone and area are optional.",
+                        tr("First name is enough. Phone and area are optional."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -262,7 +270,7 @@ fun RegistrationScreen(
                     OutlinedTextField(
                         value = firstName,
                         onValueChange = { firstName = it.take(40) },
-                        label = { Text("First name") },
+                        label = { Text(tr("First name")) },
                         singleLine = true,
                         textStyle = MaterialTheme.typography.titleLarge,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
@@ -272,7 +280,7 @@ fun RegistrationScreen(
                     OutlinedTextField(
                         value = phone,
                         onValueChange = { v -> phone = v.filter { it.isDigit() }.take(10) },
-                        label = { Text("Phone (optional, for SMS updates)") },
+                        label = { Text(tr("Phone (optional, for SMS updates)")) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth()
@@ -281,25 +289,25 @@ fun RegistrationScreen(
                     OutlinedTextField(
                         value = area,
                         onValueChange = { area = it.take(40) },
-                        label = { Text("Area or district (optional)") },
+                        label = { Text(tr("Area or district (optional)")) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(20.dp))
-                    BigButton("Next", { step = 4 }, enabled = firstName.isNotBlank(), icon = Icons.AutoMirrored.Filled.ArrowForward)
+                    BigButton(tr("Next"), { step = 4 }, enabled = firstName.isNotBlank(), icon = Icons.AutoMirrored.Filled.ArrowForward)
                 }
 
                 4 -> {
-                    StepHeader(stepShown, STEPS, "Age and needs")
+                    StepHeader(stepShown, STEPS, tr("Age and needs"))
                     Spacer(Modifier.height(16.dp))
                     Row {
-                        PictureCard("Baby\nunder 1", Icons.Default.ChildCare, ageGroup == "infant", { ageGroup = "infant" }, Modifier.weight(1f))
-                        PictureCard("Child\n1 to 17", Icons.Default.Boy, ageGroup == "child", { ageGroup = "child" }, Modifier.weight(1f))
+                        PictureCard(tr("Baby\nunder 1"), Icons.Default.ChildCare, ageGroup == "infant", { ageGroup = "infant" }, Modifier.weight(1f))
+                        PictureCard(tr("Child\n1 to 17"), Icons.Default.Boy, ageGroup == "child", { ageGroup = "child" }, Modifier.weight(1f))
                     }
                     Row {
-                        PictureCard("Adult\n18 to 59", Icons.Default.Person, ageGroup == "adult", { ageGroup = "adult" }, Modifier.weight(1f))
-                        PictureCard("Elderly\n60 and over", Icons.Default.Elderly, ageGroup == "elderly", { ageGroup = "elderly" }, Modifier.weight(1f))
+                        PictureCard(tr("Adult\n18 to 59"), Icons.Default.Person, ageGroup == "adult", { ageGroup = "adult" }, Modifier.weight(1f))
+                        PictureCard(tr("Elderly\n60 and over"), Icons.Default.Elderly, ageGroup == "elderly", { ageGroup = "elderly" }, Modifier.weight(1f))
                     }
                     Spacer(Modifier.height(10.dp))
                     OutlinedTextField(
@@ -310,15 +318,15 @@ fun RegistrationScreen(
                                 ageGroup = when { y < 1 -> "infant"; y < 18 -> "child"; y < 60 -> "adult"; else -> "elderly" }
                             }
                         },
-                        label = { Text("Age in years (optional)") },
+                        label = { Text(tr("Age in years (optional)")) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(Modifier.height(20.dp))
-                    Text("ANY HELP NEEDED?", style = MaterialTheme.typography.labelLarge)
+                    Text(tr("ANY HELP NEEDED?"), style = MaterialTheme.typography.labelLarge)
                     Text(
-                        "Choose all that apply. Staff will be told; the route will avoid stairs if needed.",
+                        tr("Choose all that apply. Staff will be told; the route will avoid stairs if needed."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -330,13 +338,13 @@ fun RegistrationScreen(
                         Triple("hearing", "Hard of hearing", Icons.Default.Hearing),
                         if (ageGroup == "adult") Triple("pregnant", "Pregnant", Icons.Default.PregnantWoman) else null,
                     ).forEach { (id, label, icon) ->
-                        ChoiceRow(icon = icon, text = label, second = null, selected = id in needs, onClick = {
+                        ChoiceRow(icon = icon, text = tr(label), second = null, selected = id in needs, onClick = {
                             needs = if (id in needs) needs - id else needs + id
                         })
                     }
                     Spacer(Modifier.height(20.dp))
                     BigButton(
-                        "Next: symptom check",
+                        tr("Next: symptom check"),
                         {
                             if (ageGroup != "adult") needs = needs - "pregnant"
                             step = 5
@@ -348,7 +356,7 @@ fun RegistrationScreen(
 
                 else -> {
                     val r = symptom
-                    StepHeader(stepShown, STEPS, "Check and register")
+                    StepHeader(stepShown, STEPS, tr("Check and register"))
                     Spacer(Modifier.height(16.dp))
                     val dept = departments.firstOrNull { it.code == r?.departmentCode }
                     Column(
@@ -358,29 +366,29 @@ fun RegistrationScreen(
                             .background(LocalExtraColors.current.field)
                             .padding(20.dp)
                     ) {
-                        Review("Patient", firstName.trim() + (ageYears.toIntOrNull()?.let { ", $it years" } ?: ", $ageGroup"))
-                        Review("Hospital", hospital?.name?.removeSuffix(" (Demo)") ?: hospitalId)
-                        Review("Department", dept?.name ?: (r?.departmentCode ?: "General Medicine"))
-                        if (needs.isNotEmpty()) Review("Help needed", needs.joinToString(", "))
-                        Review("Note for the doctor", r?.doctorNote ?: "")
+                        Review(tr("Patient"), firstName.trim() + (ageYears.toIntOrNull()?.let { ", $it years" } ?: ", $ageGroup"))
+                        Review(tr("Hospital"), hospital?.name?.removeSuffix(" (Demo)") ?: hospitalId)
+                        Review(tr("Department"), dept?.let { deptName(it) } ?: (r?.departmentCode ?: tr("General Medicine")))
+                        if (needs.isNotEmpty()) Review(tr("Help needed"), needs.map { tr(NEED_LABELS[it] ?: it) }.joinToString(", "))
+                        Review(tr("Note for the doctor"), r?.doctorNote ?: "")
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             StatusPill(
-                                label = if (r?.suggestedBand == "yellow") "Priority" else "Routine",
+                                label = if (r?.suggestedBand == "yellow") tr("Priority") else tr("Routine"),
                                 type = r?.suggestedBand ?: "green",
                                 provisional = true
                             )
                         }
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "Staff will confirm the band. Feeling worse at any time? Press Emergency.",
+                            tr("Staff will confirm the band. Feeling worse at any time? Press Emergency."),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Spacer(Modifier.height(20.dp))
                     BigButton(
-                        text = if (submitting) "Registering…" else "Register and get my token",
+                        text = if (submitting) "Registering…" else tr("Register and get my token"),
                         onClick = { submit() },
                         enabled = !submitting && r != null
                     )
@@ -396,7 +404,7 @@ fun RegistrationScreen(
 
 @Composable
 private fun Review(label: String, value: String) {
-    Text(label.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(tr(label).uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(value, style = MaterialTheme.typography.titleMedium, color = Ink)
     Spacer(Modifier.height(10.dp))
 }

@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.info
 
 import androidx.compose.foundation.layout.Column
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,7 +71,7 @@ fun OfflineReadinessScreen(
     }
     LaunchedEffect(Unit) { count() }
 
-    SevaScaffold(title = "Ready offline?", onBack = onBack, onEmergencyClick = onEmergencyClick) {
+    SevaScaffold(title = tr("Ready offline?"), onBack = onBack, onEmergencyClick = onEmergencyClick) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,43 +79,43 @@ fun OfflineReadinessScreen(
                 .padding(16.dp)
         ) {
             ScreenBand(
-                title = "Works with no signal",
+                title = tr("Works with no signal"),
                 tone = "mint",
-                lead = "Emergency, the map, the symptom check and your last ticket all live on this phone."
+                lead = tr("Emergency, the map, the symptom check and your last ticket all live on this phone.")
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             InfoCard {
-                Text("ON THIS PHONE", style = MaterialTheme.typography.labelLarge)
+                Text(tr("ON THIS PHONE"), style = MaterialTheme.typography.labelLarge)
                 Spacer(modifier = Modifier.height(8.dp))
-                Check(true, "Emergency screen, 112 and 108")
-                Check(hasMap, if (hasMap) "Indoor map and directions" else "Indoor map (not drawn for this hospital yet)")
-                Check(rules != null, "Symptom check, ${rules?.warningSigns?.size ?: 0} warning signs (rules ${rules?.version ?: "missing"})")
-                Check(directory.fetchedAt > 0, if (directory.fetchedAt > 0) "Hospitals, departments and doctors" else "Hospital list (built-in copy; connect once to update)")
-                Check(visit != null, if (visit != null) "Your ticket ${visit?.token} and its QR slip" else "No ticket saved yet")
+                Check(true, tr("Emergency screen, 112 and 108"))
+                Check(hasMap, if (hasMap) tr("Indoor map and directions") else tr("Indoor map (not drawn for this hospital yet)"))
+                Check(rules != null, tr("Symptom check, {n} warning signs (rules {version})", "n" to (rules?.warningSigns?.size ?: 0), "version" to (rules?.version ?: "–")))
+                Check(directory.fetchedAt > 0, if (directory.fetchedAt > 0) tr("Hospitals, departments and doctors") else tr("Hospital list (built-in copy; connect once to update)"))
+                Check(visit != null, if (visit != null) tr("Your ticket {token} and its QR slip", "token" to visit?.token) else tr("No ticket saved yet"))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             InfoCard {
-                Text("WAITING TO SEND", style = MaterialTheme.typography.labelLarge)
+                Text(tr("WAITING TO SEND"), style = MaterialTheme.typography.labelLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     when {
-                        pending == 0 && failed == 0 -> "Nothing. Everything has reached the hospital."
-                        else -> "$pending waiting" + if (failed > 0) ", $failed refused by the hospital" else ""
+                        pending == 0 && failed == 0 -> tr("Nothing. Everything has reached the hospital.")
+                        else -> tr("{n} waiting", "n" to pending) + if (failed > 0) ", " + tr("{n} refused by the hospital", "n" to failed) else ""
                     },
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    "Sent in this order when signal returns: urgent help first, then Priority and Routine registrations, then the rest.",
+                    tr("Sent in this order when signal returns: urgent help first, then Priority and Routine registrations, then the rest."),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (pending > 0) {
                     Spacer(modifier = Modifier.height(12.dp))
                     BigButton(
-                        text = if (sending) "Sending…" else "Send now",
+                        text = if (sending) "Sending…" else tr("Send now"),
                         icon = Icons.Default.CloudUpload,
                         enabled = !sending,
                         onClick = {
@@ -131,14 +132,14 @@ fun OfflineReadinessScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "To try it: turn on airplane mode, then register, scan stickers or press urgent help. " +
-                    "Tickets made offline show \"Waiting to be confirmed\" until the hospital confirms them.",
+                tr("To try it: turn on airplane mode, then register, scan stickers or press urgent help. ") +
+                    tr("Tickets made offline show \"Waiting to be confirmed\" until the hospital confirms them."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             if (!app.isLive) {
                 Spacer(modifier = Modifier.height(12.dp))
-                BigButton(text = "Simulator controls", type = ButtonType.SECONDARY, onClick = onOpenDemoPanel)
+                BigButton(text = tr("Simulator controls"), type = ButtonType.SECONDARY, onClick = onOpenDemoPanel)
             }
         }
     }
@@ -149,7 +150,7 @@ private fun Check(ok: Boolean, text: String) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             if (ok) Icons.Default.CheckCircle else Icons.Default.ErrorOutline,
-            contentDescription = if (ok) "Ready" else "Not ready",
+            contentDescription = if (ok) tr("Ready") else tr("Not ready"),
             tint = if (ok) Accent else ColorPriorityEdge,
             modifier = Modifier.size(24.dp)
         )

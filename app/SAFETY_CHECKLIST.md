@@ -1,16 +1,19 @@
 # SAFETY_CHECKLIST.md
 
-Safety verification checklist according to PRD section 4 and single prompt rules S1 to S10.
+PRD section 4, rules S1 to S10, as the app meets them. The backend enforces what it can on its own (a red band is
+never queued, bands are never lowered); this is the app's part. Re-check before every demo.
 
-| Rule | Requirement | Status | Verification Method |
+| Rule | Requirement | How the app meets it | Check |
 |---|---|---|---|
-| **S1** | Emergency bar/button on every screen, opens < 1s offline with route to Emergency, 112 & 108 | PASS | Verified `SevaScaffold` contains `EmergencyBar` on all screens and routes directly to `EmergencyScreen` |
-| **S2** | Any warning sign answered "yes" ends flow with Emergency recommendation, never calls `registerVisit` | PASS | Verified `SymptomCheckScreen` checks warning signs first, triggers `onEmergencyTriggered()`, enqueues emergency record, and opens `EmergencyScreen` without calling `registerVisit` |
-| **S3** | App never shows a lower band than server returned; displays provisional label when needed | PASS | Verified `registerVisitInternal` and `StatusPill` keep server band and display "(provisional)" tag |
-| **S4** | Queue screens show "Feeling worse? Press Urgent help" without encouraging waiting/leaving | PASS | Verified `MyTurnScreen` includes red outlined `BigButton("Feeling worse? Press Urgent help")` |
-| **S5** | Urgent flag shows honest status (Not received, Sent, Seen) with vibration feedback | PASS | Verified `EmergencyScreen` polls/observes flag lifecycle, updates status text, and triggers vibration upon `seenAt` |
-| **S6** | No remote token or Wait Anywhere allowed for flagged or Priority patients | PASS | Verified `waitAnywhereAllowed` flag in `MyTurnDto` is false for Priority and flagged visits |
-| **S7** | Chatbot/Help cards answer only approved FAQ content and hand off warning signs to Emergency | PASS | Verified static FAQ cards in `HelpCardsScreen` with direct Emergency handoff button |
-| **S8** | Offline screens display "Last updated at HH:mm" and offline tokens state "Waiting to be confirmed" | PASS | Verified `OfflineBanner`, `LastUpdatedText`, and "(Waiting to be confirmed)" label on `OpdSlipScreen` |
-| **S9** | OPD slip shows token, name & department only; no health data in QR; random session ID for scans | PASS | Verified `slip_qr` payload format (`SS1:SLIP:H01:<visit_id>`) and anonymous session IDs for scan events |
-| **S10**| Queue position changes display honest translated reasons from `last_reason` | PASS | Verified `translateReasonCode` maps all 10 `reason_code` values into plain language |
+| **S1** | Emergency on every screen, opens in under a second with no signal, with the route, 112 and 108 | `SevaScaffold` puts the red Emergency bar on every screen (language and consent included); Called has its own urgent-help button. The Emergency screen needs no network: the route to Casualty comes from the map on the phone, from the last scanned sticker or the gate. | Airplane mode, tap Emergency from each screen |
+| **S2** | Any warning sign ends the flow at Emergency, no token | The 11 warning signs come first. A yes opens Emergency at once, records the outcome (anonymous) and raises an urgent flag with source `symptom_check`; `register_visit` is never called. | Symptom check, tap a warning sign; dashboard shows the flag |
+| **S3** | Never show a lower band than the server | The app shows the server's `band` and `band_label`; while unconfirmed the chip has a dashed edge and "unconfirmed". | Register as elderly; chip shows Priority |
+| **S4** | Queue screens say "Feeling worse? Press Urgent help"; nothing says the patient can wait | My Turn and Called carry the red button; the wording never suggests leaving. | Read My Turn and Called |
+| **S5** | The urgent flag shows its honest state | "Not yet received by staff" (queued, with "please tell a staff member"), "Sent to staff", "Staff have seen your request" with vibration and speech when staff tap Seen. Live over Realtime, checked every 3 s as a fallback. | Press urgent help; tap Seen on the dashboard |
+| **S6** | No Wait Anywhere or remote token for flagged or Priority patients | The app offers no Wait Anywhere at all. | |
+| **S7** | Help answers only approved content and hands warning signs to Emergency | Help cards are fixed text with an Emergency hand-off; there is no chatbot. | |
+| **S8** | Offline screens say when the information is from; offline tokens say "Waiting to be confirmed" | Offline banner with "updated at"; "Last updated at" on the slip; offline tickets are marked until the hospital confirms them. | Airplane mode, register |
+| **S9** | The slip shows token, first name and department only; no health data in the QR; scans are anonymous | Slip QR is `SS1:SLIP:<hospital>:<visit_id>`; scan events go under a random session id, reset for each visit, and only with consent. | Scan a slip QR with any reader |
+| **S10** | When the place in the queue changes, the patient sees why | `last_reason` is shown on My Turn as "Why did my place change?" in the patient's language; unknown codes show the server's message. | Confirm Priority for someone ahead on the dashboard |
+
+Also: every colour-coded status carries a word and an icon (status chips, flag states, the floor-plan legend).

@@ -1,8 +1,12 @@
 # Building the SevaSetu patient app
 
-This is the guide for whoever builds the **patient app** (the offline-first PWA in the PRD, section 8).
-The backend, the staff dashboard and the indoor map already exist in this repo. Your app talks to the
-same backend, so everything you do shows up live on the dashboard, and everything staff do reaches the patient.
+This is the guide for whoever works on the **patient app** (PRD section 8). The app is built: a native Android app
+(Kotlin, Jetpack Compose) in [`app/`](app/), connected to the same backend as the staff dashboard, so everything the
+patient does shows up live on the dashboard and everything staff do reaches the phone.
+
+> **Start with [`app/README.md`](app/README.md)** to run it, and [`app/FEATURES.md`](app/FEATURES.md) for what is done
+> and what is not. This guide explains the backend rules the app follows; the code examples are in TypeScript
+> (`supabase-js`) because they mirror the contract, and the app's Kotlin does the same through `RemoteBackend`.
 
 - **Exact request and response shapes:** [`docs/CONTRACT.md`](docs/CONTRACT.md). This guide explains *how* to use it.
 - **Product spec:** `SevaSetu_PRD_v1_0_Complete.docx`, especially sections 4 (safety rules), 7 (offline), 8 (screens) and 9 (navigation).
@@ -48,7 +52,7 @@ same backend, so everything you do shows up live on the dashboard, and everythin
 **Already done for you:**
 - **Backend** (`supabase/`): queue rules, token allocation, wait windows, urgent flags, staff actions, transparency log, follow-ups, Health Journey, flow analytics. Every safety rule is enforced server-side, so a bug in the app cannot, for example, queue an emergency.
 - **Staff website** (`web/`): facility queues with the urgent alarm, counter, waiting-room board, patient-flow crowd map, doctor desk, district view, demo controls. Use it to see your app working.
-- **Indoor map** (`web/public/graph/H01.json`) and a **route planner** (`web/src/lib/graph.ts`) you can copy.
+- **Indoor maps** for all three hospitals (`web/public/graph/H0N.json`, names in English, Hindi and Urdu) and a **route planner** (`web/src/lib/graph.ts`, ported to Kotlin as `GraphRouter`).
 - **Demo data:** three fictional hospitals, 15 doctors, a busy 10:30 AM OPD, returning patients with history.
 
 ---
@@ -119,11 +123,14 @@ export const supabase = createClient(
 );
 ```
 
-**Testing on a real phone (same Wi-Fi):**
-1. Find the laptop's LAN IP (`ipconfig` on Windows, e.g. `192.168.1.23`).
-2. Use `http://192.168.1.23:54321` as the Supabase URL. The local stack already listens on all interfaces.
-3. Serve your app on the LAN too (e.g. `vite --host`). If the phone cannot connect, allow ports 54321 and your dev port through Windows Firewall.
-4. **Camera access (QR scanning) needs HTTPS or `localhost`.** On a phone over plain HTTP the camera is blocked, so use an HTTPS tunnel or your dev server's HTTPS option for scanner testing.
+**In the Android app** the URL and key go in `app/local.properties` (`sevasetu.supabaseUrl`, `sevasetu.supabaseAnonKey`);
+see [`app/README.md`](app/README.md).
+
+**Testing on a real phone:**
+1. **USB (works on any network):** `adb reverse tcp:54321 tcp:54321`, and use `http://127.0.0.1:54321` as the URL.
+2. **Same Wi-Fi:** find the laptop's LAN IP (`ipconfig`, e.g. `192.168.1.23`) and use `http://192.168.1.23:54321`.
+   Campus and office Wi-Fi often blocks phone-to-laptop traffic; if so, use USB. Windows Firewall must allow port 54321.
+3. **Emulator:** `http://10.0.2.2:54321`.
 
 The local keys are public demo keys. For the hackathon demo we will move to a hosted Supabase project and share a new URL and key.
 
@@ -287,7 +294,7 @@ await supabase.rpc("ingest_journey_events", { p_events: [
 ```
 
 They appear live on the dashboard's **Patient flow** screen (crowd map, wrong-turn hotspots).
-Names are English only in the map for now; add `hi`, `ur`, `ks`, `doi` next to `en` as translations arrive.
+Place names and landmarks carry `en`, `hi` and `ur`; the app shows `ur` for Kashmiri and `hi` for Dogri.
 
 ---
 
@@ -377,7 +384,6 @@ From PRD section 4 and 17.3. The backend enforces what it can; these are the app
 - **The demo clock** can be sped up from Demo controls. If your times look wrong, check `get_clock()` and ask whoever is running the demo.
 - **After `npx supabase db reset`,** all visits are recreated with new ids: clear the app's stored `visit_id`s.
 - **Realtime silent after a reset?** `docker restart supabase_realtime_sevasetu`.
-- **H02 and H03 have no indoor map yet.** Navigation is H01 only. The rest (queue, slip, My Turn) works at all three.
 - **Translations** in the database are a start (`hi`, `ur` for department names) and need native-speaker review before any real use.
 - **Errors come back as messages** (`error.message`), e.g. "unknown department for hospital H01". Show a friendly line and keep the outbox entry for retry only if it was a network error, not a validation error.
 
@@ -387,10 +393,10 @@ From PRD section 4 and 17.3. The backend enforces what it can; these are the app
 
 | Topic | Status |
 |---|---|
-| Symptom-check rule set (JSON on the phone) | **You own it.** Share the `cluster` values you emit (currently `fever`, `respiratory`, `diarrhoea`, `skin`, `injury`) so the outbox and the district view agree |
-| SMS / missed-call mock screen (PRD 7.2 step 3) | Not built. Decide who does it |
-| Map translations (`hi`, `ur`, `ks`, `doi` names and landmarks) | English only in `H01.json` |
-| Hosted backend for the demo | Website team will set it up and share the URL and anon key |
+| Symptom-check rule set (JSON on the phone) | Done (`symptom_rules_demo-1.json`, clusters `fever`, `respiratory`, `diarrhoea`, `skin`, `injury`). Needs clinical review |
+| Translations | Hindi and Urdu drafts for screens and maps; Kashmiri and Dogri fall back. Needs native-speaker review (`app/TRANSLATION_REVIEW.md`) |
+| SMS / missed-call fallback (PRD 7.2 step 3) | Not built. Decide who does it |
+| Hosted backend for the demo | Website team will set it up and share an `https://` URL and anon key; then rebuild the APK with it |
 | Chatbot (P1, online only) | Not started on either side |
 
 Questions about the backend, a missing field, or anything in this guide: ask before working around it.

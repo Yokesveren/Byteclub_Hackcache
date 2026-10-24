@@ -56,6 +56,30 @@ class DirectionsTest {
     }
 
     @Test
+    fun everyHospitalMapRoutesTheGateToEveryRoomAndToEmergency() {
+        for (h in listOf("H01", "H02", "H03")) {
+            val g: HospitalGraphDto = Json { ignoreUnknownKeys = true }.decodeFromString(File("src/main/assets/graph/$h.json").readText())
+            val rooms = g.nodes.filter { "room" in it.tags }
+            assertTrue("$h has rooms", rooms.isNotEmpty())
+            rooms.forEach { room ->
+                val path = GraphRouter.route(g, g.entrance, room.id, RouteOptions(avoidStairs = true))
+                assertNotNull("$h: stair-free route to ${room.id}", path)
+                assertEquals(room.id, Directions.steps(g, path!!).last().target)
+            }
+            assertNotNull("$h: route to Emergency", GraphRouter.route(g, g.entrance, g.emergency, RouteOptions(emergency = true)))
+            assertTrue("$h: names carry Hindi and Urdu", g.nodes.all { "hi" in it.name && "ur" in it.name })
+        }
+    }
+
+    @Test
+    fun directionsSpeakThePatientsLanguage() {
+        val path = GraphRouter.route(graph, "SS:H01:F0:W001", "SS:H01:F1:W103", RouteOptions(avoidStairs = true))!!
+        val hi = Directions.steps(graph, path, "hi")
+        assertTrue(hi.any { it.instruction.contains("लिफ़्ट") })
+        assertTrue(hi.last().targetName.contains("कमरा 3"))
+    }
+
+    @Test
     fun distanceIgnoresLiftRides() {
         val path = GraphRouter.route(graph, "SS:H01:F0:W016", "SS:H01:F1:W016", RouteOptions(avoidStairs = true))!!
         assertEquals(0, Directions.distance(graph, path))

@@ -1,206 +1,126 @@
-# SevaSetu Patient App (Offline-First Android App)
+# SevaSetu patient app (Android)
 
-SevaSetu (सेवा = service, सेतु = bridge) is an **offline-first patient app** designed for government hospitals and primary health centres (PHCs) in Jammu & Kashmir. Patients register without queuing, get an OPD slip with a QR code, follow their queue turn in real time, and are guided step-by-step inside the hospital to the doctor's room—even with **zero internet connection**.
+The patient side of SevaSetu: an OPD token without the counter queue, your place in the queue as it moves, and the
+way to the doctor's room by scanning QR stickers on the walls. It talks to the same backend as the staff website
+(`../supabase`, contract in `../docs/CONTRACT.md`), so whatever the patient does shows up on the dashboard and
+whatever staff do reaches the phone. Everything that matters in an emergency works with no signal.
 
----
-
-## 📌 Table of Contents
-1. [Overview & What This App Does](#-overview--what-this-app-does)
-2. [Key Workflows](#-key-workflows)
-3. [Implemented Features (F01 – F51)](#-implemented-features-f01--f51)
-4. [Backend & Website Developer Integration Guide](#-backend--website-developer-integration-guide)
-5. [Pending / Future Features](#-pending--future-features)
-6. [Building & Running the App](#-building--running-the-app)
+Kotlin, Jetpack Compose (Material 3), Room, WorkManager, CameraX + ML Kit, OkHttp. Min SDK 26, target 37.
 
 ---
 
-## 🏥 Overview & What This App Does
+## Run it
 
-In government district hospitals, long queue wait times, complex hospital layouts, and poor network connectivity lead to patient frustration and overcrowded corridors. SevaSetu addresses these challenges:
+You need the backend running (from the repo root, Docker on): `npx supabase start`, then `npx supabase status`
+for the `ANON_KEY`.
 
-- **Offline-First Operating Model**: All core features—indoor routing maps, symptom check rules, OPD ticket QR generation, audio guidance, and health history—are stored locally on the phone.
-- **Queue Transparency**: Shows real-time queue position ("3 people ahead"), estimated consult window ("Likely between 11:20 and 11:50"), and translated reason chips whenever a patient's position changes.
-- **Safety Triage First**: Evaluates critical warning signs (chest pain, breathing difficulty, pregnancy bleeding, fits) before registration; any "Yes" instantly redirects the patient to Emergency (Casualty) without issuing a token.
-- **Accessible Indoor Navigation**: Uses Dijkstra shortest-path routing over wall QR stickers (`SS:<hospital>:F<floor>:W<id>`) with an interactive Compose Canvas floor plan renderer, stair-free options, wrong-turn auto re-routing, and lost recovery.
-- **Elderly & Low-Literacy Friendly**: High-contrast theme, 4 text scale levels (100% to 200%), picture cards, spoken text-to-speech guidance ("Listen" button), and multi-language support (English, Hindi, Tamil).
-
-### Design
-The app uses the SevaSetu website's design language, so patients and staff see one product: the navy frame
-(`#0b2a3c`), scrub teal for actions (`#0b7a75`), clinical mint highlights, ward-blue and linen fields, the Chivo
-typeface with black-weight capital headings, 24dp panels and 12dp controls, and the website's band chips (a word and
-an icon every time, a dashed edge while a band is unconfirmed). Tokens live in `ui/theme/Theme.kt`; shared pieces
-(`SevaScaffold`, `BigButton`, `StatusPill`, `ScreenBand`, `SetuMark`) in `ui/components/Components.kt`. Chivo is
-bundled under the SIL Open Font License (`androidApp/OFL-Chivo.txt`).
-
----
-
-## 🔄 Key Workflows
-
-```
-[1. First Launch]  ──>  Language Choice (EN/HI/TA)  ──>  Privacy & Movement Consent
-                                                                    │
-                                                                    ▼
-[2. Home Dashboard] <─────────────────────────────────  [Active Visit Hero Card]
-       │
-       ├──> [A. Register OPD] ──> Warning Check ──> Details ──> Symptom Check ──> OPD Ticket Slip
-       │                                                                                │
-       ├──> [B. I Have My Slip] ──> Enter Token / Scan Slip QR Code ────────────────────┤
-       │                                                                                ▼
-       ├──> [C. My Turn Queue] <── Foreground Service Alerts (3 ahead & Called) ──> [Called Screen]
-       │            │                                                                   │
-       │            └──> Pressed "Feeling Worse?" ──────────────────────┐               ▼
-       │                                                                │       [D. Indoor Navigation]
-       ├──> [E. Emergency] <────────────────────────────────────────────┴───────> Wall Sticker Scanner
-       │
-       ├──> [F. Health Journey] ──> View Past Consultations & Next Follow-ups
-       │
-       └──> [G. Simulation Panel] ──> Toggle Offline, Autopilot, Clock Speed & Staff Actions
-```
-
----
-
-## 📋 Implemented Features (F01 – F51)
-
-### 1. Foundation & Design System
-- **F01**: Project setup, permissions (`CAMERA`, `VIBRATE`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC`), `H01.json` indoor map assets.
-- **F02 / F50**: Compose Material 3 design system, `SevaScaffold`, top bar with Back & Listen buttons, persistent 56dp `EmergencyBar`, 4 text scale levels, high-contrast mode with 2dp solid outlines.
-- **F03**: Home screen with active visit hero card, 2x2 action tile grid, and secondary navigation links.
-- **F51**: Reusable states (`EmptyState`, `LoadingState`, `ErrorState` with retry, and `OfflineBanner`).
-
-### 2. Data & Offline Simulation Engine
-- **F04**: `BackendGateway` interface, snake_case DTO serialization, `FakeBackend` Room simulator, and `NetworkException` for simulated offline mode.
-- **F05**: Room database (`SevaDatabase`) holding stored visits, patient profiles, registration drafts, outbox queue items, cached health journeys, and public tables.
-- **F06**: Priority-based Outbox queue (`OutboxManager`) with WorkManager sync:
-  - Priority 0: Urgent Help flags (immediate dispatch)
-  - Priority 1: Priority (yellow) registrations
-  - Priority 2: Routine (green) registrations
-  - Priority 3: Symptom check records
-  - Priority 4: Anonymous indoor scan events
-- **F07**: Simulated clock starting at 10:30 AM Asia/Kolkata with 1x, 30x, and 120x speedup options.
-- **F08**: Simulation & Demo Operator Panel (offline toggle, clock speedup, autopilot switch, doctor call next, confirm priority, send to emergency, mark flag seen, add fictional patients, load demo patient Kamla).
-
-### 3. Language, Consent & Accessibility
-- **F09 / F10**: Language selection screen (English, Hindi, Tamil) with spoken TTS greetings and `backendLanguage()` mapper (`hi` -> `hi`, `ta` -> `en`, `en` -> `en`).
-- **F11**: Privacy Consent screen (Terms required; Movement tracking optional).
-- **F12**: First-launch public hospital data preloader.
-- **F13**: Settings screen with text scaling, high-contrast, speech speed, avoid stairs default, alert toggles, and offline readiness checklist link.
-- **F14 / F15**: Android TextToSpeech helper and `TRANSLATION_REVIEW.md` document for Hindi and Tamil native-speaker review.
-
-### 4. Safety, Emergency & Symptom Triage
-- **F16**: Offline Emergency screen with steps to Casualty, 112 / 108 ACTION_DIAL buttons, and warning sign list.
-- **F17**: Honest 3-state urgent flag lifecycle: *"Not yet received by staff"*, *"Sent to staff"*, and *"Staff have seen your request"* (with 800ms vibration feedback).
-- **F18**: Symptom check engine using `symptom_rules_demo-1.json`: evaluates 11 critical warning signs first (any "Yes" redirects to Emergency without a token), followed by routine questions mapping to department (`M`, `P`, `A`, `O`), suggested band (`green` / `yellow`), cluster (`fever`, `respiratory`, `diarrhoea`, `skin`, `injury`), and a 2-4 line doctor note.
-- **F19**: "Not sure?" help desk fallback routing.
-
-### 5. Registration & OPD Slip
-- **F20 / F21**: Step-by-step registration flow with assisted mode banner, age group & special needs picture cards, district picker, and draft persistence.
-- **F22**: Submit logic: online returns live `MyTurnDto`; offline creates local `StoredVisit` with an unconfirmed token (`M-x4F2` marked *"Waiting to be confirmed"*), enqueuing registration in Outbox.
-- **F23**: Ticket-shaped OPD Slip with 56sp token display, time window range, provisional band pill, ZXing QR code generation (`SS1:SLIP:<hospital>:<visit_id>`), Google Maps navigation link, and share QR action.
-
-### 6. Queue & Alerts
-- **F24 / F25**: My Turn live queue screen showing people ahead, estimated window range, paused doctor status info, and translated reason chips (`last_reason` for 10 reason codes).
-- **F26 / F27**: Status handling (`called` -> Called screen with room in huge type; `emergency` -> Emergency screen) and 5-second polling / broadcast flow collection.
-- **F28**: Foreground `QueueWatcherService` with ongoing notification *"Watching your queue"*, firing high-priority alerts at 3 people ahead and when called.
-- **F29**: "I Have My Slip" screen linking token by text search (with seeded demo tokens `M-017`, `M-011`, etc.) or slip QR scan.
-- **F30**: Simulated SMS Inbox screen demonstrating feature fallback for patients without mobile data.
-
-### 7. Indoor Navigation & Wall Scanner
-- **F31**: `GraphRouter` Kotlin port of `graph.ts` (Dijkstra algorithm over 31 wall sticker nodes with distance, lift wait penalty +10m, crowd penalty +3m, avoid stairs mode, and emergency mode).
-- **F32 / F33**: Destination search and step-by-step guidance with turn directions, translated landmarks, and distance.
-- **F34**: Interactive Compose Canvas floor plan renderer (10px = 1m scale), drawing rooms, corridors, highlighted route, and "You are here" dot.
-- **F35**: CameraX & ML Kit wall sticker scanner (`SS:<hospital>:F<floor>:W<id>`) + "Simulate scan" node list.
-- **F36 / F37**: Wrong turn auto re-routing, 90s lost recovery prompt, and anonymous journey event recording (`entry`, `scan`, `wrong_turn`, `room`, `exit`).
-- **F38 / F39 / F40**: Map translations (`H01_i18n_hi.json`, `H01_i18n_ta.json`), help desk fallback for unmapped hospitals (H02/H03), and emergency route integration.
-- **F49**: Printable wall sticker sheet preview screen in Demo Panel.
-
-### 8. Care Continuity & Quality
-- **F41**: My Health Journey timeline with seeded patient Kamla (3 past visits, next follow-up due status).
-- **F42**: Before You Visit screen showing hospital address, facility service status (Lab UP, X-Ray DOWN), and doctor availability.
-- **F43**: Static offline Help FAQ cards with Emergency handoff.
-- **F44**: Offline readiness checklist screen.
-- **F45 – F48**: TalkBack accessibility pass, 360dp text scale validation, `SAFETY_CHECKLIST.md` (S1–S10 passed), unit test suite (`GraphRouterTest` passed 3/3), and signed release build configuration.
-
----
-
-## 🌐 Backend & Website Developer Integration Guide
-
-The app now lives in `app/` next to the website (`web/`) and the shared backend (`supabase/`), and talks to that
-backend through `RemoteBackend` (`data/gateway/RemoteBackend.kt`): the patient RPCs over REST with the anon key, the
-public tables, and Realtime broadcast for instant queue updates. Whatever the patient does shows up on the staff
-website, and whatever staff do reaches the phone.
-
-**Connect to the backend**
-
-1. From the repo root, with Docker running: `npx supabase start`, then `npx supabase status` for the `ANON_KEY`.
-2. Create `app/local.properties` (git-ignored) next to `settings.gradle.kts`:
+1. Create `app/local.properties` (git-ignored):
    ```properties
-   sdk.dir=C\:\Users\<you>\AppData\Local\Android\Sdk
-   sevasetu.supabaseUrl=http://<your laptop's LAN IP>:54321
+   sdk.dir=C\:\\Users\\<you>\\AppData\\Local\\Android\\Sdk
+   sevasetu.supabaseUrl=http://127.0.0.1:54321
    sevasetu.supabaseAnonKey=<ANON_KEY>
    ```
-   Use the LAN IP (not `127.0.0.1`) so a real phone on the same Wi-Fi can reach it. Debug builds allow plain http
-   for this; release builds stay https-only, so a hosted backend needs an `https://` URL.
-3. Build and install. Home shows **● Connected to the hospital**. Leave both settings empty to run on the built-in
-   simulator instead (**● Simulator mode**), exactly as before.
+2. Build and install: `./gradlew :androidApp:installDebug` (JDK 21; Gradle downloads one if needed).
+3. Let the phone reach the laptop's backend:
+   - **USB (works on any network):** `adb reverse tcp:54321 tcp:54321` and keep the URL `http://127.0.0.1:54321`.
+     Run it again after replugging.
+   - **Wi-Fi:** use `http://<laptop LAN IP>:54321`. Many campus and office networks block phone-to-laptop traffic;
+     if the app says offline, use USB.
+   - **Emulator:** `http://10.0.2.2:54321`.
+4. Home shows "Connected to the hospital". With both settings left empty the app runs on its built-in simulator
+   ("Simulator mode"), which needs no backend at all.
 
-Offline still works the same way: an unreachable server raises `NetworkException`, registrations get a phone-made
-token marked "Waiting to be confirmed" (S8), urgent flags go first in the outbox, and the outbox resends everything
-when the app starts or WorkManager sees a connection. A request the server *refuses* (a rule or validation error)
-raises `BackendException` instead and is shown to the patient rather than queued forever.
+Debug builds allow plain `http` for the local backend; release builds are https-only, so a hosted backend needs an
+`https://` URL.
 
-**Check the wiring:** `RemoteBackendLiveTest` runs the real client against the backend (skipped unless configured):
+**Publish the APK on the website** (the website's "Get the app" page, `/patient-app`, serves it):
+`cp androidApp/build/outputs/apk/debug/androidApp-debug.apk ../web/public/download/sevasetu-patient.apk`
+(git-ignored; build it with the URL the downloading phones can reach).
+
+## Tests
+
 ```bash
-SEVASETU_TEST_URL=http://127.0.0.1:54321 SEVASETU_TEST_ANON_KEY=<ANON_KEY> ./gradlew :androidApp:testDebugUnitTest
+./gradlew :androidApp:testDebugUnitTest
 ```
-It creates fictional visits, so point it at a local or demo backend only.
+- `GraphRouterTest`, `DirectionsTest`: routes and spoken directions on all three hospital maps, stair-free routes,
+  turns worked out from the plan, Hindi directions.
+- `I18nTest`: language fallbacks (Kashmiri to Urdu, Dogri to Hindi) and that every translation keeps its placeholders.
+- `RemoteBackendLiveTest`: the real client against a running backend; skipped unless configured. It creates fictional
+  visits, so use a local or demo backend only:
+  ```powershell
+  $env:SEVASETU_TEST_URL='http://127.0.0.1:54321'; $env:SEVASETU_TEST_ANON_KEY='<ANON_KEY>'; ./gradlew :androidApp:testDebugUnitTest
+  ```
 
-### RPCs & Endpoints to Sync with Website/Staff Dashboard
+---
 
-| Mobile Gateway Function | Backend RPC / Endpoint | Description / Website Developer Perspective |
+## What the patient can do
+
+| Screen | What happens | Backend |
 |---|---|---|
-| `registerVisit(p)` | `rpc("register_visit", { p })` | Registers patient visit. Website dashboard displays new token in doctor's queue column. |
-| `getMyTurn(visitId)` | `rpc("get_my_turn", { p_visit_id })` | Returns queue status, people ahead, time window estimate, and `last_reason`. |
-| `linkSlip(hospitalId, token)` | `rpc("link_slip", { p_hospital_id, p_token })` | Finds today's visit by token for paper slip holders. |
-| `raiseUrgentFlag(p)` | `rpc("raise_urgent_flag", { p })` | Raises urgent help alarm. Triage dashboard shows red flashing banner; tapping **Seen** sets `seen_at` which vibrates patient phone. |
-| `getUrgentFlag(id)` | `rpc("get_urgent_flag", { p_id })` | Polling fallback for urgent flag acknowledgment state. |
-| `recordSymptomCheck(p)` | `rpc("record_symptom_check", { p })` | Records symptom checks for emergency/help-desk outcomes. Clusters (`fever`, `respiratory`, `diarrhoea`, `skin`, `injury`) feed district outbreak maps. |
-| `ingestJourneyEvents(list)` | `rpc("ingest_journey_events", { p_events })` | Batches anonymous scan events (`entry`, `scan`, `wrong_turn`, `room`, `exit`) under random `session_id`. Feeds staff crowd map and wrong-turn heatmaps. |
-| `getMyJourney(visitId)` | `rpc("get_my_journey", { p_visit_id })` | Returns patient consultation history & follow-ups set by doctors. |
-| `getClock()` | `rpc("get_clock")` | Synchronizes mobile queue time displays with the backend's simulated/server time. |
+| Language, consent | Five languages in their own scripts; consent in plain words, scan sharing optional. Asked once. | none |
+| Home | The ticket (token, people ahead, time window), or "register now"; connection status. | `get_my_turn` |
+| Register | Who, which hospital, first name (phone and area optional), age, help needed. | `register_visit` |
+| Symptom check | 11 warning signs first: any yes opens Emergency, raises an urgent flag, no token (S2). Then the main problem and how long, giving a department, a suggested band and a note for the doctor. | `record_symptom_check`, `raise_urgent_flag` |
+| OPD slip | Token, name, department, room, time window, QR (`SS1:SLIP:<hospital>:<visit>`), share, directions to the gate. | |
+| My turn | The big number of people ahead, the time window, why the place changed (S10), doctor away notice. Live through Realtime. | `get_my_turn`, `visit:` / `hospital:` channels |
+| Alerts | A notification watches the queue in the background: at 3 ahead, when called, when sent to Emergency. | same |
+| Called | The room in the largest type, spoken and vibrated; screen flash for hearing needs. | |
+| I have my slip | Scan the slip QR or type the token (normalised, e.g. `m17` = `M-017`). | `link_slip`, `get_my_turn` |
+| Find your way | Pick a destination (your doctor first); scan stickers; one step at a time with turns, distances and landmarks; floor plan; stair-free routes; "no problem, a new route" after a wrong turn; "are you lost?" after 90 s. | `ingest_journey_events` (only with consent) |
+| Emergency | On every screen. The way to Casualty from where you last scanned, 112 and 108, and "I need urgent help" with its honest state: not yet received, sent, seen by staff (S5). | `raise_urgent_flag`, `get_urgent_flag`, `flag:` channel |
+| Health journey | Past visits with the status staff recorded and the next follow-up; kept for offline. | `get_my_journey` |
+| Before you visit | Is the doctor in, is the X-ray working, directions to the gate, per hospital. | public tables |
+| Settings | Language, text size (4 steps), high contrast, avoid stairs, sound, vibration, flash, scan sharing, forget this visit. | |
+| Ready offline? | What is really stored on this phone, and what is waiting to send (with "send now"). | |
 
-### Realtime Broadcast Synchronization
-Subscribe to Supabase Realtime broadcast channels and refetch `getMyTurn`:
-- `visit:<visitId>` — Triggers when staff call next patient (`status: called`), confirm priority, or transfer to Emergency.
-- `hospital:<hospitalId>` — Triggers when queue order changes.
-- `flag:<flagId>` — Triggers when staff tap **Seen** on urgent flag alarm.
+### Offline (PRD 7)
+
+- The hospital list, the three indoor maps, the symptom rules, the Emergency route and the last ticket are on the phone.
+- Registering with no signal gives a phone-made token (`M-x4F`) marked "Waiting to be confirmed"; the outbox sends it
+  with its original time when signal returns and the official token replaces it.
+- The outbox sends in priority order: urgent help, Priority registrations, Routine registrations, symptom records,
+  scan events. Every call is idempotent on its client id, so retries are safe. A request the hospital refuses (a rule
+  or validation error) is shown, not retried forever.
+
+### Languages
+
+Screens, directions, place names and alerts are in English, Hindi and Urdu; Urdu and Kashmiri lay out right to left.
+Kashmiri is shown in Urdu script and Dogri in Hindi until their own translations exist. Listen reads screens aloud
+where the phone has a voice for the language.
+
+- Screen text: `i18n/strings.py` (keyed by the English text in the code). After editing, run
+  `python i18n/build_strings.py`; it regenerates `ui/i18n/Strings.kt` and lists any text in the code that has no
+  translation yet. In code, wrap visible text in `tr("...")` (or `trNow("...")` outside a composable).
+- Place names and landmarks: in the maps, built by `../web/scripts/graph_common.py`.
+- All translations are first drafts: see `TRANSLATION_REVIEW.md`.
+
+### Hospital maps
+
+`androidApp/src/main/assets/graph/H01.json`, `H02.json`, `H03.json`, identical to the website's copies in
+`../web/public/graph`. Build them with `python scripts/build_h0N_graph.py` from `web/`; each build writes both copies
+and checks that every place is reachable from the gate. Wall stickers carry the node id (`SS:H01:F1:W103`); the
+sticker sheet (Settings > Wall sticker sheet) shows them all for printing.
 
 ---
 
-## 🔮 Pending / Future Features
+## Code map
 
-1. ~~**Live Remote Backend Wiring**~~: done (`RemoteBackend`, see the integration guide above).
-2. **Additional Local Language Audio Files**:
-   - Add pre-recorded Kashmiri (`ks`) and Dogri (`doi`) audio files under `res/raw/` for complete regional voice guidance.
-3. **Bluetooth Low Energy (BLE) Beacon Indoor Positioning**:
-   - Integrate BLE beacon RSSI distance estimation alongside wall QR sticker scanning for automatic indoor position updates.
-
----
-
-## 🛠️ Building & Running the App
-
-### Requirements
-- Android Studio Ladybug or newer
-- JDK 21 (Gradle 9.5 daemon toolchain) / Kotlin 2.4
-- Min SDK 26 (Android 8.0) | Target SDK 37
-
-### Build Commands
-```bash
-# Run unit tests
-./gradlew :androidApp:test
-
-# Build Debug APK
-./gradlew :androidApp:assembleDebug
-
-# Build Release APK
-./gradlew :androidApp:assembleRelease
 ```
+androidApp/src/main/java/app/sevasetu/patient/
+  SevaApplication.kt        wiring: backend (live or simulator), database, outbox, settings, speech, maps, directory
+  MainActivity.kt, NavGraph.kt
+  data/gateway/             BackendGateway, RemoteBackend (Supabase REST + Realtime), FakeBackend (simulator)
+  data/outbox/              priority outbox + WorkManager retry
+  data/visit/               VisitRepository (the current ticket), Directory (hospitals, departments, doctors; cached)
+  data/navigation/          GraphRouter (Dijkstra, same rules as web/src/lib/graph.ts), Directions, NavSession
+  data/prefs/               Settings (SharedPreferences), Speaker (text to speech)
+  service/QueueWatcherService.kt   background queue alerts
+  ui/                       one package per screen; ui/components (shared design pieces), ui/theme, ui/i18n
+```
+
+Design follows the website (`../web/src/app/globals.css`): navy frame `#0b2a3c`, scrub teal actions `#0b7a75`,
+clinical mint `#9fe5cf`, ward blue and linen fields, Chivo with black-weight capitals, and status chips that always
+carry a word and an icon. Chivo is bundled under the SIL Open Font License (`androidApp/OFL-Chivo.txt`).
+
+See also: `DECISIONS.md` (why things are the way they are), `SAFETY_CHECKLIST.md` (S1 to S10),
+`FEATURES.md` (status), `TRANSLATION_REVIEW.md`.

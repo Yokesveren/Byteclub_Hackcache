@@ -1,6 +1,9 @@
 package app.sevasetu.patient.ui.slip
 
+import app.sevasetu.patient.ui.i18n.deptName
+import app.sevasetu.patient.ui.i18n.floorLabel
 import android.content.Intent
+import app.sevasetu.patient.ui.i18n.tr
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -94,7 +97,7 @@ fun OpdSlipScreen(
     }
 
     SevaScaffold(
-        title = "OPD slip",
+        title = tr("OPD slip"),
         onBack = onBack,
         onListen = {
             app.speaker.speak(
@@ -123,7 +126,7 @@ fun OpdSlipScreen(
                     if (unconfirmed) {
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            "WAITING TO BE CONFIRMED",
+                            tr("WAITING TO BE CONFIRMED"),
                             style = MaterialTheme.typography.labelMedium,
                             color = ColorPriorityContent,
                             modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(ColorPriorityContainer).padding(horizontal = 10.dp, vertical = 4.dp)
@@ -131,19 +134,19 @@ fun OpdSlipScreen(
                     }
                 }
                 Column(modifier = Modifier.fillMaxWidth().padding(22.dp)) {
-                    SlipLine("Name", myTurn.firstName)
-                    SlipLine("Department", myTurn.department.name)
-                    SlipLine("Doctor", "${myTurn.doctor.name} · ${myTurn.doctor.room}" + if (myTurn.doctor.floor > 0) ", floor ${myTurn.doctor.floor}" else ", ground floor")
+                    SlipLine(tr("Name"), myTurn.firstName)
+                    SlipLine(tr("Department"), deptName(myTurn.department))
+                    SlipLine(tr("Doctor"), "${myTurn.doctor.name} · ${myTurn.doctor.room}, ${floorLabel(myTurn.doctor.floor)}")
                     if (est != null) {
-                        SlipLine("Ahead of you", if (est.peopleAhead == 0) "You are next" else "${est.peopleAhead} people")
+                        SlipLine(tr("Ahead of you"), if (est.peopleAhead == 0) tr("You are next") else tr("{n} people", "n" to est.peopleAhead))
                     }
-                    window?.let { SlipLine("Likely seen", it) }
+                    window?.let { SlipLine(tr("Likely seen"), it) }
                     HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = LocalExtraColors.current.edge)
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Image(bitmap = qr.asImageBitmap(), contentDescription = "Slip QR code for token ${myTurn.token}", modifier = Modifier.size(220.dp))
                     }
                     Text(
-                        "Show this at the counter or the doctor's door.",
+                        tr("Show this at the counter or the doctor's door."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -151,7 +154,7 @@ fun OpdSlipScreen(
                     )
                     displayTime(myTurn.lastUpdated)?.let {
                         Text(
-                            "Last updated at $it",
+                            tr("Last updated at {time}", "time" to it),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -162,15 +165,15 @@ fun OpdSlipScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            BigButton(text = "Open my turn", icon = Icons.Default.Schedule, onClick = onOpenMyTurn)
+            BigButton(text = tr("Open my turn"), icon = Icons.Default.Schedule, onClick = onOpenMyTurn)
             Spacer(modifier = Modifier.height(12.dp))
             myTurn.doctor.roomWaypointId?.let { room ->
-                BigButton(text = "Take me to my room", icon = Icons.Default.Navigation, type = ButtonType.SECONDARY, onClick = { onNavigateToRoom(room) })
+                BigButton(text = tr("Take me to my room"), icon = Icons.Default.Navigation, type = ButtonType.SECONDARY, onClick = { onNavigateToRoom(room) })
                 Spacer(modifier = Modifier.height(12.dp))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 BigButton(
-                    text = "Directions",
+                    text = tr("Directions"),
                     icon = Icons.Default.Map,
                     type = ButtonType.SECONDARY,
                     modifier = Modifier.weight(1f),
@@ -180,7 +183,7 @@ fun OpdSlipScreen(
                         )
                     }
                 )
-                BigButton(text = "Share", icon = Icons.Default.Share, type = ButtonType.SECONDARY, modifier = Modifier.weight(1f), onClick = { share() })
+                BigButton(text = tr("Share"), icon = Icons.Default.Share, type = ButtonType.SECONDARY, modifier = Modifier.weight(1f), onClick = { share() })
             }
         }
     }
@@ -189,7 +192,7 @@ fun OpdSlipScreen(
 @Composable
 private fun SlipLine(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.Top) {
-        Text(label.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(120.dp))
+        Text(tr(label).uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(120.dp))
         Text(value, style = MaterialTheme.typography.titleMedium, color = Ink, modifier = Modifier.weight(1f))
     }
 }

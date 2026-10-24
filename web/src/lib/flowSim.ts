@@ -29,21 +29,25 @@ interface Visitor {
   wait: number;
 }
 
-const ROOMS_F0 = ["SS:H01:F0:W007", "SS:H01:F0:W008", "SS:H01:F0:W010", "SS:H01:F0:W011"];
-const ROOMS_F1 = ["SS:H01:F1:W103", "SS:H01:F1:W104", "SS:H01:F1:W105", "SS:H01:F1:W114", "SS:H01:F1:W115"];
-const REGISTRATION = "SS:H01:F0:W003";
-const PHARMACY = "SS:H01:F0:W012";
-const WAITING_F0 = "SS:H01:F0:W020";
-const WAITING_F1 = "SS:H01:F1:W111";
-
 const rand = (a: number, b: number) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
 const uuid = () => crypto.randomUUID();
 
 export class FlowSim {
   private visitors: Visitor[] = [];
+  // The places a visit passes through, read from the map's tags, so any hospital's map works.
+  private rooms: string[];
+  private registration: string;
+  private pharmacy?: string;
+  private waiting: Map<number, string>;
 
-  constructor(private g: HospitalGraph) {}
+  constructor(private g: HospitalGraph) {
+    const tagged = (tag: string) => g.nodes.filter((n) => n.sticker && n.tags.includes(tag));
+    this.rooms = tagged("room").map((n) => n.id);
+    this.registration = tagged("registration")[0]?.id ?? g.entrance;
+    this.pharmacy = tagged("pharmacy")[0]?.id;
+    this.waiting = new Map(tagged("waiting").map((n) => [n.floor, n.id]));
+  }
 
   get count() {
     return this.visitors.length;
@@ -51,16 +55,16 @@ export class FlowSim {
 
   private plan(): Stop[] {
     const g = this.g;
-    // General Medicine is the busiest department, so more visitors head upstairs.
-    const room = Math.random() < 0.6 ? pick(ROOMS_F1) : pick(ROOMS_F0);
-    const waiting = room.includes(":F1:") ? WAITING_F1 : WAITING_F0;
+    // General Medicine is the busiest department, so its rooms (named so on the map) draw more visitors.
+    const gm = this.rooms.filter((id) => g.nodes.find((n) => n.id === id)?.name.en.includes("General Medicine"));
+    const room = gm.length && Math.random() < 0.6 ? pick(gm) : pick(this.rooms);
+    const floor = g.nodes.find((n) => n.id === room)?.floor ?? 0;
+    const waiting = this.waiting.get(floor) ?? this.waiting.values().next().value;
     const avoidStairs = Math.random() < 0.35; // elderly, wheelchair, walking difficulty
-    const legs: [string, number][] = [
-      [REGISTRATION, rand(3, 6)],
-      [waiting, rand(14, 30)], // OPD waits are long: the waiting areas fill first
-      [room, rand(3, 6)],
-    ];
-    if (Math.random() < 0.55) legs.push([PHARMACY, rand(2, 4)]);
+    const legs: [string, number][] = [[this.registration, rand(3, 6)]];
+    if (waiting) legs.push([waiting, rand(14, 30)]); // OPD waits are long: the waiting areas fill first
+    legs.push([room, rand(3, 6)]);
+    if (this.pharmacy && Math.random() < 0.55) legs.push([this.pharmacy, rand(2, 4)]);
     legs.push([g.entrance, 0]);
 
     const stops: Stop[] = [{ id: g.entrance, dwell: 1, kind: "entry" }];

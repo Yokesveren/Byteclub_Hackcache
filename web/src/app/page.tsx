@@ -136,6 +136,13 @@ export default function Landing() {
           </ul>
           <nav className="ss-footer-links" aria-label="Footer">
             <div>
+              <h3>Patients</h3>
+              <ul>
+                <li><Link href="/patient-app">Get the app</Link></li>
+                <li><Link href="/board/H01">Is my turn near?</Link></li>
+              </ul>
+            </div>
+            <div>
               <h3>Hospital staff</h3>
               <ul>
                 <li><Link href="/facility">Facility view</Link></li>

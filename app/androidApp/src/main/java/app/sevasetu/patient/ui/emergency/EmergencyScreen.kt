@@ -1,6 +1,8 @@
 package app.sevasetu.patient.ui.emergency
 
+import app.sevasetu.patient.ui.i18n.LocalLang
 import android.content.Context
+import app.sevasetu.patient.ui.i18n.tr
 import android.content.Intent
 import android.net.Uri
 import android.os.VibrationEffect
@@ -98,14 +100,15 @@ fun EmergencyScreen(
     val visit = app.visits.active.value
     val hospitalId = visit?.hospital?.id ?: app.prefs.current.hospitalId
     val graph = remember(hospitalId) { app.nav.graph(hospitalId) }
+    val lang = LocalLang.current
     val position = app.nav.position.value
-    val steps = remember(graph, position) {
+    val steps = remember(graph, position, lang) {
         graph?.let { g ->
             GraphRouter.route(g, position ?: g.entrance, g.emergency, RouteOptions(emergency = true))
-                ?.let { Directions.steps(g, it) }
+                ?.let { Directions.steps(g, it, lang) }
         }.orEmpty()
     }
-    val emergencyName = graph?.nodes?.firstOrNull { it.id == graph.emergency }?.displayName() ?: "Emergency (Casualty)"
+    val emergencyName = graph?.nodes?.firstOrNull { it.id == graph.emergency }?.displayName(lang) ?: tr("Emergency (Casualty)")
 
     fun vibrate() {
         val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -206,21 +209,21 @@ fun EmergencyScreen(
                         .size(48.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color(0x33FFFFFF))
-                        .clickable(onClickLabel = "Go back", onClick = onBack),
+                        .clickable(onClickLabel = tr("Go back"), onClick = onBack),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back", tint = Color.White)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Go back"), tint = Color.White)
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 ListenButton(onClick = { speakAll() })
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            Text("◆ EMERGENCY", style = MaterialTheme.typography.labelLarge, color = Color.White)
-            Text("GO TO EMERGENCY NOW.", style = MaterialTheme.typography.displayMedium, color = Color.White)
+            Text(tr("◆ EMERGENCY"), style = MaterialTheme.typography.labelLarge, color = Color.White)
+            Text(tr("GO TO EMERGENCY NOW."), style = MaterialTheme.typography.displayMedium, color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "You do not need a token. Go straight to $emergencyName. It is open day and night.",
+                tr("You do not need a token. Go straight to {place}. It is open day and night.", "place" to emergencyName),
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
@@ -230,8 +233,8 @@ fun EmergencyScreen(
 
             // Call buttons: large, white on red
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CallTile("112", "Emergency", Modifier.weight(1f)) { dial("112") }
-                CallTile("108", "Ambulance", Modifier.weight(1f)) { dial("108") }
+                CallTile("112", tr("Emergency"), Modifier.weight(1f)) { dial("112") }
+                CallTile("108", tr("Ambulance"), Modifier.weight(1f)) { dial("108") }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -240,35 +243,35 @@ fun EmergencyScreen(
             Column(
                 modifier = Modifier.fillMaxWidth().clip(CardShape).background(Color.White).padding(20.dp)
             ) {
-                Text("TELL THE STAFF", style = MaterialTheme.typography.titleLarge, color = Ink)
+                Text(tr("TELL THE STAFF"), style = MaterialTheme.typography.titleLarge, color = Ink)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    "Already in the hospital and feeling worse? This alerts the nurses' screen at once.",
+                    tr("Already in the hospital and feeling worse? This alerts the nurses' screen at once."),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(14.dp))
                 when (state) {
                     FlagState.NONE -> BigButton(
-                        text = "I need urgent help",
+                        text = tr("I need urgent help"),
                         type = ButtonType.DANGER,
                         icon = Icons.Default.NotificationsActive,
                         onClick = { raise("patient_app") }
                     )
                     FlagState.QUEUED -> FlagStatus(
                         Icons.Default.WifiOff, Color(0xFFFFF1C2), Color(0xFF5C3D00),
-                        "NOT YET RECEIVED BY STAFF",
-                        "No connection yet. It will be sent the moment there is signal. Please tell a staff member now."
+                        tr("NOT YET RECEIVED BY STAFF"),
+                        tr("No connection yet. It will be sent the moment there is signal. Please tell a staff member now.")
                     )
                     FlagState.SENT -> FlagStatus(
                         Icons.Default.Schedule, Color(0xFFDCECF7), Ink,
-                        "SENT TO STAFF",
-                        "Waiting for a nurse to see it" + (flag?.receivedAt?.let { " · sent at ${displayTime(it)}" } ?: "") + "."
+                        tr("SENT TO STAFF"),
+                        tr("Waiting for a nurse to see it") + (flag?.receivedAt?.let { " · " + tr("sent at {time}", "time" to displayTime(it)) } ?: "") + "."
                     )
                     FlagState.SEEN -> FlagStatus(
                         Icons.Default.CheckCircle, Mint, Ink,
-                        "STAFF HAVE SEEN YOUR REQUEST",
-                        "Help is coming. Stay where you are if you can."
+                        tr("STAFF HAVE SEEN YOUR REQUEST"),
+                        tr("Help is coming. Stay where you are if you can.")
                     )
                 }
             }
@@ -278,9 +281,9 @@ fun EmergencyScreen(
             // The way to Casualty, from the map on the phone (works offline)
             if (steps.isNotEmpty()) {
                 Column(modifier = Modifier.fillMaxWidth().clip(CardShape).background(Color.White).padding(20.dp)) {
-                    Text("THE WAY TO EMERGENCY", style = MaterialTheme.typography.titleLarge, color = Ink)
+                    Text(tr("THE WAY TO EMERGENCY"), style = MaterialTheme.typography.titleLarge, color = Ink)
                     Text(
-                        if (position != null) "From where you last scanned." else "From the main gate.",
+                        if (position != null) tr("From where you last scanned.") else tr("From the main gate."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -302,7 +305,7 @@ fun EmergencyScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            BigButton(text = "Back", type = ButtonType.SECONDARY, onClick = onBack)
+            BigButton(text = tr("Back"), type = ButtonType.SECONDARY, onClick = onBack)
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -319,7 +322,7 @@ private fun CallTile(number: String, label: String, modifier: Modifier, onClick:
     ) {
         Icon(Icons.Default.Call, contentDescription = null, tint = ColorEmergency, modifier = Modifier.size(28.dp))
         Spacer(modifier = Modifier.height(6.dp))
-        Text("CALL $number", style = MaterialTheme.typography.headlineMedium, color = ColorEmergency)
+        Text(tr("CALL {number}", "number" to number), style = MaterialTheme.typography.headlineMedium, color = ColorEmergency)
         Text(label, style = MaterialTheme.typography.bodyMedium, color = Frame)
     }
 }

@@ -2,7 +2,9 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import graphJson from "../../../../public/graph/H01.json";
+import h01 from "../../../../public/graph/H01.json";
+import h02 from "../../../../public/graph/H02.json";
+import h03 from "../../../../public/graph/H03.json";
 import { BandFigure, PageBand } from "@/components/PageBand";
 import { useShell } from "@/components/StaffShell";
 import { FlowSim } from "@/lib/flowSim";
@@ -11,8 +13,8 @@ import { hhmm } from "@/lib/format";
 import { useLiveData } from "@/lib/hooks";
 import { rpc } from "@/lib/supabase";
 
-const GRAPH = graphJson as HospitalGraph;
-const MAPS: Record<string, HospitalGraph> = { H01: GRAPH };
+const MAPS: Record<string, HospitalGraph> = { H01: h01 as HospitalGraph, H02: h02 as HospitalGraph, H03: h03 as HospitalGraph };
+const floorWord = (g: HospitalGraph, floor: number) => (g.floors.length > 1 ? (floor === 0 ? "ground" : floor === 1 ? "first" : `floor ${floor}`) : "");
 
 interface Flow {
   now: string;
@@ -62,7 +64,7 @@ export default function FlowView() {
   if (!g) {
     return (
       <div>
-        <PageBand tone="night" title="Patient flow" lead="The indoor map for this hospital has not been drawn yet. Only Chinar District Hospital (H01) has QR stickers in the demo." />
+        <PageBand tone="night" title="Patient flow" lead="The indoor map for this hospital has not been drawn yet." />
       </div>
     );
   }
@@ -73,7 +75,7 @@ export default function FlowView() {
     .sort((x, y) => y.n / y.a.capacity - x.n / x.a.capacity);
   const top = busiest[0];
   const finding = top
-    ? `Busiest right now: ${top.a.label}${top.a.floor === 1 ? ", first floor" : ""}, ${top.n} ${top.n === 1 ? "visitor" : "visitors"} for ${top.a.capacity} places (${LEVEL[levelOf(top.n, top.a.capacity)].word.toLowerCase()}).`
+    ? `Busiest right now: ${top.a.label}${top.a.floor > 0 ? `, ${floorWord(g, top.a.floor)} floor` : ""}, ${top.n} ${top.n === 1 ? "visitor" : "visitors"} for ${top.a.capacity} places (${LEVEL[levelOf(top.n, top.a.capacity)].word.toLowerCase()}).`
     : "Nobody connected is moving through the building right now.";
   const canSimulate = staff.role === "demo" || staff.role === "admin";
 
@@ -130,7 +132,7 @@ export default function FlowView() {
                       <div className="flex items-baseline justify-between gap-3 text-sm">
                         <span className="font-bold">
                           {a.label}
-                          <span className="font-normal text-[var(--muted)]"> · {a.floor === 0 ? "ground" : "first"}</span>
+                          {floorWord(g, a.floor) && <span className="font-normal text-[var(--muted)]"> · {floorWord(g, a.floor)}</span>}
                         </span>
                         <span className="tabular-nums">
                           {n} / {a.capacity} <span className="font-bold" style={{ color: LEVEL[lv].ink }}>{LEVEL[lv].word}</span>
@@ -194,6 +196,7 @@ function FloorPlan({
   const areas = g.areas.filter((a) => a.floor === floor);
   const spotSet = new Map(spots.map((s) => [s.waypoint_id, s.count]));
   const total = nodes.reduce((s, n) => s + (here[n.id] ?? 0), 0);
+  const plan = g.floors.find((f) => f.floor === floor);
 
   return (
     <section className="overflow-hidden rounded-[24px] bg-white ring-1 ring-[var(--edge)]">
@@ -201,8 +204,8 @@ function FloorPlan({
         <h2 className="text-lg font-black uppercase tracking-[-0.02em]">{name}</h2>
         <span className="text-sm text-[#c9c9c9] tabular-nums">{total} connected {total === 1 ? "visitor" : "visitors"}</span>
       </header>
-      <svg viewBox="0 0 1000 560" className="block h-auto w-full" role="img" aria-label={`${name}: crowd levels by area`}>
-        <rect width="1000" height="560" fill="#f8fafb" />
+      <svg viewBox={`0 0 ${plan?.width ?? 1000} ${plan?.height ?? 560}`} className="block h-auto w-full" role="img" aria-label={`${name}: crowd levels by area`}>
+        <rect width={plan?.width ?? 1000} height={plan?.height ?? 560} fill="#f8fafb" />
         {areas.map((a) => (
           <AreaShape key={a.id} a={a} n={counts.get(a.id) ?? 0} />
         ))}

@@ -1,0 +1,881 @@
+{
+ "hospital_id": "H02",
+ "name": "Jhelum Sub-District Hospital (Demo)",
+ "version": 2,
+ "units": "Plan pixels; 10 px = 1 m. Edges are walkable both ways. Names carry en, hi and ur.",
+ "floors": [
+  {
+   "floor": 0,
+   "name": "Ground floor",
+   "name_i18n": {
+    "en": "Ground floor",
+    "hi": "भूतल",
+    "ur": "گراؤنڈ فلور"
+   },
+   "width": 1000,
+   "height": 560
+  }
+ ],
+ "entrance": "SS:H02:F0:W001",
+ "emergency": "SS:H02:F0:W005",
+ "nodes": [
+  {
+   "id": "SS:H02:F0:W001",
+   "floor": 0,
+   "x": 80,
+   "y": 500,
+   "sticker": true,
+   "tags": [
+    "entrance",
+    "exit"
+   ],
+   "name": {
+    "en": "Main gate",
+    "hi": "मुख्य द्वार",
+    "ur": "مین گیٹ"
+   },
+   "landmark": {
+    "en": "Under the green hospital sign",
+    "hi": "हरे अस्पताल बोर्ड के नीचे",
+    "ur": "سبز اسپتال بورڈ کے نیچے"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W002",
+   "floor": 0,
+   "x": 160,
+   "y": 300,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Entrance hall",
+    "hi": "प्रवेश हॉल",
+    "ur": "داخلی ہال"
+   },
+   "landmark": {
+    "en": "Ramp beside the steps",
+    "hi": "सीढ़ियों के बगल में रैंप",
+    "ur": "سیڑھیوں کے ساتھ ریمپ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W005",
+   "floor": 0,
+   "x": 140,
+   "y": 160,
+   "sticker": true,
+   "tags": [
+    "emergency"
+   ],
+   "name": {
+    "en": "Emergency (Casualty)",
+    "hi": "इमरजेंसी (कैजुअल्टी)",
+    "ur": "ایمرجنسی (کیجولٹی)"
+   },
+   "landmark": {
+    "en": "Red doors, open all day and night",
+    "hi": "लाल दरवाज़े, दिन-रात खुले",
+    "ur": "سرخ دروازے، دن رات کھلے"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W003",
+   "floor": 0,
+   "x": 300,
+   "y": 230,
+   "sticker": true,
+   "tags": [
+    "registration"
+   ],
+   "name": {
+    "en": "Registration counter",
+    "hi": "पंजीकरण काउंटर",
+    "ur": "رجسٹریشن کاؤنٹر"
+   },
+   "landmark": {
+    "en": "Window with the red cross",
+    "hi": "लाल क्रॉस वाली खिड़की",
+    "ur": "سرخ صلیب والی کھڑکی"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W004",
+   "floor": 0,
+   "x": 420,
+   "y": 230,
+   "sticker": true,
+   "tags": [
+    "help"
+   ],
+   "name": {
+    "en": "Help desk",
+    "hi": "सहायता डेस्क",
+    "ur": "ہیلپ ڈیسک"
+   },
+   "landmark": {
+    "en": "Notice board with the doctors' list",
+    "hi": "डॉक्टरों की सूची वाला सूचना बोर्ड",
+    "ur": "ڈاکٹروں کی فہرست والا نوٹس بورڈ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W012",
+   "floor": 0,
+   "x": 560,
+   "y": 230,
+   "sticker": true,
+   "tags": [
+    "pharmacy"
+   ],
+   "name": {
+    "en": "Pharmacy",
+    "hi": "दवाखाना",
+    "ur": "فارمیسی"
+   },
+   "landmark": {
+    "en": "Medicine window",
+    "hi": "दवा की खिड़की",
+    "ur": "دوائی کی کھڑکی"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W013",
+   "floor": 0,
+   "x": 700,
+   "y": 230,
+   "sticker": true,
+   "tags": [
+    "lab"
+   ],
+   "name": {
+    "en": "Laboratory",
+    "hi": "प्रयोगशाला",
+    "ur": "لیبارٹری"
+   },
+   "landmark": {
+    "en": "Sample collection",
+    "hi": "नमूना संग्रह",
+    "ur": "نمونہ جمع کرنا"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W020",
+   "floor": 0,
+   "x": 300,
+   "y": 380,
+   "sticker": true,
+   "tags": [
+    "waiting"
+   ],
+   "name": {
+    "en": "Waiting area",
+    "hi": "प्रतीक्षा क्षेत्र",
+    "ur": "انتظار گاہ"
+   },
+   "landmark": {
+    "en": "Wooden bench under the clock",
+    "hi": "घड़ी के नीचे लकड़ी की बेंच",
+    "ur": "گھڑی کے نیچے لکڑی کا بینچ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W021",
+   "floor": 0,
+   "x": 460,
+   "y": 380,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 1 (General Medicine)",
+    "hi": "कमरा 1 (सामान्य चिकित्सा)",
+    "ur": "کمرہ 1 (جنرل میڈیسن)"
+   },
+   "landmark": {
+    "en": "Blue door with the room number",
+    "hi": "कमरा नंबर वाला नीला दरवाज़ा",
+    "ur": "کمرہ نمبر والا نیلا دروازہ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W022",
+   "floor": 0,
+   "x": 600,
+   "y": 380,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 2 (General Medicine)",
+    "hi": "कमरा 2 (सामान्य चिकित्सा)",
+    "ur": "کمرہ 2 (جنرل میڈیسن)"
+   },
+   "landmark": {
+    "en": "Blue door with the room number",
+    "hi": "कमरा नंबर वाला नीला दरवाज़ा",
+    "ur": "کمرہ نمبر والا نیلا دروازہ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W023",
+   "floor": 0,
+   "x": 740,
+   "y": 380,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 3 (Paediatrics)",
+    "hi": "कमरा 3 (बाल रोग)",
+    "ur": "کمرہ 3 (بچوں کا شعبہ)"
+   },
+   "landmark": {
+    "en": "Blue door with the room number",
+    "hi": "कमरा नंबर वाला नीला दरवाज़ा",
+    "ur": "کمرہ نمبر والا نیلا دروازہ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W024",
+   "floor": 0,
+   "x": 860,
+   "y": 230,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 4 (Maternal Health)",
+    "hi": "कमरा 4 (मातृ स्वास्थ्य)",
+    "ur": "کمرہ 4 (زچہ و بچہ)"
+   },
+   "landmark": {
+    "en": "Blue door with the room number",
+    "hi": "कमरा नंबर वाला नीला दरवाज़ा",
+    "ur": "کمرہ نمبر والا نیلا دروازہ"
+   }
+  },
+  {
+   "id": "SS:H02:F0:W015",
+   "floor": 0,
+   "x": 880,
+   "y": 380,
+   "sticker": true,
+   "tags": [
+    "toilet"
+   ],
+   "name": {
+    "en": "Toilets",
+    "hi": "शौचालय",
+    "ur": "بیت الخلا"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:V300",
+   "floor": 0,
+   "x": 300,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:W006",
+   "floor": 0,
+   "x": 420,
+   "y": 300,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Verandah",
+    "hi": "बरामदा",
+    "ur": "برآمدہ"
+   },
+   "landmark": {
+    "en": "Chinar tree in the courtyard",
+    "hi": "आँगन में चिनार का पेड़",
+    "ur": "صحن میں چنار کا درخت"
+   }
+  },
+  {
+   "id": "SS:H02:F0:V460",
+   "floor": 0,
+   "x": 460,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:V560",
+   "floor": 0,
+   "x": 560,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:V600",
+   "floor": 0,
+   "x": 600,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:W009",
+   "floor": 0,
+   "x": 700,
+   "y": 300,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor centre",
+    "hi": "गलियारे का बीच",
+    "ur": "راہداری کا درمیان"
+   },
+   "landmark": {
+    "en": "Water cooler",
+    "hi": "पानी का कूलर",
+    "ur": "پانی کا کولر"
+   }
+  },
+  {
+   "id": "SS:H02:F0:V740",
+   "floor": 0,
+   "x": 740,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:V860",
+   "floor": 0,
+   "x": 860,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H02:F0:V880",
+   "floor": 0,
+   "x": 880,
+   "y": 300,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
+   },
+   "landmark": null
+  }
+ ],
+ "edges": [
+  {
+   "from": "SS:H02:F0:W002",
+   "to": "SS:H02:F0:V300",
+   "distance_m": 14.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V300",
+   "to": "SS:H02:F0:W006",
+   "distance_m": 12.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:W006",
+   "to": "SS:H02:F0:V460",
+   "distance_m": 4.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V460",
+   "to": "SS:H02:F0:V560",
+   "distance_m": 10.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V560",
+   "to": "SS:H02:F0:V600",
+   "distance_m": 4.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V600",
+   "to": "SS:H02:F0:W009",
+   "distance_m": 10.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:W009",
+   "to": "SS:H02:F0:V740",
+   "distance_m": 4.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V740",
+   "to": "SS:H02:F0:V860",
+   "distance_m": 12.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:V860",
+   "to": "SS:H02:F0:V880",
+   "distance_m": 2.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:W001",
+   "to": "SS:H02:F0:W002",
+   "distance_m": 21.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": true,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W005",
+   "to": "SS:H02:F0:W002",
+   "distance_m": 14.1,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W003",
+   "to": "SS:H02:F0:V300",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:W020",
+   "to": "SS:H02:F0:V300",
+   "distance_m": 8.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H02:F0:W004",
+   "to": "SS:H02:F0:W006",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W021",
+   "to": "SS:H02:F0:V460",
+   "distance_m": 8.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W012",
+   "to": "SS:H02:F0:V560",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W022",
+   "to": "SS:H02:F0:V600",
+   "distance_m": 8.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W013",
+   "to": "SS:H02:F0:W009",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W023",
+   "to": "SS:H02:F0:V740",
+   "distance_m": 8.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W024",
+   "to": "SS:H02:F0:V860",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H02:F0:W015",
+   "to": "SS:H02:F0:V880",
+   "distance_m": 8.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  }
+ ],
+ "areas": [
+  {
+   "id": "F0-emergency",
+   "floor": 0,
+   "label": "Emergency",
+   "label_i18n": {
+    "en": "Emergency",
+    "hi": "इमरजेंसी",
+    "ur": "ایمرجنسی"
+   },
+   "kind": "emergency",
+   "x": 40,
+   "y": 60,
+   "w": 200,
+   "h": 150,
+   "capacity": 12,
+   "waypoints": [
+    "SS:H02:F0:W005"
+   ]
+  },
+  {
+   "id": "F0-hall",
+   "floor": 0,
+   "label": "Entrance hall",
+   "label_i18n": {
+    "en": "Entrance hall",
+    "hi": "प्रवेश हॉल",
+    "ur": "داخلی ہال"
+   },
+   "kind": "hall",
+   "x": 40,
+   "y": 220,
+   "w": 200,
+   "h": 320,
+   "capacity": 20,
+   "waypoints": [
+    "SS:H02:F0:W001",
+    "SS:H02:F0:W002"
+   ]
+  },
+  {
+   "id": "F0-registration",
+   "floor": 0,
+   "label": "Registration",
+   "label_i18n": {
+    "en": "Registration",
+    "hi": "पंजीकरण",
+    "ur": "رجسٹریشن"
+   },
+   "kind": "service",
+   "x": 250,
+   "y": 60,
+   "w": 110,
+   "h": 200,
+   "capacity": 20,
+   "waypoints": [
+    "SS:H02:F0:W003"
+   ]
+  },
+  {
+   "id": "F0-help",
+   "floor": 0,
+   "label": "Help desk",
+   "label_i18n": {
+    "en": "Help desk",
+    "hi": "सहायता डेस्क",
+    "ur": "ہیلپ ڈیسک"
+   },
+   "kind": "service",
+   "x": 370,
+   "y": 60,
+   "w": 110,
+   "h": 200,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H02:F0:W004"
+   ]
+  },
+  {
+   "id": "F0-pharmacy",
+   "floor": 0,
+   "label": "Pharmacy",
+   "label_i18n": {
+    "en": "Pharmacy",
+    "hi": "दवाखाना",
+    "ur": "فارمیسی"
+   },
+   "kind": "service",
+   "x": 490,
+   "y": 60,
+   "w": 130,
+   "h": 200,
+   "capacity": 12,
+   "waypoints": [
+    "SS:H02:F0:W012"
+   ]
+  },
+  {
+   "id": "F0-lab",
+   "floor": 0,
+   "label": "Laboratory",
+   "label_i18n": {
+    "en": "Laboratory",
+    "hi": "प्रयोगशाला",
+    "ur": "لیبارٹری"
+   },
+   "kind": "service",
+   "x": 630,
+   "y": 60,
+   "w": 140,
+   "h": 200,
+   "capacity": 10,
+   "waypoints": [
+    "SS:H02:F0:W013"
+   ]
+  },
+  {
+   "id": "F0-room4",
+   "floor": 0,
+   "label": "Room 4",
+   "label_i18n": {
+    "en": "Room 4",
+    "hi": "कमरा 4",
+    "ur": "کمرہ 4"
+   },
+   "kind": "room",
+   "x": 780,
+   "y": 60,
+   "w": 180,
+   "h": 200,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H02:F0:W024"
+   ]
+  },
+  {
+   "id": "F0-corridor",
+   "floor": 0,
+   "label": "Verandah",
+   "label_i18n": {
+    "en": "Verandah",
+    "hi": "बरामदा",
+    "ur": "برآمدہ"
+   },
+   "kind": "corridor",
+   "x": 240,
+   "y": 275,
+   "w": 720,
+   "h": 50,
+   "capacity": 20,
+   "waypoints": [
+    "SS:H02:F0:W006",
+    "SS:H02:F0:W009",
+    "SS:H02:F0:V300",
+    "SS:H02:F0:V460",
+    "SS:H02:F0:V560",
+    "SS:H02:F0:V600",
+    "SS:H02:F0:V740",
+    "SS:H02:F0:V860",
+    "SS:H02:F0:V880"
+   ]
+  },
+  {
+   "id": "F0-waiting",
+   "floor": 0,
+   "label": "Waiting area",
+   "label_i18n": {
+    "en": "Waiting area",
+    "hi": "प्रतीक्षा क्षेत्र",
+    "ur": "انتظار گاہ"
+   },
+   "kind": "waiting",
+   "x": 250,
+   "y": 340,
+   "w": 150,
+   "h": 190,
+   "capacity": 30,
+   "waypoints": [
+    "SS:H02:F0:W020"
+   ]
+  },
+  {
+   "id": "F0-room1",
+   "floor": 0,
+   "label": "Room 1",
+   "label_i18n": {
+    "en": "Room 1",
+    "hi": "कमरा 1",
+    "ur": "کمرہ 1"
+   },
+   "kind": "room",
+   "x": 410,
+   "y": 340,
+   "w": 110,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H02:F0:W021"
+   ]
+  },
+  {
+   "id": "F0-room2",
+   "floor": 0,
+   "label": "Room 2",
+   "label_i18n": {
+    "en": "Room 2",
+    "hi": "कमरा 2",
+    "ur": "کمرہ 2"
+   },
+   "kind": "room",
+   "x": 530,
+   "y": 340,
+   "w": 120,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H02:F0:W022"
+   ]
+  },
+  {
+   "id": "F0-room3",
+   "floor": 0,
+   "label": "Room 3",
+   "label_i18n": {
+    "en": "Room 3",
+    "hi": "कमरा 3",
+    "ur": "کمرہ 3"
+   },
+   "kind": "room",
+   "x": 660,
+   "y": 340,
+   "w": 160,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H02:F0:W023"
+   ]
+  },
+  {
+   "id": "F0-toilets",
+   "floor": 0,
+   "label": "Toilets",
+   "label_i18n": {
+    "en": "Toilets",
+    "hi": "शौचालय",
+    "ur": "بیت الخلا"
+   },
+   "kind": "toilet",
+   "x": 830,
+   "y": 340,
+   "w": 130,
+   "h": 190,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H02:F0:W015"
+   ]
+  }
+ ]
+}

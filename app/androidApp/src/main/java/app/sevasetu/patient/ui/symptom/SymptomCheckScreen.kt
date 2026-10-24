@@ -1,6 +1,9 @@
 package app.sevasetu.patient.ui.symptom
 
+import app.sevasetu.patient.ui.i18n.I18n
+import app.sevasetu.patient.ui.i18n.LocalLang
 import android.content.Context
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -135,7 +138,7 @@ fun SymptomCheckScreen(
     }
 
     SevaScaffold(
-        title = "Symptom check",
+        title = tr("Symptom check"),
         onBack = { if (page > 0) page-- else onBack() },
         onListen = {
             when (page) {
@@ -157,27 +160,27 @@ fun SymptomCheckScreen(
         ) {
             when (page) {
                 0 -> {
-                    StepHeader(currentStep = 1, totalSteps = 3, question = "Any of these right now?")
+                    StepHeader(currentStep = 1, totalSteps = 3, question = tr("Any of these right now?"))
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        "Tap one if it is true. You will be sent to Emergency straight away, no token needed.",
+                        tr("Tap one if it is true. You will be sent to Emergency straight away, no token needed."),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     rules.warningSigns.forEach { sign ->
                         WarningRow(
-                            text = sign.text[language] ?: sign.text["en"].orEmpty(),
+                            text = sign.text[language] ?: sign.text[I18n.base(language)] ?: sign.text["en"].orEmpty(),
                             second = if (language == "en") sign.text["hi"] else sign.text["en"],
                             onClick = { onEmergencyTriggered(mapOf("warning_sign" to sign.id), rules.version) }
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    BigButton(text = "None of these", icon = Icons.Default.Check, onClick = { page = 1 })
+                    BigButton(text = tr("None of these"), icon = Icons.Default.Check, onClick = { page = 1 })
                 }
 
                 1 -> {
-                    StepHeader(currentStep = 2, totalSteps = 3, question = "What is the main problem today?")
+                    StepHeader(currentStep = 2, totalSteps = 3, question = tr("What is the main problem today?"))
                     Spacer(modifier = Modifier.height(16.dp))
                     PROBLEMS
                         .filter { it.id != "pregnancy" || ageGroup == "adult" || pregnant }
@@ -185,15 +188,15 @@ fun SymptomCheckScreen(
                         .forEach { p ->
                             ChoiceRow(
                                 icon = p.icon,
-                                text = p.label,
-                                second = p.hindi,
+                                text = tr(p.label),
+                                second = if (LocalLang.current == "en") p.hindi else null,
                                 selected = problem == p,
                                 onClick = { problem = p; page = 2 }
                             )
                         }
                     Spacer(modifier = Modifier.height(16.dp))
                     BigButton(
-                        text = "Not sure? Ask the help desk",
+                        text = tr("Not sure? Ask the help desk"),
                         type = ButtonType.SECONDARY,
                         icon = Icons.AutoMirrored.Filled.HelpOutline,
                         onClick = {
@@ -214,10 +217,10 @@ fun SymptomCheckScreen(
 
                 else -> {
                     val p = problem ?: PROBLEMS.last()
-                    StepHeader(currentStep = 3, totalSteps = 3, question = "Since when?")
+                    StepHeader(currentStep = 3, totalSteps = 3, question = tr("Since when?"))
                     Spacer(modifier = Modifier.height(16.dp))
                     DURATIONS.forEach { (id, label) ->
-                        ChoiceRow(icon = null, text = label, second = null, selected = duration == id, onClick = {
+                        ChoiceRow(icon = null, text = tr(label), second = null, selected = duration == id, onClick = {
                             duration = id
                             val child = ageGroup in setOf("infant", "child")
                             val department = when {
@@ -257,7 +260,7 @@ private fun WarningRow(text: String, second: String?, onClick: () -> Unit) {
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFFFEDEA))
             .border(1.5.dp, Color(0xFFF3B9B4), RoundedCornerShape(16.dp))
-            .clickable(onClickLabel = "Yes, I have this") { onClick() }
+            .clickable(onClickLabel = tr("Yes, I have this")) { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -269,7 +272,7 @@ private fun WarningRow(text: String, second: String?, onClick: () -> Unit) {
                 Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        Text("YES", style = MaterialTheme.typography.labelLarge, color = ColorEmergency)
+        Text(tr("YES"), style = MaterialTheme.typography.labelLarge, color = ColorEmergency)
     }
 }
 
@@ -298,6 +301,6 @@ fun ChoiceRow(icon: ImageVector?, text: String, second: String?, selected: Boole
                 Text(it, style = MaterialTheme.typography.bodyMedium, color = if (selected) Mint else MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        if (selected) Icon(Icons.Default.Check, contentDescription = "Selected", tint = Mint)
+        if (selected) Icon(Icons.Default.Check, contentDescription = tr("Selected"), tint = Mint)
     }
 }

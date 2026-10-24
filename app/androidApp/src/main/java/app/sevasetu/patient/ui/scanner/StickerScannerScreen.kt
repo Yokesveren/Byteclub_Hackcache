@@ -1,6 +1,10 @@
 package app.sevasetu.patient.ui.scanner
 
+import app.sevasetu.patient.ui.i18n.LocalLang
+import app.sevasetu.patient.ui.i18n.floorLabel
 import android.Manifest
+import app.sevasetu.patient.ui.i18n.tr
+import app.sevasetu.patient.ui.i18n.trNow
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,8 +104,8 @@ fun StickerScannerScreen(
     LaunchedEffect(warning) { if (warning != null) { delay(2500); warning = null } }
 
     val title = when (mode) {
-        ScanMode.SLIP -> "Scan your slip"
-        else -> "Scan a sticker"
+        ScanMode.SLIP -> tr("Scan your slip")
+        else -> tr("Scan a sticker")
     }
 
     SevaScaffold(title = title, onBack = onBack, onEmergencyClick = onEmergencyClick) {
@@ -118,7 +122,7 @@ fun StickerScannerScreen(
                             ScanMode.SLIP -> isSlip(text)
                             ScanMode.ANY -> isSticker(text) || isSlip(text)
                         }
-                        if (!ok) warning = if (mode == ScanMode.SLIP) "That is not a SevaSetu slip." else "That is not a SevaSetu sticker."
+                        if (!ok) warning = if (mode == ScanMode.SLIP) trNow("That is not a SevaSetu slip.") else trNow("That is not a SevaSetu sticker.")
                         ok
                     },
                     onFound = onResult
@@ -131,9 +135,9 @@ fun StickerScannerScreen(
             ) {
                 Text(
                     text = when {
-                        !hasCamera -> "SevaSetu needs the camera to read QR codes."
-                        mode == ScanMode.SLIP -> "Hold the QR code on your slip inside the square."
-                        else -> "Hold the QR sticker on the wall inside the square."
+                        !hasCamera -> tr("SevaSetu needs the camera to read QR codes.")
+                        mode == ScanMode.SLIP -> tr("Hold the QR code on your slip inside the square.")
+                        else -> tr("Hold the QR sticker on the wall inside the square.")
                     },
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
@@ -171,7 +175,7 @@ fun StickerScannerScreen(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     if (!hasCamera) {
                         BigButton(
-                            text = "Allow camera",
+                            text = tr("Allow camera"),
                             icon = Icons.Default.QrCodeScanner,
                             onClick = {
                                 if (askedOnce) {
@@ -189,7 +193,7 @@ fun StickerScannerScreen(
                     }
                     if (mode != ScanMode.SLIP) {
                         BigButton(
-                            text = "Can't scan? Choose where you are",
+                            text = tr("Can't scan? Choose where you are"),
                             type = ButtonType.SECONDARY,
                             icon = Icons.Default.FormatListBulleted,
                             onClick = { showList = true }
@@ -270,9 +274,9 @@ private fun StickerList(onPick: (String) -> Unit, onClose: () -> Unit) {
 
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "WHERE ARE YOU?", style = MaterialTheme.typography.headlineMedium)
+        Text(text = tr("WHERE ARE YOU?"), style = MaterialTheme.typography.headlineMedium)
         Text(
-            text = "Choose the place nearest to you. It works the same as scanning its sticker.",
+            text = tr("Choose the place nearest to you. It works the same as scanning its sticker."),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -284,7 +288,7 @@ private fun StickerList(onPick: (String) -> Unit, onClose: () -> Unit) {
                     lastFloor = node.floor
                     item(key = "floor-${node.floor}") {
                         Text(
-                            text = (graph?.floors?.firstOrNull { it.floor == node.floor }?.name ?: "Floor ${node.floor}").uppercase(),
+                            text = floorLabel(node.floor).uppercase(),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 12.dp, bottom = 6.dp)
@@ -303,8 +307,8 @@ private fun StickerList(onPick: (String) -> Unit, onClose: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = node.displayName(), style = MaterialTheme.typography.titleMedium)
-                            node.landmarkText()?.let {
+                            Text(text = node.displayName(LocalLang.current), style = MaterialTheme.typography.titleMedium)
+                            node.landmarkText(LocalLang.current)?.let {
                                 Text(text = it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
@@ -314,6 +318,6 @@ private fun StickerList(onPick: (String) -> Unit, onClose: () -> Unit) {
                 }
             }
         }
-        BigButton(text = "Back to the camera", type = ButtonType.SECONDARY, onClick = onClose, modifier = Modifier.padding(vertical = 12.dp))
+        BigButton(text = tr("Back to the camera"), type = ButtonType.SECONDARY, onClick = onClose, modifier = Modifier.padding(vertical = 12.dp))
     }
 }

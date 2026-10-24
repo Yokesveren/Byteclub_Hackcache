@@ -7,7 +7,7 @@ See `SevaSetu_PRD_v1_0_Complete.docx`.
 |---|---|---|
 | Backend (Postgres rules, RPCs, realtime) | `supabase/` | website team |
 | PHC Dashboard (web) | `web/` | website team |
-| Patient App (Android, Jetpack Compose) | `app/` | app team: build and connect with [`app/README.md`](app/README.md). Guide: [`APP_README.md`](APP_README.md), contract: [`docs/CONTRACT.md`](docs/CONTRACT.md) |
+| Patient App (Android, Jetpack Compose) | `app/` | app team: run it with [`app/README.md`](app/README.md); guide for building on it: [`APP_README.md`](APP_README.md); contract: [`docs/CONTRACT.md`](docs/CONTRACT.md) |
 
 All hospitals, doctors and patients are made up.
 
@@ -37,15 +37,29 @@ Sign in with a demo account (password `sevasetu-demo`, buttons on the login page
 | Patient flow: crowd map from QR scans, wrong-turn hotspots, visitor simulator | `/flow` |
 | Transparency log | `/log` |
 | Demo controls: clock speed, autopilot, add patients, urgent flag, reset | `/demo` |
+| Get the patient app: what it does, APK download and a QR to scan (public) | `/patient-app` |
 
 `npx supabase db reset` rebuilds the database and the 10:30 AM demo scenario. If live updates stall after a reset,
 run `docker restart supabase_realtime_sevasetu`.
 
-## The hospital map
+## The patient app
 
-`web/public/graph/H01.json` is the indoor map shared with the patient app (QR waypoints, corridors, lift, stairs,
-areas with capacities). Edit `web/scripts/build_h01_graph.py` and run `python scripts/build_h01_graph.py` from `web/`.
-Routing lives in `web/src/lib/graph.ts`. See `docs/CONTRACT.md` section 7.
+The Android app in `app/` uses the same backend: a patient registering on the phone appears in the Facility view,
+staff actions reach the phone at once, scans feed Patient flow. To try it on a phone over USB:
+
+```bash
+cd app
+./gradlew :androidApp:installDebug          # after creating app/local.properties, see app/README.md
+adb reverse tcp:54321 tcp:54321             # the phone reaches the laptop's backend through the cable
+```
+
+## The hospital maps
+
+`web/public/graph/H01.json`, `H02.json` and `H03.json` are the indoor maps of the three demo hospitals, shared with
+the patient app (QR waypoints, corridors, lift, stairs, areas with capacities, names in English, Hindi and Urdu).
+Edit `web/scripts/build_h0N_graph.py` (shared pieces in `graph_common.py`) and run it from `web/`: it writes both the
+website's and the app's copy and checks every place is reachable. Routing lives in `web/src/lib/graph.ts` (and its
+Kotlin twin in the app). See `docs/CONTRACT.md` section 7.
 
 ## Where the rules live
 

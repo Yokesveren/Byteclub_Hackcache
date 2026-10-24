@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.settings
 
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,17 +61,17 @@ fun SettingsScreen(
     val visit by app.visits.active.collectAsState()
     fun set(change: (Settings) -> Settings) = app.prefs.update(change)
 
-    SevaScaffold(title = "Settings", onBack = onBack, onEmergencyClick = onEmergencyClick) {
+    SevaScaffold(title = tr("Settings"), onBack = onBack, onEmergencyClick = onEmergencyClick) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Section("Reading") {
-                LinkRow("Language", LANGUAGES.firstOrNull { it.code == s.language }?.let { "${it.native} · ${it.english}" } ?: s.language, onOpenLanguage)
+            Section(tr("Reading")) {
+                LinkRow(tr("Language"), LANGUAGES.firstOrNull { it.code == s.language }?.let { "${it.native} · ${it.english}" } ?: s.language, onOpenLanguage)
                 Divider()
-                Text("Text size", style = MaterialTheme.typography.titleMedium)
+                Text(tr("Text size"), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(1.0f to "A", 1.25f to "A+", 1.5f to "A++", 2.0f to "A+++").forEach { (scale, label) ->
@@ -90,34 +91,34 @@ fun SettingsScreen(
                     }
                 }
                 Divider()
-                ToggleRow("High contrast", "Black on white with solid edges.", s.highContrast) { on -> set { it.copy(highContrast = on) } }
+                ToggleRow(tr("High contrast"), tr("Black on white with solid edges."), s.highContrast) { on -> set { it.copy(highContrast = on) } }
             }
 
-            Section("Finding your way") {
-                ToggleRow("Avoid stairs", "Routes use the lift and ramps only.", s.avoidStairs) { on -> set { it.copy(avoidStairs = on) } }
+            Section(tr("Finding your way")) {
+                ToggleRow(tr("Avoid stairs"), tr("Routes use the lift and ramps only."), s.avoidStairs) { on -> set { it.copy(avoidStairs = on) } }
                 Divider()
                 ToggleRow(
-                    "Share the stickers I scan",
-                    "Anonymous. Helps the hospital see crowded corridors.",
+                    tr("Share the stickers I scan"),
+                    tr("Anonymous. Helps the hospital see crowded corridors."),
                     s.movementConsent
                 ) { on -> set { it.copy(movementConsent = on) } }
             }
 
-            Section("Alerts") {
-                ToggleRow("Sound", "Speak and ring when it is nearly your turn.", s.alertSound) { on -> set { it.copy(alertSound = on) } }
+            Section(tr("Alerts")) {
+                ToggleRow(tr("Sound"), tr("Speak and ring when it is nearly your turn."), s.alertSound) { on -> set { it.copy(alertSound = on) } }
                 Divider()
-                ToggleRow("Vibrate", null, s.alertVibration) { on -> set { it.copy(alertVibration = on) } }
+                ToggleRow(tr("Vibrate"), null, s.alertVibration) { on -> set { it.copy(alertVibration = on) } }
                 Divider()
-                ToggleRow("Flash the screen when called", "For people who are hard of hearing.", s.flashOnCall) { on -> set { it.copy(flashOnCall = on) } }
+                ToggleRow(tr("Flash the screen when called"), tr("For people who are hard of hearing."), s.flashOnCall) { on -> set { it.copy(flashOnCall = on) } }
             }
 
-            Section("This phone") {
-                LinkRow("Ready for no signal?", "What works offline on this phone", onOpenReadiness)
+            Section(tr("This phone")) {
+                LinkRow(tr("Ready for no signal?"), tr("What works offline on this phone"), onOpenReadiness)
                 Divider()
-                LinkRow("Wall sticker sheet", "Print the hospital's QR stickers", onOpenStickerSheet)
+                LinkRow(tr("Wall sticker sheet"), tr("Print the hospital's QR stickers"), onOpenStickerSheet)
                 if (!app.isLive) {
                     Divider()
-                    LinkRow("Simulator controls", "Demo only: move the queue on this phone", onOpenDemoPanel)
+                    LinkRow(tr("Simulator controls"), tr("Demo only: move the queue on this phone"), onOpenDemoPanel)
                 }
                 if (visit != null) {
                     Divider()
@@ -135,9 +136,9 @@ fun SettingsScreen(
                             .padding(vertical = 8.dp)
                     ) {
                         Column {
-                            Text("Forget this visit", style = MaterialTheme.typography.titleMedium, color = ColorEmergency)
+                            Text(tr("Forget this visit"), style = MaterialTheme.typography.titleMedium, color = ColorEmergency)
                             Text(
-                                "Removes token ${visit?.token} from this phone. It does not cancel it at the hospital.",
+                                tr("Removes token {token} from this phone. It does not cancel it at the hospital.", "token" to visit?.token),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -147,7 +148,7 @@ fun SettingsScreen(
             }
 
             Text(
-                if (app.isLive) "Connected to the hospital server." else "Simulator mode: no hospital server is set in this build.",
+                if (app.isLive) tr("Connected to the hospital server.") else tr("Simulator mode: no hospital server is set in this build."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp)
@@ -158,7 +159,7 @@ fun SettingsScreen(
 
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
-    Text(title.uppercase(), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(start = 4.dp, bottom = 8.dp))
+    Text(tr(title).uppercase(), style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(start = 4.dp, bottom = 8.dp))
     InfoCard { content() }
     Spacer(Modifier.height(20.dp))
 }

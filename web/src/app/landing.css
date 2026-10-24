@@ -400,7 +400,7 @@
 .ss-places a { font-size: var(--step-sub); font-weight: 700; color: #5fd3c6; text-decoration: none; letter-spacing: -0.02em; }
 .ss-places a:hover { text-decoration: underline; }
 .ss-places small { display: block; font-size: var(--step-small); color: #bdbdbd; }
-.ss-footer-links { grid-column: 7 / 13; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); font-size: var(--step-small); }
+.ss-footer-links { grid-column: 7 / 13; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gutter); font-size: var(--step-small); }
 .ss-footer-links h3 { margin: 0 0 10px; font-size: var(--step-small); color: #bdbdbd; font-weight: 400; }
 .ss-footer-links ul { list-style: none; margin: 0; padding: 0; }
 .ss-footer-links li + li { margin-top: 6px; }

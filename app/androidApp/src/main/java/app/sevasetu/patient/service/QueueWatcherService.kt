@@ -19,6 +19,7 @@ import app.sevasetu.patient.MainActivity
 import app.sevasetu.patient.R
 import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.data.model.MyTurnDto
+import app.sevasetu.patient.ui.i18n.trNow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -89,14 +90,14 @@ class QueueWatcherService : Service() {
             "called" -> {
                 if (alertedFinal != turn.visitId) {
                     alertedFinal = turn.visitId
-                    alert("It's your turn: ${turn.token}", "Please go to ${turn.doctor.room} (${turn.doctor.name}) now.")
+                    alert(trNow("It's your turn: {token}", "token" to turn.token), trNow("Please go to {room} ({doctor}) now.", "room" to turn.doctor.room, "doctor" to turn.doctor.name))
                 }
                 return true
             }
             "emergency" -> {
                 if (alertedFinal != turn.visitId) {
                     alertedFinal = turn.visitId
-                    alert("Go to Emergency now", "Staff have asked you to go to Emergency (Casualty). You do not need a token.")
+                    alert(trNow("Go to Emergency now"), trNow("Staff have asked you to go to Emergency (Casualty). You do not need a token."))
                 }
                 return true
             }
@@ -105,9 +106,9 @@ class QueueWatcherService : Service() {
         if (ahead != null && ahead <= 3 && alertedNear != turn.visitId) {
             alertedNear = turn.visitId
             alert(
-                "Your turn is coming: ${turn.token}",
-                if (ahead == 0) "You are next. Please wait near ${turn.doctor.room}."
-                else "Only $ahead ${if (ahead == 1) "person" else "people"} ahead. Please come near ${turn.doctor.room}."
+                trNow("Your turn is coming: {token}", "token" to turn.token),
+                if (ahead == 0) trNow("You are next. Please wait near {room}.", "room" to turn.doctor.room)
+                else trNow("Only {n} ahead of you. Please come near {room}.", "n" to ahead, "room" to turn.doctor.room)
             )
         }
         return false
@@ -121,13 +122,14 @@ class QueueWatcherService : Service() {
 
     private fun ongoing(turn: MyTurnDto?) = NotificationCompat.Builder(this, ONGOING_CHANNEL)
         .setSmallIcon(R.drawable.ic_stat_seva)
-        .setContentTitle(if (turn != null) "Token ${turn.token} · ${turn.doctor.room}" else "SevaSetu")
+        .setContentTitle(if (turn != null) trNow("Token {token} · {room}", "token" to turn.token, "room" to turn.doctor.room) else trNow("SevaSetu"))
         .setContentText(
             when {
-                turn == null -> "Watching your place in the queue"
-                turn.estimate?.paused == true -> "The doctor is away for now. Your place is kept."
-                turn.estimate != null -> "${turn.estimate.peopleAhead} ahead of you · now serving ${turn.nowServing ?: "–"}"
-                else -> "Watching your place in the queue"
+                turn == null -> trNow("Watching your place in the queue")
+                turn.estimate?.paused == true -> trNow("The doctor is away for now. Your place is kept.")
+                turn.estimate != null -> trNow("{n} ahead of you", "n" to turn.estimate.peopleAhead) + " · " +
+                    trNow("Now serving {token}", "token" to (turn.nowServing ?: "–"))
+                else -> trNow("Watching your place in the queue")
             }
         )
         .setOngoing(true)
@@ -166,10 +168,10 @@ class QueueWatcherService : Service() {
     private fun createChannels() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(
-            NotificationChannel(ONGOING_CHANNEL, "Your place in the queue", NotificationManager.IMPORTANCE_LOW)
+            NotificationChannel(ONGOING_CHANNEL, trNow("Your place in the queue"), NotificationManager.IMPORTANCE_LOW)
         )
         manager.createNotificationChannel(
-            NotificationChannel(ALERT_CHANNEL, "Your turn alerts", NotificationManager.IMPORTANCE_HIGH).apply {
+            NotificationChannel(ALERT_CHANNEL, trNow("Your turn alerts"), NotificationManager.IMPORTANCE_HIGH).apply {
                 enableVibration(true)
             }
         )

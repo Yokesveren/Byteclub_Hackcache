@@ -1,6 +1,9 @@
 package app.sevasetu.patient.ui.myturn
 
+import app.sevasetu.patient.ui.i18n.deptName
+import app.sevasetu.patient.ui.i18n.floorLabel
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,8 +94,8 @@ fun MyTurnScreen(
     var offline by remember { mutableStateOf(false) }
 
     if (visitId == null) {
-        SevaScaffold(title = "My turn", onBack = onBack, onEmergencyClick = onEmergencyClick) {
-            EmptyState("No token yet.\n\nRegister for OPD, or use \"I have my slip\" to follow a token from the counter.")
+        SevaScaffold(title = tr("My turn"), onBack = onBack, onEmergencyClick = onEmergencyClick) {
+            EmptyState(tr("No token yet.\n\nRegister for OPD, or use \"I have my slip\" to follow a token from the counter."))
         }
         return
     }
@@ -129,7 +132,7 @@ fun MyTurnScreen(
 
     val t = turn
     SevaScaffold(
-        title = "My turn",
+        title = tr("My turn"),
         onBack = onBack,
         onListen = t?.let { v ->
             {
@@ -147,7 +150,7 @@ fun MyTurnScreen(
         lastUpdatedTime = displayTime(t?.lastUpdated)
     ) {
         if (t == null) {
-            LoadingState("Finding your place in the queue…")
+            LoadingState(tr("Finding your place in the queue…"))
             return@SevaScaffold
         }
         Column(
@@ -168,24 +171,24 @@ fun MyTurnScreen(
                     .padding(22.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("TOKEN", style = MaterialTheme.typography.labelLarge, color = Mint)
+                    Text(tr("TOKEN"), style = MaterialTheme.typography.labelLarge, color = Mint)
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(t.token, style = MaterialTheme.typography.headlineLarge, color = Color.White, modifier = Modifier.weight(1f))
                     StatusPill(label = t.bandLabel, type = t.band, provisional = t.bandProvisional)
                 }
                 if (!confirmed) {
-                    Text("Waiting to be confirmed by the hospital", style = MaterialTheme.typography.labelMedium, color = Color(0xFFF2B01E))
+                    Text(tr("Waiting to be confirmed by the hospital"), style = MaterialTheme.typography.labelMedium, color = Color(0xFFF2B01E))
                 }
                 Spacer(modifier = Modifier.height(18.dp))
                 when {
                     est == null -> Text(
-                        "Your place will show once the hospital confirms your token.",
+                        tr("Your place will show once the hospital confirms your token."),
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
                     else -> {
                         Text(
-                            if (est.peopleAhead == 0) "YOU ARE NEXT" else "PEOPLE AHEAD OF YOU",
+                            if (est.peopleAhead == 0) tr("YOU ARE NEXT") else tr("PEOPLE AHEAD OF YOU"),
                             style = MaterialTheme.typography.labelLarge,
                             color = Mint
                         )
@@ -195,13 +198,13 @@ fun MyTurnScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                         if (!est.paused && est.windowStart != null && est.windowEnd != null) {
                             Text(
-                                "Likely between ${displayTime(est.windowStart)} and ${displayTime(est.windowEnd)}",
+                                tr("Likely between {from} and {to}", "from" to displayTime(est.windowStart), "to" to displayTime(est.windowEnd)),
                                 style = MaterialTheme.typography.titleMedium,
                                 color = Color.White
                             )
                         }
                         t.nowServing?.let {
-                            Text("Now serving $it", style = MaterialTheme.typography.bodyMedium, color = Color(0xFFC9ECE6))
+                            Text(tr("Now serving {token}", "token" to it), style = MaterialTheme.typography.bodyMedium, color = Color(0xFFC9ECE6))
                         }
                     }
                 }
@@ -211,8 +214,8 @@ fun MyTurnScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 Notice(
                     icon = Icons.Default.PauseCircle,
-                    title = "THE DOCTOR IS AWAY FOR NOW",
-                    text = (t.doctor.statusNote?.let { "$it. " } ?: "") + "Your place is kept. The time will show again when the doctor is back."
+                    title = tr("THE DOCTOR IS AWAY FOR NOW"),
+                    text = (t.doctor.statusNote?.let { "$it. " } ?: "") + tr("Your place is kept. The time will show again when the doctor is back.")
                 )
             }
 
@@ -222,12 +225,12 @@ fun MyTurnScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("WHY DID MY PLACE CHANGE?", style = MaterialTheme.typography.labelLarge)
+                        Text(tr("WHY DID MY PLACE CHANGE?"), style = MaterialTheme.typography.labelLarge)
                     }
                     Spacer(modifier = Modifier.height(6.dp))
-                    Text(translateReasonCode(reason.reasonCode, reason.message), style = MaterialTheme.typography.bodyLarge)
+                    Text(tr(translateReasonCode(reason.reasonCode, reason.message)), style = MaterialTheme.typography.bodyLarge)
                     displayTime(reason.at)?.let {
-                        Text("At $it", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(tr("At {time}", "time" to it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -242,15 +245,15 @@ fun MyTurnScreen(
                     .background(LocalExtraColors.current.field)
                     .padding(20.dp)
             ) {
-                Text("YOUR DOCTOR", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(tr("YOUR DOCTOR"), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(t.doctor.name, style = MaterialTheme.typography.titleLarge, color = Ink)
                 Text(
-                    "${t.doctor.room} · ${if (t.doctor.floor == 0) "ground floor" else "floor ${t.doctor.floor}"} · ${t.department.name}",
+                    "${t.doctor.room} · ${floorLabel(t.doctor.floor)} · ${deptName(t.department)}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Ink
                 )
                 if (t.doctor.stairFree.not()) {
-                    Text("Stairs only to this room. Ask staff for help if you need it.", style = MaterialTheme.typography.bodyMedium, color = ColorPriorityContent)
+                    Text(tr("Stairs only to this room. Ask staff for help if you need it."), style = MaterialTheme.typography.bodyMedium, color = ColorPriorityContent)
                 }
             }
 
@@ -259,14 +262,14 @@ fun MyTurnScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 t.doctor.roomWaypointId?.let { room ->
                     BigButton(
-                        text = "Take me there",
+                        text = tr("Take me there"),
                         onClick = { onNavigateToRoom(room) },
                         icon = Icons.Default.Navigation,
                         modifier = Modifier.weight(1f)
                     )
                 }
                 BigButton(
-                    text = "Show slip",
+                    text = tr("Show slip"),
                     onClick = onShowSlip,
                     type = ButtonType.SECONDARY,
                     icon = Icons.Default.QrCode2,
@@ -278,14 +281,14 @@ fun MyTurnScreen(
 
             // S4: on every queue screen, never "you can wait"
             BigButton(
-                text = "Feeling worse? Press Urgent help",
+                text = tr("Feeling worse? Press Urgent help"),
                 onClick = onEmergencyClick,
                 type = ButtonType.DANGER,
                 icon = Icons.Default.Warning
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                "We will alert you when 3 people are ahead and when it is your turn, even with the phone in your pocket.",
+                tr("We will alert you when 3 people are ahead and when it is your turn, even with the phone in your pocket."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

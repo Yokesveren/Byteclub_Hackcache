@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# patient app build, copied in by app/README.md "Publish the APK" (large; never committed)
+/public/download/*.apk

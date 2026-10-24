@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.journey
 
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -89,7 +90,7 @@ fun HealthJourneyScreen(
 
     val j = journey
     SevaScaffold(
-        title = "Health journey",
+        title = tr("Health journey"),
         onBack = onBack,
         isOffline = offline,
         onListen = j?.let { jj ->
@@ -103,10 +104,10 @@ fun HealthJourneyScreen(
         onEmergencyClick = onEmergencyClick
     ) {
         when {
-            loading && j == null -> LoadingState("Loading your visits…")
-            visitId == null -> EmptyState("Your past visits will show here after you register or follow a slip.")
+            loading && j == null -> LoadingState(tr("Loading your visits…"))
+            visitId == null -> EmptyState(tr("Your past visits will show here after you register or follow a slip."))
             j == null || (j.journey.isEmpty() && j.nextFollowUp == null) -> EmptyState(
-                "No earlier visits recorded yet.\n\nAfter the doctor sees you, the visit and any follow-up date will appear here."
+                tr("No earlier visits recorded yet.\n\nAfter the doctor sees you, the visit and any follow-up date will appear here.")
             )
             else -> Column(
                 modifier = Modifier
@@ -121,15 +122,15 @@ fun HealthJourneyScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Ink)
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("NEXT FOLLOW-UP", style = MaterialTheme.typography.labelLarge, color = Ink)
+                            Text(tr("NEXT FOLLOW-UP"), style = MaterialTheme.typography.labelLarge, color = Ink)
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(day(f.on), style = MaterialTheme.typography.headlineLarge, color = Ink)
                         Text(
                             when (f.state) {
-                                "done" -> "Done. Thank you for coming back."
-                                "defaulted" -> "Missed. Please come in soon, or ask a health worker to call you."
-                                else -> "Please come on this day and bring your previous prescription."
+                                "done" -> tr("Done. Thank you for coming back.")
+                                "defaulted" -> tr("Missed. Please come in soon, or ask a health worker to call you.")
+                                else -> tr("Please come on this day and bring your previous prescription.")
                             },
                             style = MaterialTheme.typography.bodyLarge,
                             color = Ink
@@ -138,7 +139,7 @@ fun HealthJourneyScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                Text("EARLIER VISITS", style = MaterialTheme.typography.labelLarge)
+                Text(tr("EARLIER VISITS"), style = MaterialTheme.typography.labelLarge)
                 Spacer(modifier = Modifier.height(10.dp))
                 j.journey.sortedByDescending { it.day }.forEach { item ->
                     Row(modifier = Modifier.fillMaxWidth()) {
@@ -160,7 +161,7 @@ fun HealthJourneyScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(day(item.day), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                                 StatusPill(
-                                    label = when (item.status) { "red" -> "Emergency"; "yellow" -> "Priority"; else -> "Routine" },
+                                    label = when (item.status) { "red" -> tr("Emergency"); "yellow" -> tr("Priority"); else -> tr("Routine") },
                                     type = item.status
                                 )
                             }

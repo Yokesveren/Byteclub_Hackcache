@@ -1,18 +1,44 @@
 # TRANSLATION_REVIEW.md
 
-Review file for Hindi (`hi`) and Tamil (`ta`) string translations used in the SevaSetu patient app.
+Every patient-facing line of the app exists in English, Hindi and Urdu. **The Hindi and Urdu are first drafts written
+for the demo, not by native speakers.** Before any real patient uses the app, a native speaker of each language must
+review them, and Kashmiri and Dogri need their own translations.
 
-## English - Hindi - Tamil String Mapping
+## Where the text lives
 
-| Key | English | Hindi (हिन्दी) | Tamil (தமிழ்) |
+| What | File | Languages |
+|---|---|---|
+| Screen text, directions, alerts (about 360 lines) | `app/i18n/strings.py` | en (key), hi, ur |
+| Place names and landmarks on the indoor maps | `web/scripts/graph_common.py` (`WORDS`) | en, hi, ur |
+| Department names | `supabase/seed.sql` (`name_i18n`) | en, hi, ur |
+| Warning signs in the symptom check | `app/androidApp/src/main/assets/symptom_rules_demo-1.json` | en, hi, ur |
+
+The warning signs are also clinical content: a clinician reviews their meaning, a native speaker their wording.
+
+## How fallbacks work
+
+- Kashmiri (`ks`) is shown in Urdu, right to left. Dogri (`doi`) is shown in Hindi.
+- Any line with no translation shows in English, never blank.
+- Place-holders such as `{token}` or `{m}` must stay exactly as written; `python app/i18n/build_strings.py` refuses a
+  table where they differ, and lists English text in the code that has no translation yet.
+
+## What to check
+
+1. **Plain words.** Patients may have little schooling. Prefer the words people say in the OPD (टोकन, डॉक्टर,
+   ٹوکن, ڈاکٹر) over formal ones.
+2. **Safety lines first.** These must be unmistakable: "Go to Emergency now", "You do not need a token",
+   "I need urgent help", "Not yet received by staff", "Staff have seen your request", the 11 warning signs.
+3. **Directions.** Left and right, "walk about {m} m", floor names, and the map's place names and landmarks.
+4. **Length.** Buttons are written in capitals in English; check that the Hindi and Urdu fit on a small phone at the
+   largest text size.
+5. **Kashmiri and Dogri.** Add `ks` and `doi` columns: extend `I18n.base()` in
+   `ui/i18n/I18n.kt` to use them instead of the Urdu and Hindi fallbacks.
+
+## Review log
+
+| Language | Reviewer | Date | Status |
 |---|---|---|---|
-| `app_name` | SevaSetu | सेवासेतु | சேவாசேது |
-| `emergency` | Emergency | आपातकालीन | அவசர சிகிச்சை |
-| `urgent_help` | Feeling worse? Press Urgent help | स्थिति बिगड़ रही है? आपातकालीन सहायता लें | நிலைமை மோசமாகிறதா? அவசர உதவி |
-| `call_112` | Call 112 | 112 पर कॉल करें | 112 ஐ அழைக்கவும் |
-| `call_108` | Call 108 | 108 पर कॉल करें | 108 ஐ அழைக்கவும் |
-| `go_to_emergency` | Go to Emergency now. You don't need a token. | तुरंत आपातकालीन विभाग जाएं। टोकन की आवश्यकता नहीं है। | तुरंत அவசர சிகிச்சைப் பிரிவுக்குச் செல்லவும். டோக்கன் தேவையில்லை. |
-| `step_header` | Step %1$d of %2$d | चरण %1$d / %2$d | படி %1$d / %2$d |
-| `last_updated` | Last updated at %1$s | अंतिम अपडेट: %1$s | கடைசியாக புதுப்பிக்கப்பட்டது %1$s |
-| `offline_banner` | No internet. Showing saved information. | इंटरनेट नहीं है। सहेजी गई जानकारी दिखाई जा रही है। | இணையம் இல்லை. சேமிக்கப்பட்ட தகவல்கள் காட்டப்படுகின்றன. |
-| `token_unconfirmed` | Waiting to be confirmed | पुष्टि की प्रतीक्षा है | உறுதிப்படுத்த காத்திருக்கிறது |
+| Hindi | | | draft, not reviewed |
+| Urdu | | | draft, not reviewed |
+| Kashmiri | | | not started (shows Urdu) |
+| Dogri | | | not started (shows Hindi) |

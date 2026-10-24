@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.home
 
 import android.Manifest
+import app.sevasetu.patient.ui.i18n.tr
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -117,7 +118,7 @@ fun HomeScreen(
         ?.removeSuffix(" (Demo)")
 
     SevaScaffold(
-        title = "SevaSetu",
+        title = tr("SevaSetu"),
         onListen = {
             app.speaker.speak(
                 when {
@@ -140,7 +141,7 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = if (visit != null && !finished) "NAMASTE, ${visit.firstName.uppercase()}" else "NAMASTE",
+                text = if (visit != null && !finished) "NAMASTE, ${visit.firstName.uppercase()}" else tr("NAMASTE"),
                 style = MaterialTheme.typography.displayMedium
             )
             hospitalName?.let {
@@ -167,26 +168,26 @@ fun HomeScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (visit == null || finished) {
-                    GridTile("Register", Icons.Default.PersonAdd, onNavigateToRegister, Modifier.weight(1f))
+                    GridTile(tr("Register"), Icons.Default.PersonAdd, onNavigateToRegister, Modifier.weight(1f))
                 } else {
-                    GridTile("My turn", Icons.Default.Schedule, onNavigateToMyTurn, Modifier.weight(1f))
+                    GridTile(tr("My turn"), Icons.Default.Schedule, onNavigateToMyTurn, Modifier.weight(1f))
                 }
-                GridTile("I have my slip", Icons.Default.ConfirmationNumber, onNavigateToHaveSlip, Modifier.weight(1f))
+                GridTile(tr("I have my slip"), Icons.Default.ConfirmationNumber, onNavigateToHaveSlip, Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GridTile("Find a place", Icons.Default.Navigation, onNavigateToFindPlace, Modifier.weight(1f))
-                GridTile("Health journey", Icons.AutoMirrored.Filled.Assignment, onNavigateToJourney, Modifier.weight(1f))
+                GridTile(tr("Find a place"), Icons.Default.Navigation, onNavigateToFindPlace, Modifier.weight(1f))
+                GridTile(tr("Health journey"), Icons.AutoMirrored.Filled.Assignment, onNavigateToJourney, Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             InfoCard {
-                ListItemRow(title = "Before you visit", subtitle = "Is the doctor in? Is the X-ray working?", icon = Icons.Default.LocalHospital, onClick = onNavigateToPreVisit)
+                ListItemRow(title = tr("Before you visit"), subtitle = tr("Is the doctor in? Is the X-ray working?"), icon = Icons.Default.LocalHospital, onClick = onNavigateToPreVisit)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
-                ListItemRow(title = "Help and questions", subtitle = null, icon = Icons.AutoMirrored.Filled.Help, onClick = onNavigateToHelp)
+                ListItemRow(title = tr("Help and questions"), subtitle = null, icon = Icons.AutoMirrored.Filled.Help, onClick = onNavigateToHelp)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
-                ListItemRow(title = "Settings", subtitle = "Text size, language, alerts", icon = Icons.Default.Settings, onClick = onNavigateToSettings)
+                ListItemRow(title = tr("Settings"), subtitle = tr("Text size, language, alerts"), icon = Icons.Default.Settings, onClick = onNavigateToSettings)
             }
 
             Spacer(modifier = Modifier.height(14.dp))
@@ -212,21 +213,21 @@ private fun StartCard(onRegister: () -> Unit) {
             .fillMaxWidth()
             .clip(CardShape)
             .background(Frame)
-            .clickable(role = Role.Button, onClickLabel = "Register") { onRegister() }
+            .clickable(role = Role.Button, onClickLabel = tr("Register")) { onRegister() }
             .padding(22.dp)
     ) {
-        Text("NO QUEUE AT THE COUNTER", style = MaterialTheme.typography.labelLarge, color = Mint)
+        Text(tr("NO QUEUE AT THE COUNTER"), style = MaterialTheme.typography.labelLarge, color = Mint)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Get your OPD token on this phone.", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+        Text(tr("Get your OPD token on this phone."), style = MaterialTheme.typography.headlineMedium, color = Color.White)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            "A few questions, one per screen. Then follow your turn live and find the doctor's room.",
+            tr("A few questions, one per screen. Then follow your turn live and find the doctor's room."),
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFFC9ECE6)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("REGISTER NOW", style = MaterialTheme.typography.labelLarge, color = Mint)
+            Text(tr("REGISTER NOW"), style = MaterialTheme.typography.labelLarge, color = Mint)
             Spacer(modifier = Modifier.width(6.dp))
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Mint, modifier = Modifier.size(18.dp))
         }
@@ -248,15 +249,15 @@ private fun TicketCard(visit: MyTurnDto, onOpen: () -> Unit, onSlip: () -> Unit)
             .fillMaxWidth()
             .clip(CardShape)
             .background(bg)
-            .clickable(onClickLabel = "Open my turn", role = Role.Button) { onOpen() }
+            .clickable(onClickLabel = tr("Open my turn"), role = Role.Button) { onOpen() }
             .padding(22.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 when {
-                    emergency -> "GO TO EMERGENCY NOW"
-                    called -> "IT'S YOUR TURN"
-                    else -> "YOUR TOKEN"
+                    emergency -> tr("GO TO EMERGENCY NOW")
+                    called -> tr("IT'S YOUR TURN")
+                    else -> tr("YOUR TOKEN")
                 },
                 style = MaterialTheme.typography.labelLarge,
                 color = ink,
@@ -267,7 +268,7 @@ private fun TicketCard(visit: MyTurnDto, onOpen: () -> Unit, onSlip: () -> Unit)
         Text(visit.token, style = MaterialTheme.typography.displayLarge, color = ink)
         if (visit.offlineToken != null && visit.token == visit.offlineToken) {
             Text(
-                "Waiting to be confirmed by the hospital",
+                tr("Waiting to be confirmed by the hospital"),
                 style = MaterialTheme.typography.labelMedium,
                 color = ColorPriorityContent,
                 modifier = Modifier
@@ -283,10 +284,10 @@ private fun TicketCard(visit: MyTurnDto, onOpen: () -> Unit, onSlip: () -> Unit)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 when {
-                    est.paused -> "The doctor is away for now. Your place is kept."
-                    est.peopleAhead == 0 -> "You are next."
-                    else -> "${est.peopleAhead} ahead of you" +
-                        (if (est.windowStart != null && est.windowEnd != null) " · likely ${displayTime(est.windowStart)}–${displayTime(est.windowEnd)}" else "")
+                    est.paused -> tr("The doctor is away for now. Your place is kept.")
+                    est.peopleAhead == 0 -> tr("You are next.")
+                    else -> tr("{n} ahead of you", "n" to est.peopleAhead) +
+                        (if (est.windowStart != null && est.windowEnd != null) " · " + tr("likely {from}–{to}", "from" to displayTime(est.windowStart), "to" to displayTime(est.windowEnd)) else "")
                 },
                 style = MaterialTheme.typography.bodyLarge,
                 color = ink
@@ -294,19 +295,19 @@ private fun TicketCard(visit: MyTurnDto, onOpen: () -> Unit, onSlip: () -> Unit)
         }
         Spacer(modifier = Modifier.height(14.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(if (emergency) "SEE THE WAY" else "OPEN MY TURN", style = MaterialTheme.typography.labelLarge, color = ink)
+            Text(if (emergency) tr("SEE THE WAY") else tr("OPEN MY TURN"), style = MaterialTheme.typography.labelLarge, color = ink)
             Spacer(modifier = Modifier.width(6.dp))
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = ink, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.weight(1f))
             if (!emergency) {
                 Text(
-                    "SHOW SLIP",
+                    tr("SHOW SLIP"),
                     style = MaterialTheme.typography.labelLarge,
                     color = ink,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .border(2.dp, ink, RoundedCornerShape(10.dp))
-                        .clickable(onClickLabel = "Show my slip") { onSlip() }
+                        .clickable(onClickLabel = tr("Show my slip")) { onSlip() }
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 )
             }
@@ -323,7 +324,7 @@ private fun FinishedCard(visit: MyTurnDto, onNewVisit: () -> Unit) {
             .background(LocalExtraColors.current.field)
             .padding(22.dp)
     ) {
-        Text("VISIT FINISHED", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(tr("VISIT FINISHED"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(visit.token, style = MaterialTheme.typography.headlineLarge)
         Text("${visit.doctor.name} · ${visit.department.name}", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(14.dp))
@@ -335,7 +336,7 @@ private fun FinishedCard(visit: MyTurnDto, onNewVisit: () -> Unit) {
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("START A NEW VISIT", style = MaterialTheme.typography.labelLarge, color = Color.White)
+            Text(tr("START A NEW VISIT"), style = MaterialTheme.typography.labelLarge, color = Color.White)
             Spacer(modifier = Modifier.width(6.dp))
             Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
         }

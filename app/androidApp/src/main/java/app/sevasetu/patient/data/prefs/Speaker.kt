@@ -2,6 +2,7 @@ package app.sevasetu.patient.data.prefs
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import app.sevasetu.patient.ui.i18n.STRINGS
 import java.util.Locale
 
 /**
@@ -16,6 +17,9 @@ class Speaker(context: Context, private val prefs: Prefs) {
 
     fun speak(en: String, hi: String? = null, ur: String? = null) {
         if (!ready) return
+        // Lines the screens did not translate themselves come from the app's translation table when listed there.
+        @Suppress("NAME_SHADOWING") val hi = hi ?: STRINGS[en]?.get("hi")
+        @Suppress("NAME_SHADOWING") val ur = ur ?: STRINGS[en]?.get("ur")
         val (text, locale) = when (prefs.current.language) {
             "hi", "doi" -> if (hi != null) hi to Locale("hi", "IN") else en to Locale("en", "IN")
             "ur", "ks" -> when {

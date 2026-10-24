@@ -1,18 +1,28 @@
 {
  "hospital_id": "H01",
  "name": "Chinar District Hospital (Demo)",
- "version": 1,
- "units": "Plan pixels; 10 px = 1 m. Edges are walkable both ways.",
+ "version": 2,
+ "units": "Plan pixels; 10 px = 1 m. Edges are walkable both ways. Names carry en, hi and ur.",
  "floors": [
   {
    "floor": 0,
    "name": "Ground floor",
+   "name_i18n": {
+    "en": "Ground floor",
+    "hi": "भूतल",
+    "ur": "گراؤنڈ فلور"
+   },
    "width": 1000,
    "height": 560
   },
   {
    "floor": 1,
    "name": "First floor",
+   "name_i18n": {
+    "en": "First floor",
+    "hi": "पहली मंज़िल",
+    "ur": "پہلی منزل"
+   },
    "width": 1000,
    "height": 560
   }
@@ -31,10 +41,14 @@
     "exit"
    ],
    "name": {
-    "en": "Main gate"
+    "en": "Main gate",
+    "hi": "मुख्य द्वार",
+    "ur": "مین گیٹ"
    },
    "landmark": {
-    "en": "Under the green hospital sign"
+    "en": "Under the green hospital sign",
+    "hi": "हरे अस्पताल बोर्ड के नीचे",
+    "ur": "سبز اسپتال بورڈ کے نیچے"
    }
   },
   {
@@ -47,10 +61,14 @@
     "emergency"
    ],
    "name": {
-    "en": "Emergency (Casualty)"
+    "en": "Emergency (Casualty)",
+    "hi": "इमरजेंसी (कैजुअल्टी)",
+    "ur": "ایمرجنسی (کیجولٹی)"
    },
    "landmark": {
-    "en": "Red doors, open all day and night"
+    "en": "Red doors, open all day and night",
+    "hi": "लाल दरवाज़े, दिन-रात खुले",
+    "ur": "سرخ دروازے، دن رات کھلے"
    }
   },
   {
@@ -63,10 +81,14 @@
     "junction"
    ],
    "name": {
-    "en": "Entrance hall"
+    "en": "Entrance hall",
+    "hi": "प्रवेश हॉल",
+    "ur": "داخلی ہال"
    },
    "landmark": {
-    "en": "Beside the visitor notice board"
+    "en": "Beside the visitor notice board",
+    "hi": "आगंतुक सूचना बोर्ड के पास",
+    "ur": "ملاقاتیوں کے نوٹس بورڈ کے پاس"
    }
   },
   {
@@ -79,10 +101,14 @@
     "registration"
    ],
    "name": {
-    "en": "Registration counter"
+    "en": "Registration counter",
+    "hi": "पंजीकरण काउंटर",
+    "ur": "رجسٹریشن کاؤنٹر"
    },
    "landmark": {
-    "en": "Windows 1 to 4"
+    "en": "Windows 1 to 4",
+    "hi": "खिड़की 1 से 4",
+    "ur": "کھڑکی 1 سے 4"
    }
   },
   {
@@ -95,10 +121,14 @@
     "help"
    ],
    "name": {
-    "en": "Help desk"
+    "en": "Help desk",
+    "hi": "सहायता डेस्क",
+    "ur": "ہیلپ ڈیسک"
    },
    "landmark": {
-    "en": "Blue counter with the help sign"
+    "en": "Blue counter with the help sign",
+    "hi": "सहायता चिह्न वाला नीला काउंटर",
+    "ur": "مدد کے نشان والا نیلا کاؤنٹر"
    }
   },
   {
@@ -111,10 +141,14 @@
     "pharmacy"
    ],
    "name": {
-    "en": "Pharmacy"
+    "en": "Pharmacy",
+    "hi": "दवाखाना",
+    "ur": "فارمیسی"
    },
    "landmark": {
-    "en": "Medicine window"
+    "en": "Medicine window",
+    "hi": "दवा की खिड़की",
+    "ur": "دوائی کی کھڑکی"
    }
   },
   {
@@ -127,10 +161,14 @@
     "lab"
    ],
    "name": {
-    "en": "Laboratory"
+    "en": "Laboratory",
+    "hi": "प्रयोगशाला",
+    "ur": "لیبارٹری"
    },
    "landmark": {
-    "en": "Sample collection"
+    "en": "Sample collection",
+    "hi": "नमूना संग्रह",
+    "ur": "نمونہ جمع کرنا"
    }
   },
   {
@@ -143,10 +181,14 @@
     "xray"
    ],
    "name": {
-    "en": "X-ray"
+    "en": "X-ray",
+    "hi": "एक्स-रे",
+    "ur": "ایکس رے"
    },
    "landmark": {
-    "en": "Yellow radiation sign"
+    "en": "Yellow radiation sign",
+    "hi": "पीला विकिरण चिह्न",
+    "ur": "پیلا تابکاری نشان"
    }
   },
   {
@@ -159,10 +201,14 @@
     "waiting"
    ],
    "name": {
-    "en": "Waiting area, ground floor"
+    "en": "Waiting area, ground floor",
+    "hi": "प्रतीक्षा क्षेत्र, भूतल",
+    "ur": "انتظار گاہ، گراؤنڈ فلور"
    },
    "landmark": {
-    "en": "Rows of green chairs"
+    "en": "Rows of green chairs",
+    "hi": "हरी कुर्सियों की कतारें",
+    "ur": "سبز کرسیوں کی قطاریں"
    }
   },
   {
@@ -175,10 +221,14 @@
     "lift"
    ],
    "name": {
-    "en": "Lift, ground floor"
+    "en": "Lift, ground floor",
+    "hi": "लिफ़्ट, भूतल",
+    "ur": "لفٹ، گراؤنڈ فلور"
    },
    "landmark": {
-    "en": "Steel doors"
+    "en": "Steel doors",
+    "hi": "स्टील के दरवाज़े",
+    "ur": "اسٹیل کے دروازے"
    }
   },
   {
@@ -191,7 +241,9 @@
     "stairs"
    ],
    "name": {
-    "en": "Stairs, ground floor"
+    "en": "Stairs, ground floor",
+    "hi": "सीढ़ियाँ, भूतल",
+    "ur": "سیڑھیاں، گراؤنڈ فلور"
    },
    "landmark": null
   },
@@ -205,7 +257,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 7 (Paediatrics)"
+    "en": "Room 7 (Paediatrics)",
+    "hi": "कमरा 7 (बाल रोग)",
+    "ur": "کمرہ 7 (بچوں کا شعبہ)"
    },
    "landmark": null
   },
@@ -219,7 +273,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 8 (Paediatrics)"
+    "en": "Room 8 (Paediatrics)",
+    "hi": "कमरा 8 (बाल रोग)",
+    "ur": "کمرہ 8 (بچوں کا شعبہ)"
    },
    "landmark": null
   },
@@ -233,7 +289,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 10 (Maternal Health)"
+    "en": "Room 10 (Maternal Health)",
+    "hi": "कमरा 10 (मातृ स्वास्थ्य)",
+    "ur": "کمرہ 10 (زچہ و بچہ)"
    },
    "landmark": null
   },
@@ -247,7 +305,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 11 (Maternal Health)"
+    "en": "Room 11 (Maternal Health)",
+    "hi": "कमरा 11 (मातृ स्वास्थ्य)",
+    "ur": "کمرہ 11 (زچہ و بچہ)"
    },
    "landmark": null
   },
@@ -261,7 +321,9 @@
     "toilet"
    ],
    "name": {
-    "en": "Toilets, ground floor"
+    "en": "Toilets, ground floor",
+    "hi": "शौचालय, भूतल",
+    "ur": "بیت الخلا، گراؤنڈ فلور"
    },
    "landmark": null
   },
@@ -275,7 +337,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -289,7 +353,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -303,10 +369,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor by the help desk"
+    "en": "Corridor by the help desk",
+    "hi": "सहायता डेस्क के पास गलियारा",
+    "ur": "ہیلپ ڈیسک کے پاس راہداری"
    },
    "landmark": {
-    "en": "Green notice board"
+    "en": "Green notice board",
+    "hi": "हरा सूचना बोर्ड",
+    "ur": "سبز نوٹس بورڈ"
    }
   },
   {
@@ -319,7 +389,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -333,7 +405,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -347,7 +421,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -361,7 +437,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -375,10 +453,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor centre"
+    "en": "Corridor centre",
+    "hi": "गलियारे का बीच",
+    "ur": "راہداری کا درمیان"
    },
    "landmark": {
-    "en": "Water cooler"
+    "en": "Water cooler",
+    "hi": "पानी का कूलर",
+    "ur": "پانی کا کولر"
    }
   },
   {
@@ -391,7 +473,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -405,7 +489,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -419,10 +505,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor east end"
+    "en": "Corridor east end",
+    "hi": "गलियारे का पूर्वी छोर",
+    "ur": "راہداری کا مشرقی سرا"
    },
    "landmark": {
-    "en": "Fire extinguisher"
+    "en": "Fire extinguisher",
+    "hi": "अग्निशामक यंत्र",
+    "ur": "آگ بجھانے کا آلہ"
    }
   },
   {
@@ -435,7 +525,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -449,7 +541,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -463,10 +557,14 @@
     "lift"
    ],
    "name": {
-    "en": "Lift, first floor"
+    "en": "Lift, first floor",
+    "hi": "लिफ़्ट, पहली मंज़िल",
+    "ur": "لفٹ، پہلی منزل"
    },
    "landmark": {
-    "en": "Steel doors"
+    "en": "Steel doors",
+    "hi": "स्टील के दरवाज़े",
+    "ur": "اسٹیل کے دروازے"
    }
   },
   {
@@ -479,7 +577,9 @@
     "stairs"
    ],
    "name": {
-    "en": "Stairs, first floor"
+    "en": "Stairs, first floor",
+    "hi": "सीढ़ियाँ, पहली मंज़िल",
+    "ur": "سیڑھیاں، پہلی منزل"
    },
    "landmark": null
   },
@@ -493,10 +593,14 @@
     "room"
    ],
    "name": {
-    "en": "Room 3 (General Medicine)"
+    "en": "Room 3 (General Medicine)",
+    "hi": "कमरा 3 (सामान्य चिकित्सा)",
+    "ur": "کمرہ 3 (جنرل میڈیسن)"
    },
    "landmark": {
-    "en": "Next to the green notice board"
+    "en": "Next to the green notice board",
+    "hi": "हरे सूचना बोर्ड के बगल में",
+    "ur": "سبز نوٹس بورڈ کے ساتھ"
    }
   },
   {
@@ -509,7 +613,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 4 (General Medicine)"
+    "en": "Room 4 (General Medicine)",
+    "hi": "कमरा 4 (सामान्य चिकित्सा)",
+    "ur": "کمرہ 4 (جنرل میڈیسن)"
    },
    "landmark": null
   },
@@ -523,7 +629,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 5 (General Medicine)"
+    "en": "Room 5 (General Medicine)",
+    "hi": "कमरा 5 (सामान्य चिकित्सा)",
+    "ur": "کمرہ 5 (جنرل میڈیسن)"
    },
    "landmark": null
   },
@@ -537,7 +645,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 14 (Orthopaedics)"
+    "en": "Room 14 (Orthopaedics)",
+    "hi": "कमरा 14 (हड्डी रोग)",
+    "ur": "کمرہ 14 (ہڈیوں کا شعبہ)"
    },
    "landmark": null
   },
@@ -551,10 +661,14 @@
     "waiting"
    ],
    "name": {
-    "en": "Waiting area, first floor"
+    "en": "Waiting area, first floor",
+    "hi": "प्रतीक्षा क्षेत्र, पहली मंज़िल",
+    "ur": "انتظار گاہ، پہلی منزل"
    },
    "landmark": {
-    "en": "Rows of blue chairs"
+    "en": "Rows of blue chairs",
+    "hi": "नीली कुर्सियों की कतारें",
+    "ur": "نیلی کرسیوں کی قطاریں"
    }
   },
   {
@@ -567,7 +681,9 @@
     "room"
    ],
    "name": {
-    "en": "Room 15 (Orthopaedics)"
+    "en": "Room 15 (Orthopaedics)",
+    "hi": "कमरा 15 (हड्डी रोग)",
+    "ur": "کمرہ 15 (ہڈیوں کا شعبہ)"
    },
    "landmark": null
   },
@@ -581,7 +697,9 @@
     "toilet"
    ],
    "name": {
-    "en": "Toilets, first floor"
+    "en": "Toilets, first floor",
+    "hi": "शौचालय, पहली मंज़िल",
+    "ur": "بیت الخلا، پہلی منزل"
    },
    "landmark": null
   },
@@ -595,10 +713,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor west, first floor"
+    "en": "Corridor west, first floor",
+    "hi": "पश्चिमी गलियारा, पहली मंज़िल",
+    "ur": "مغربی راہداری، پہلی منزل"
    },
    "landmark": {
-    "en": "Green notice board"
+    "en": "Green notice board",
+    "hi": "हरा सूचना बोर्ड",
+    "ur": "سبز نوٹس بورڈ"
    }
   },
   {
@@ -611,7 +733,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -625,7 +749,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -639,10 +765,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor by the stairs"
+    "en": "Corridor by the stairs",
+    "hi": "सीढ़ियों के पास गलियारा",
+    "ur": "سیڑھیوں کے پاس راہداری"
    },
    "landmark": {
-    "en": "Window over the courtyard"
+    "en": "Window over the courtyard",
+    "hi": "आँगन की ओर खिड़की",
+    "ur": "صحن کی طرف کھڑکی"
    }
   },
   {
@@ -655,7 +785,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -669,7 +801,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -683,10 +817,14 @@
     "junction"
    ],
    "name": {
-    "en": "Corridor east, first floor"
+    "en": "Corridor east, first floor",
+    "hi": "पूर्वी गलियारा, पहली मंज़िल",
+    "ur": "مشرقی راہداری، پہلی منزل"
    },
    "landmark": {
-    "en": "Water cooler"
+    "en": "Water cooler",
+    "hi": "पानी का कूलर",
+    "ur": "پانی کا کولر"
    }
   },
   {
@@ -699,7 +837,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   },
@@ -713,7 +853,9 @@
     "corridor"
    ],
    "name": {
-    "en": "Corridor"
+    "en": "Corridor",
+    "hi": "गलियारा",
+    "ur": "راہداری"
    },
    "landmark": null
   }
@@ -1148,6 +1290,11 @@
    "id": "F0-emergency",
    "floor": 0,
    "label": "Emergency",
+   "label_i18n": {
+    "en": "Emergency",
+    "hi": "इमरजेंसी",
+    "ur": "ایمرجنسی"
+   },
    "kind": "emergency",
    "x": 40,
    "y": 60,
@@ -1162,6 +1309,11 @@
    "id": "F0-hall",
    "floor": 0,
    "label": "Entrance hall",
+   "label_i18n": {
+    "en": "Entrance hall",
+    "hi": "प्रवेश हॉल",
+    "ur": "داخلی ہال"
+   },
    "kind": "hall",
    "x": 40,
    "y": 200,
@@ -1177,6 +1329,11 @@
    "id": "F0-registration",
    "floor": 0,
    "label": "Registration",
+   "label_i18n": {
+    "en": "Registration",
+    "hi": "पंजीकरण",
+    "ur": "رجسٹریشن"
+   },
    "kind": "service",
    "x": 220,
    "y": 60,
@@ -1191,6 +1348,11 @@
    "id": "F0-help",
    "floor": 0,
    "label": "Help desk",
+   "label_i18n": {
+    "en": "Help desk",
+    "hi": "सहायता डेस्क",
+    "ur": "ہیلپ ڈیسک"
+   },
    "kind": "service",
    "x": 380,
    "y": 60,
@@ -1205,6 +1367,11 @@
    "id": "F0-pharmacy",
    "floor": 0,
    "label": "Pharmacy",
+   "label_i18n": {
+    "en": "Pharmacy",
+    "hi": "दवाखाना",
+    "ur": "فارمیسی"
+   },
    "kind": "service",
    "x": 490,
    "y": 60,
@@ -1219,6 +1386,11 @@
    "id": "F0-lab",
    "floor": 0,
    "label": "Laboratory",
+   "label_i18n": {
+    "en": "Laboratory",
+    "hi": "प्रयोगशाला",
+    "ur": "لیبارٹری"
+   },
    "kind": "service",
    "x": 640,
    "y": 60,
@@ -1233,6 +1405,11 @@
    "id": "F0-xray",
    "floor": 0,
    "label": "X-ray",
+   "label_i18n": {
+    "en": "X-ray",
+    "hi": "एक्स-रे",
+    "ur": "ایکس رے"
+   },
    "kind": "service",
    "x": 800,
    "y": 60,
@@ -1247,6 +1424,11 @@
    "id": "F0-corridor",
    "floor": 0,
    "label": "Main corridor",
+   "label_i18n": {
+    "en": "Main corridor",
+    "hi": "मुख्य गलियारा",
+    "ur": "مرکزی راہداری"
+   },
    "kind": "corridor",
    "x": 200,
    "y": 280,
@@ -1273,6 +1455,11 @@
    "id": "F0-waiting",
    "floor": 0,
    "label": "Waiting area",
+   "label_i18n": {
+    "en": "Waiting area",
+    "hi": "प्रतीक्षा क्षेत्र",
+    "ur": "انتظار گاہ"
+   },
    "kind": "waiting",
    "x": 220,
    "y": 340,
@@ -1287,6 +1474,11 @@
    "id": "F0-lift",
    "floor": 0,
    "label": "Lift",
+   "label_i18n": {
+    "en": "Lift",
+    "hi": "लिफ़्ट",
+    "ur": "لفٹ"
+   },
    "kind": "lift",
    "x": 410,
    "y": 340,
@@ -1301,6 +1493,11 @@
    "id": "F0-stairs",
    "floor": 0,
    "label": "Stairs",
+   "label_i18n": {
+    "en": "Stairs",
+    "hi": "सीढ़ियाँ",
+    "ur": "سیڑھیاں"
+   },
    "kind": "stairs",
    "x": 480,
    "y": 340,
@@ -1315,6 +1512,11 @@
    "id": "F0-room7",
    "floor": 0,
    "label": "Room 7",
+   "label_i18n": {
+    "en": "Room 7",
+    "hi": "कमरा 7",
+    "ur": "کمرہ 7"
+   },
    "kind": "room",
    "x": 550,
    "y": 340,
@@ -1329,6 +1531,11 @@
    "id": "F0-room8",
    "floor": 0,
    "label": "Room 8",
+   "label_i18n": {
+    "en": "Room 8",
+    "hi": "कमरा 8",
+    "ur": "کمرہ 8"
+   },
    "kind": "room",
    "x": 640,
    "y": 340,
@@ -1343,6 +1550,11 @@
    "id": "F0-room10",
    "floor": 0,
    "label": "Room 10",
+   "label_i18n": {
+    "en": "Room 10",
+    "hi": "कमरा 10",
+    "ur": "کمرہ 10"
+   },
    "kind": "room",
    "x": 730,
    "y": 340,
@@ -1357,6 +1569,11 @@
    "id": "F0-room11",
    "floor": 0,
    "label": "Room 11",
+   "label_i18n": {
+    "en": "Room 11",
+    "hi": "कमरा 11",
+    "ur": "کمرہ 11"
+   },
    "kind": "room",
    "x": 820,
    "y": 340,
@@ -1371,6 +1588,11 @@
    "id": "F0-toilets",
    "floor": 0,
    "label": "Toilets",
+   "label_i18n": {
+    "en": "Toilets",
+    "hi": "शौचालय",
+    "ur": "بیت الخلا"
+   },
    "kind": "toilet",
    "x": 910,
    "y": 340,
@@ -1385,6 +1607,11 @@
    "id": "F1-room3",
    "floor": 1,
    "label": "Room 3",
+   "label_i18n": {
+    "en": "Room 3",
+    "hi": "कमरा 3",
+    "ur": "کمرہ 3"
+   },
    "kind": "room",
    "x": 220,
    "y": 60,
@@ -1399,6 +1626,11 @@
    "id": "F1-room4",
    "floor": 1,
    "label": "Room 4",
+   "label_i18n": {
+    "en": "Room 4",
+    "hi": "कमरा 4",
+    "ur": "کمرہ 4"
+   },
    "kind": "room",
    "x": 490,
    "y": 60,
@@ -1413,6 +1645,11 @@
    "id": "F1-room5",
    "floor": 1,
    "label": "Room 5",
+   "label_i18n": {
+    "en": "Room 5",
+    "hi": "कमरा 5",
+    "ur": "کمرہ 5"
+   },
    "kind": "room",
    "x": 640,
    "y": 60,
@@ -1427,6 +1664,11 @@
    "id": "F1-room14",
    "floor": 1,
    "label": "Room 14",
+   "label_i18n": {
+    "en": "Room 14",
+    "hi": "कमरा 14",
+    "ur": "کمرہ 14"
+   },
    "kind": "room",
    "x": 800,
    "y": 60,
@@ -1441,6 +1683,11 @@
    "id": "F1-corridor",
    "floor": 1,
    "label": "First-floor corridor",
+   "label_i18n": {
+    "en": "First-floor corridor",
+    "hi": "पहली मंज़िल का गलियारा",
+    "ur": "پہلی منزل کی راہداری"
+   },
    "kind": "corridor",
    "x": 220,
    "y": 280,
@@ -1463,6 +1710,11 @@
    "id": "F1-waiting",
    "floor": 1,
    "label": "Waiting area",
+   "label_i18n": {
+    "en": "Waiting area",
+    "hi": "प्रतीक्षा क्षेत्र",
+    "ur": "انتظار گاہ"
+   },
    "kind": "waiting",
    "x": 220,
    "y": 340,
@@ -1477,6 +1729,11 @@
    "id": "F1-lift",
    "floor": 1,
    "label": "Lift",
+   "label_i18n": {
+    "en": "Lift",
+    "hi": "लिफ़्ट",
+    "ur": "لفٹ"
+   },
    "kind": "lift",
    "x": 410,
    "y": 340,
@@ -1491,6 +1748,11 @@
    "id": "F1-stairs",
    "floor": 1,
    "label": "Stairs",
+   "label_i18n": {
+    "en": "Stairs",
+    "hi": "सीढ़ियाँ",
+    "ur": "سیڑھیاں"
+   },
    "kind": "stairs",
    "x": 480,
    "y": 340,
@@ -1505,6 +1767,11 @@
    "id": "F1-room15",
    "floor": 1,
    "label": "Room 15",
+   "label_i18n": {
+    "en": "Room 15",
+    "hi": "कमरा 15",
+    "ur": "کمرہ 15"
+   },
    "kind": "room",
    "x": 640,
    "y": 340,
@@ -1519,6 +1786,11 @@
    "id": "F1-toilets",
    "floor": 1,
    "label": "Toilets",
+   "label_i18n": {
+    "en": "Toilets",
+    "hi": "शौचालय",
+    "ur": "بیت الخلا"
+   },
    "kind": "toilet",
    "x": 910,
    "y": 340,

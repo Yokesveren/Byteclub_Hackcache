@@ -1,6 +1,8 @@
 package app.sevasetu.patient.ui.slip
 
 import androidx.compose.foundation.background
+import app.sevasetu.patient.ui.i18n.tr
+import app.sevasetu.patient.ui.i18n.trNow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,8 +92,8 @@ fun IHaveMySlipScreen(
     }
 
     fun failure(e: Exception) {
-        error = if (e is NetworkException) "No connection to the hospital. Try again when you have signal, or show your slip at the help desk."
-        else e.localizedMessage ?: "Something went wrong. Please try again."
+        error = if (e is NetworkException) trNow("No connection to the hospital. Try again when you have signal, or show your slip at the help desk.")
+        else e.localizedMessage ?: trNow("Something went wrong. Please try again.")
     }
 
     LaunchedEffect(scanned) {
@@ -116,7 +118,7 @@ fun IHaveMySlipScreen(
             try {
                 val turn = app.backendGateway.linkSlip(hospitalId, t)
                 if (turn != null) follow(turn)
-                else error = "We could not find $t at this hospital today. Check the number and hospital, or ask at the help desk."
+                else error = trNow("We could not find {token} at this hospital today. Check the number and hospital, or ask at the help desk.", "token" to t)
             } catch (e: Exception) {
                 failure(e)
             }
@@ -125,7 +127,7 @@ fun IHaveMySlipScreen(
     }
 
     SevaScaffold(
-        title = "I have my slip",
+        title = tr("I have my slip"),
         onBack = onBack,
         onListen = { app.speaker.speak("Type the token number on your slip, or scan its QR code.", "अपनी पर्ची का टोकन नंबर लिखें या उसका QR कोड स्कैन करें।") },
         onEmergencyClick = onEmergencyClick
@@ -137,16 +139,16 @@ fun IHaveMySlipScreen(
                 .padding(16.dp)
         ) {
             ScreenBand(
-                title = "Follow your token",
+                title = tr("Follow your token"),
                 tone = "linen",
-                lead = "Got a paper slip at the counter? Follow your place in the queue here."
+                lead = tr("Got a paper slip at the counter? Follow your place in the queue here.")
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            BigButton(text = "Scan the QR on my slip", icon = Icons.Default.QrCodeScanner, onClick = onOpenScanner, enabled = !busy)
+            BigButton(text = tr("Scan the QR on my slip"), icon = Icons.Default.QrCodeScanner, onClick = onOpenScanner, enabled = !busy)
 
             Spacer(modifier = Modifier.height(24.dp))
-            Text("OR TYPE THE TOKEN", style = MaterialTheme.typography.labelLarge)
+            Text(tr("OR TYPE THE TOKEN"), style = MaterialTheme.typography.labelLarge)
             Spacer(modifier = Modifier.height(10.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -170,7 +172,7 @@ fun IHaveMySlipScreen(
             OutlinedTextField(
                 value = token,
                 onValueChange = { token = it.take(8); error = null },
-                label = { Text("Token, for example M-017") },
+                label = { Text(tr("Token, for example M-017")) },
                 singleLine = true,
                 textStyle = MaterialTheme.typography.headlineMedium,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Go),
@@ -179,7 +181,7 @@ fun IHaveMySlipScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
             BigButton(
-                text = if (busy) "Looking…" else "Follow this token",
+                text = if (busy) "Looking…" else tr("Follow this token"),
                 type = ButtonType.SECONDARY,
                 icon = Icons.AutoMirrored.Filled.ArrowForward,
                 enabled = token.isNotBlank() && !busy,
@@ -191,7 +193,7 @@ fun IHaveMySlipScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "Typed tokens work on the day of the visit. The QR code works any day.",
+                tr("Typed tokens work on the day of the visit. The QR code works any day."),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

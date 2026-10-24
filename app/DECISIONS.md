@@ -28,3 +28,21 @@ This file records architecture and design choices made during the development of
   `SevaApplication`.
 - The UI adopted the website's design language (see README "Design").
 
+
+## 5. Finishing the app (Oct 2026)
+- **Settings in SharedPreferences, read synchronously** (`data/prefs/Prefs.kt`), so the first frame already knows the
+  language, text size and whether onboarding is done. DataStore's async start would flash the language screen.
+- **Translations keyed by the English text** (`ui/i18n`, source in `i18n/strings.py`). A missing translation shows
+  English instead of a blank or a key, and the code stays readable. Hindi and Urdu now; Kashmiri shows Urdu and Dogri
+  Hindi until native translations exist. Urdu and Kashmiri switch the layout to right to left.
+- **Directions are computed, not stored.** `Directions` turns a route into sticker-to-sticker steps and works out left
+  and right from the plan coordinates, including corners between stickers. Place names come from the map file in
+  three languages, so a new hospital needs only a map.
+- **One map builder for the website and the app** (`web/scripts/graph_common.py`): each build writes both copies, so
+  they cannot drift; H02 and H03 now have maps and their doctors have room waypoints.
+- **The scanner hands back a string**; `NavGraph` decides what it means (sticker or slip), so one camera screen serves
+  navigation and "I have my slip". A pick-a-place list stands in when a sticker is missing.
+- **Background alerts in a foreground service** started when a visit exists, stopped when it is called, finished or
+  sent to Emergency. Live updates wake it; it also checks every 20 s.
+- **The hospital directory is cached** (`data/visit/Directory.kt`) with a built-in copy of the demo hospitals, so
+  registration works on a first launch with no signal; offline tickets use real hospital names.

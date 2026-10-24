@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.info
 
 import androidx.compose.foundation.layout.Column
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,7 @@ fun HelpCardsScreen(
     onEmergencyClick: () -> Unit
 ) {
     SevaScaffold(
-        title = "Help & FAQs",
+        title = tr("Help & FAQs"),
         onBack = onBack,
         onEmergencyClick = onEmergencyClick
     ) {
@@ -35,14 +36,14 @@ fun HelpCardsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(text = "Frequently Asked Questions", style = MaterialTheme.typography.headlineLarge)
+            Text(text = tr("Frequently Asked Questions"), style = MaterialTheme.typography.headlineLarge)
             Spacer(modifier = Modifier.height(16.dp))
 
             InfoCard {
-                Text(text = "What documents should I bring?", style = MaterialTheme.typography.titleLarge)
+                Text(text = tr("What documents should I bring?"), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Please bring any previous hospital prescriptions, test reports, and an ID proof if available. ABHA number is optional.",
+                    text = tr("Please bring any previous hospital prescriptions, test reports, and an ID proof if available. ABHA number is optional."),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -50,10 +51,10 @@ fun HelpCardsScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             InfoCard {
-                Text(text = "How does the OPD token work?", style = MaterialTheme.typography.titleLarge)
+                Text(text = tr("How does the OPD token work?"), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Your token shows your place in the doctor's queue. Priority (yellow) patients are placed ahead of Routine patients.",
+                    text = tr("Your token shows your place in the doctor's queue. Priority (yellow) patients are placed ahead of Routine patients."),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -61,10 +62,10 @@ fun HelpCardsScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             InfoCard {
-                Text(text = "Where is the pharmacy & lab located?", style = MaterialTheme.typography.titleLarge)
+                Text(text = tr("Where is the pharmacy & lab located?"), style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Pharmacy and Laboratory are on the Ground Floor along the main corridor. Follow the indoor map in 'Find a place'.",
+                    text = tr("Pharmacy and Laboratory are on the Ground Floor along the main corridor. Follow the indoor map in 'Find a place'."),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -72,7 +73,7 @@ fun HelpCardsScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             BigButton(
-                text = "Have Chest Pain or Severe Symptoms? Press Emergency",
+                text = tr("Have Chest Pain or Severe Symptoms? Press Emergency"),
                 onClick = onEmergencyClick,
                 type = ButtonType.DANGER
             )

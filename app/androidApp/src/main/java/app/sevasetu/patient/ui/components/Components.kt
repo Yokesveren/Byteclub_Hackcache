@@ -1,6 +1,7 @@
 package app.sevasetu.patient.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import app.sevasetu.patient.ui.i18n.tr
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -128,7 +129,7 @@ fun SevaScaffold(
                                 .clickable(onClick = onBack),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = tr("Go back"), tint = Color.White)
                         }
                     } else {
                         SetuMark(size = 36.dp, modifier = Modifier.padding(start = 4.dp))
@@ -174,7 +175,7 @@ fun EmergencyBar(onClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = "Open emergency help") { onClick() },
+            .clickable(onClickLabel = tr("Open emergency help")) { onClick() },
         color = extraColors.emergencyBar,
     ) {
         Row(
@@ -188,7 +189,7 @@ fun EmergencyBar(onClick: () -> Unit) {
             Text(text = "◆", color = Color.White, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "EMERGENCY / आपातकालीन",
+                text = tr("EMERGENCY / आपातकालीन"),
                 color = Color.White,
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -267,13 +268,13 @@ fun PictureCard(
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = if (isSelected) Mint else Accent, modifier = Modifier.size(48.dp))
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = title, style = MaterialTheme.typography.titleMedium, color = content, textAlign = TextAlign.Center)
+        Text(text = tr(title), style = MaterialTheme.typography.titleMedium, color = content, textAlign = TextAlign.Center)
         if (isSelected) {
             Spacer(modifier = Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = Mint, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Selected", style = MaterialTheme.typography.labelMedium, color = Mint)
+                Text(text = tr("Selected"), style = MaterialTheme.typography.labelMedium, color = Mint)
             }
         }
     }
@@ -288,7 +289,7 @@ fun StepHeader(
     val extraColors = LocalExtraColors.current
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "STEP $currentStep OF $totalSteps",
+            text = tr("STEP {n} OF {total}", "n" to currentStep, "total" to totalSteps),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -355,9 +356,9 @@ fun StatusPill(
     ) {
         Text(text = chip.icon, color = chip.content, style = MaterialTheme.typography.labelMedium)
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text = label, color = chip.content, style = MaterialTheme.typography.labelLarge)
+        Text(text = tr(label), color = chip.content, style = MaterialTheme.typography.labelLarge)
         if (provisional) {
-            Text(text = " · unconfirmed", color = chip.content.copy(alpha = 0.8f), style = MaterialTheme.typography.labelMedium)
+            Text(text = tr(" · unconfirmed"), color = chip.content.copy(alpha = 0.8f), style = MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -432,14 +433,14 @@ fun ListenButton(onClick: () -> Unit) {
     ) {
         Icon(imageVector = Icons.Default.VolumeUp, contentDescription = null, tint = Ink, modifier = Modifier.size(20.dp))
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text = "LISTEN", style = MaterialTheme.typography.labelLarge, color = Ink)
+        Text(text = tr("LISTEN"), style = MaterialTheme.typography.labelLarge, color = Ink)
     }
 }
 
 @Composable
 fun LastUpdatedText(time: String) {
     Text(
-        text = "Last updated at ${displayTime(time)}",
+        text = tr("Last updated at {time}", "time" to displayTime(time)),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -459,7 +460,7 @@ fun OfflineBanner(lastUpdatedTime: String? = null) {
         Text(text = "▲", color = x.offlineContent, style = MaterialTheme.typography.labelMedium)
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = "No internet. Showing saved info${if (lastUpdatedTime != null) " (updated $lastUpdatedTime)" else ""}.",
+            text = if (lastUpdatedTime != null) tr("No internet. Showing saved info (updated {time}).", "time" to lastUpdatedTime) else tr("No internet. Showing saved info."),
             style = MaterialTheme.typography.bodyMedium,
             color = x.offlineContent
         )
@@ -509,7 +510,7 @@ fun ErrorState(message: String, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.error)
         Spacer(modifier = Modifier.height(24.dp))
-        BigButton(text = "Try again", onClick = onRetry, type = ButtonType.PRIMARY, icon = Icons.Default.Refresh)
+        BigButton(text = tr("Try again"), onClick = onRetry, type = ButtonType.PRIMARY, icon = Icons.Default.Refresh)
     }
 }
 
@@ -521,12 +522,12 @@ fun ComponentPreviews() {
         Column(modifier = Modifier.background(Color.White).padding(16.dp)) {
             EmergencyBar(onClick = {})
             Spacer(modifier = Modifier.height(10.dp))
-            BigButton(text = "Register now", onClick = {})
+            BigButton(text = tr("Register now"), onClick = {})
             Spacer(modifier = Modifier.height(10.dp))
             Row {
-                StatusPill(label = "Priority", type = "priority", provisional = true)
+                StatusPill(label = tr("Priority"), type = "priority", provisional = true)
                 Spacer(modifier = Modifier.width(8.dp))
-                StatusPill(label = "Routine", type = "routine")
+                StatusPill(label = tr("Routine"), type = "routine")
             }
             Spacer(modifier = Modifier.height(10.dp))
             OfflineBanner(lastUpdatedTime = "10:42")

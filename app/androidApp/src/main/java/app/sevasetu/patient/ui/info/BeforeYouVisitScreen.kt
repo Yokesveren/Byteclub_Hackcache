@@ -1,6 +1,8 @@
 package app.sevasetu.patient.ui.info
 
+import app.sevasetu.patient.ui.i18n.floorLabel
 import android.content.Intent
+import app.sevasetu.patient.ui.i18n.tr
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,7 +77,7 @@ fun BeforeYouVisitScreen(
     val checked = directory.fetchedAt.takeIf { it > 0 }?.let { SimpleDateFormat("HH:mm, d MMM", Locale.US).format(Date(it)) }
 
     SevaScaffold(
-        title = "Before you visit",
+        title = tr("Before you visit"),
         onBack = onBack,
         isOffline = !refreshing && !fresh && app.isLive,
         lastUpdatedTime = checked,
@@ -110,7 +112,7 @@ fun BeforeYouVisitScreen(
                 ScreenBand(title = h.name.removeSuffix(" (Demo)"), tone = "ward", lead = h.address.removeSuffix(" (fictional)"))
                 Spacer(modifier = Modifier.height(12.dp))
                 BigButton(
-                    text = "Directions to the gate",
+                    text = tr("Directions to the gate"),
                     icon = Icons.Default.Map,
                     type = ButtonType.SECONDARY,
                     onClick = {
@@ -121,13 +123,13 @@ fun BeforeYouVisitScreen(
 
                 if (h.services.isNotEmpty()) {
                     InfoCard {
-                        Text("SERVICES TODAY", style = MaterialTheme.typography.labelLarge)
+                        Text(tr("SERVICES TODAY"), style = MaterialTheme.typography.labelLarge)
                         Spacer(modifier = Modifier.height(8.dp))
                         h.services.entries.forEachIndexed { i, (key, state) ->
                             if (i > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = LocalExtraColors.current.edge)
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(SERVICE_NAMES[key] ?: key.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                                StatusPill(label = if (state == "up") "Working" else "Not working", type = if (state == "up") "green" else "yellow")
+                                Text(tr(SERVICE_NAMES[key] ?: key.replaceFirstChar { it.uppercase() }), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                                StatusPill(label = if (state == "up") tr("Working") else tr("Not working"), type = if (state == "up") "green" else "yellow")
                             }
                         }
                     }
@@ -135,11 +137,11 @@ fun BeforeYouVisitScreen(
                 }
 
                 InfoCard {
-                    Text("IS MY DOCTOR IN?", style = MaterialTheme.typography.labelLarge)
+                    Text(tr("IS MY DOCTOR IN?"), style = MaterialTheme.typography.labelLarge)
                     Spacer(modifier = Modifier.height(8.dp))
                     if (doctors.isEmpty()) {
                         Text(
-                            if (refreshing) "Checking…" else "The doctor list is not on this phone yet. Connect once to download it.",
+                            if (refreshing) "Checking…" else tr("The doctor list is not on this phone yet. Connect once to download it."),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -149,13 +151,13 @@ fun BeforeYouVisitScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(doc.name, style = MaterialTheme.typography.titleMedium)
                                 Text(
-                                    "${doc.room} · ${if (doc.floor == 0) "ground floor" else "floor ${doc.floor}"}" + (doc.statusNote?.let { " · $it" } ?: ""),
+                                    "${doc.room} · ${floorLabel(doc.floor)}" + (doc.statusNote?.let { " · $it" } ?: ""),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             StatusPill(
-                                label = when (doc.status) { "in" -> "In"; "delayed" -> "Delayed"; "break" -> "On break"; "off" -> "Off today"; else -> "Away" },
+                                label = when (doc.status) { "in" -> tr("In"); "delayed" -> tr("Delayed"); "break" -> tr("On break"); "off" -> tr("Off today"); else -> tr("Away") },
                                 type = if (doc.status == "in") "green" else "yellow"
                             )
                         }
@@ -163,7 +165,7 @@ fun BeforeYouVisitScreen(
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 checked?.let {
-                    Text("Checked at $it", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(tr("Checked at {time}", "time" to it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

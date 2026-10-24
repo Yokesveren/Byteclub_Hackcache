@@ -31,12 +31,12 @@ insert into public.doctors (id, hospital_id, department_id, name, room, floor, r
   ('H01-D07', 'H01', 'H01-MH', 'Dr. Meenakshi Raina', 'Room 11', 0, 'SS:H01:F0:W011', true, 8.5),
   ('H01-D08', 'H01', 'H01-OR', 'Dr. Irfan Dar', 'Room 14', 1, 'SS:H01:F1:W114', true, 7),
   ('H01-D09', 'H01', 'H01-OR', 'Dr. Sunil Koul', 'Room 15', 1, 'SS:H01:F1:W115', false, 6.5),
-  ('H02-D01', 'H02', 'H02-GM', 'Dr. Showkat Mir', 'Room 1', 0, null, true, 6),
-  ('H02-D02', 'H02', 'H02-GM', 'Dr. Ritu Bali', 'Room 2', 0, null, true, 6),
-  ('H02-D03', 'H02', 'H02-PD', 'Dr. Asif Khan', 'Room 3', 0, null, true, 7),
-  ('H02-D04', 'H02', 'H02-MH', 'Dr. Rukhsana Akhter', 'Room 4', 0, null, true, 8),
-  ('H03-D01', 'H03', 'H03-GM', 'Dr. Tanveer Ganie', 'OPD 1', 0, null, true, 6),
-  ('H03-D02', 'H03', 'H03-PD', 'Dr. Priya Kotwal', 'OPD 2', 0, null, true, 7);
+  ('H02-D01', 'H02', 'H02-GM', 'Dr. Showkat Mir', 'Room 1', 0, 'SS:H02:F0:W021', true, 6),
+  ('H02-D02', 'H02', 'H02-GM', 'Dr. Ritu Bali', 'Room 2', 0, 'SS:H02:F0:W022', true, 6),
+  ('H02-D03', 'H02', 'H02-PD', 'Dr. Asif Khan', 'Room 3', 0, 'SS:H02:F0:W023', true, 7),
+  ('H02-D04', 'H02', 'H02-MH', 'Dr. Rukhsana Akhter', 'Room 4', 0, 'SS:H02:F0:W024', true, 8),
+  ('H03-D01', 'H03', 'H03-GM', 'Dr. Tanveer Ganie', 'OPD 1', 0, 'SS:H03:F0:W021', true, 6),
+  ('H03-D02', 'H03', 'H03-PD', 'Dr. Priya Kotwal', 'OPD 2', 0, 'SS:H03:F0:W022', true, 7);
 
 -- Demo staff logins (password for all: sevasetu-demo). Local development only.
 do $$
