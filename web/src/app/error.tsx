@@ -10,9 +10,9 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
   }, [error]);
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[#0a0a0a] p-6 text-[#f2f2f2]">
+    <main className="grid min-h-screen place-items-center bg-[#0b2a3c] p-6 text-[#f2f2f2]">
       <div className="max-w-xl">
-        <p className="text-lg font-bold text-[#ffc013]">Something went wrong</p>
+        <p className="text-lg font-bold text-[#9fe5cf]">Something went wrong</p>
         <h1 className="mt-3 text-[clamp(3rem,2rem+4vw,5.5rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
           Let’s try
           <br />
@@ -23,10 +23,10 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         </p>
         {error.digest && <p className="mt-2 text-sm text-[#9a9a9a]">Reference {error.digest}</p>}
         <div className="mt-8 flex flex-wrap gap-3">
-          <button onClick={reset} className="h-12 rounded-xl bg-[#b0298f] px-6 font-black uppercase text-white hover:bg-[#951f78]">
+          <button onClick={reset} className="h-12 rounded-xl bg-[#0b7a75] px-6 font-black uppercase text-white hover:bg-[#08615d]">
             Retry
           </button>
-          <Link href="/" className="grid h-12 place-items-center rounded-xl bg-[#262626] px-6 font-bold text-white hover:bg-[#333]">
+          <Link href="/" className="grid h-12 place-items-center rounded-xl bg-[#1c4a60] px-6 font-bold text-white hover:bg-[#26576e]">
             Home
           </Link>
         </div>

@@ -2,18 +2,18 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="grid min-h-screen bg-[#0a0a0a] text-[#f2f2f2] lg:grid-cols-2">
+    <main className="grid min-h-screen bg-[#0b2a3c] text-[#f2f2f2] lg:grid-cols-2">
       <section className="flex flex-col justify-between p-6 sm:p-10">
         <Link href="/" className="flex items-center gap-3">
           <svg viewBox="0 0 30 30" width="32" height="32" aria-hidden>
-            <rect width="30" height="30" rx="6" fill="#b0298f" />
+            <rect width="30" height="30" rx="6" fill="#0b7a75" />
             <path d="M5 21 Q15 5 25 21" fill="none" stroke="#ffffff" strokeWidth="3.4" />
             <rect x="4" y="21" width="22" height="3.4" fill="#ffffff" />
           </svg>
           <span className="text-2xl font-black uppercase tracking-[-0.04em]">SevaSetu</span>
         </Link>
         <div className="my-16">
-          <p className="text-lg font-bold text-[#ffc013]">Wrong turn</p>
+          <p className="text-lg font-bold text-[#9fe5cf]">Wrong turn</p>
           <h1 className="mt-3 text-[clamp(3.5rem,2rem+6vw,7rem)] font-black uppercase leading-[0.86] tracking-[-0.05em]">
             No sticker
             <br />
@@ -28,11 +28,11 @@ export default function NotFound() {
           <a href="tel:108" className="font-bold text-white underline">108</a>
         </p>
       </section>
-      <section className="flex flex-col justify-center gap-3 bg-[#cbe4f2] p-6 text-[#0a0a0a] sm:p-10 lg:rounded-l-[32px]">
+      <section className="flex flex-col justify-center gap-3 bg-[#dcecf7] p-6 text-[#0b2a3c] sm:p-10 lg:rounded-l-[32px]">
         {[
-          { href: "/", label: "Home", note: "What SevaSetu is", bg: "#ffc013" },
+          { href: "/", label: "Home", note: "What SevaSetu is", bg: "#9fe5cf" },
           { href: "/login", label: "Staff sign-in", note: "The hospital dashboard", bg: "#ffffff" },
-          { href: "/board/H01", label: "Waiting-room board", note: "Chinar District Hospital, live", bg: "#f1e3b5" },
+          { href: "/board/H01", label: "Waiting-room board", note: "Chinar District Hospital, live", bg: "#edf3f8" },
         ].map((l) => (
           <Link
             key={l.href}

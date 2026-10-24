@@ -93,7 +93,7 @@ export function ReasonDialog({
             type="submit"
             disabled={busy}
             className={`rounded px-4 py-2 font-semibold text-white disabled:opacity-60 ${
-              danger ? "bg-red-700 hover:bg-red-800" : "bg-[var(--ink)] hover:bg-[#2a2a2a]"
+              danger ? "bg-red-700 hover:bg-red-800" : "bg-[var(--ink)] hover:bg-[#204f65]"
             }`}
           >
             {busy ? "Saving…" : confirmLabel}

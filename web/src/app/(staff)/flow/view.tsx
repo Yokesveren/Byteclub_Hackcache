@@ -34,7 +34,7 @@ type Level = "empty" | "green" | "amber" | "red";
 const LEVEL: Record<Level, { fill: string; ink: string; word: string }> = {
   empty: { fill: "#eef2f5", ink: "#56636b", word: "Quiet" },
   green: { fill: "#c9eed6", ink: "#0d3b1e", word: "Normal" },
-  amber: { fill: "#ffe08a", ink: "#4d3a00", word: "Busy" },
+  amber: { fill: "#ffe08a", ink: "#164e3f", word: "Busy" },
   red: { fill: "#ff9f97", ink: "#5c0b0f", word: "Overcrowded" },
 };
 
@@ -197,7 +197,7 @@ function FloorPlan({
 
   return (
     <section className="overflow-hidden rounded-[24px] bg-white ring-1 ring-[var(--edge)]">
-      <header className="flex items-baseline justify-between gap-4 bg-[#0a0a0a] px-6 py-3 text-white">
+      <header className="flex items-baseline justify-between gap-4 bg-[#0b2a3c] px-6 py-3 text-white">
         <h2 className="text-lg font-black uppercase tracking-[-0.02em]">{name}</h2>
         <span className="text-sm text-[#c9c9c9] tabular-nums">{total} connected {total === 1 ? "visitor" : "visitors"}</span>
       </header>
@@ -228,7 +228,7 @@ function FloorPlan({
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               )}
-              <rect x={n.x - 6} y={n.y - 6} width={12} height={12} rx={2} fill={n.tags.includes("emergency") ? "#c4242a" : "#0a0a0a"}>
+              <rect x={n.x - 6} y={n.y - 6} width={12} height={12} rx={2} fill={n.tags.includes("emergency") ? "#c4242a" : "#0b2a3c"}>
                 <title>{n.name.en}</title>
               </rect>
             </g>
@@ -248,7 +248,7 @@ function FloorPlan({
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   style={{ transformOrigin: `${n.x}px ${n.y - 22}px` }}
                 >
-                  <motion.circle cx={n.x} cy={n.y - 22} fill="#b0298f" animate={{ r }} transition={{ type: "spring", stiffness: 260, damping: 18 }} />
+                  <motion.circle cx={n.x} cy={n.y - 22} fill="#0b7a75" animate={{ r }} transition={{ type: "spring", stiffness: 260, damping: 18 }} />
                   <text x={n.x} y={n.y - 17} textAnchor="middle" fontSize={15} fontWeight={900} fill="#ffffff">
                     {c}
                   </text>
@@ -281,7 +281,7 @@ function AreaShape({ a, n }: { a: GraphArea; n: number }) {
       />
       {isRoomLike && (
         <>
-          <text x={a.x + 12} y={a.y + 26} fontSize={a.w < 90 ? 13 : 16} fontWeight={800} fill="#0a0a0a">
+          <text x={a.x + 12} y={a.y + 26} fontSize={a.w < 90 ? 13 : 16} fontWeight={800} fill="#0b2a3c">
             {a.label}
           </text>
           {a.h > 120 && (
@@ -297,21 +297,21 @@ function AreaShape({ a, n }: { a: GraphArea; n: number }) {
 
 function Legend({ connected }: { connected: number }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[20px] bg-[#f1e3b5] px-5 py-4 text-sm">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[20px] bg-[#edf3f8] px-5 py-4 text-sm">
       {(["green", "amber", "red"] as Level[]).map((l) => (
         <span key={l} className="flex items-center gap-2">
           <span className="h-4 w-6 rounded" style={{ background: LEVEL[l].fill }} />
           <strong>{LEVEL[l].word}</strong>
-          <span className="text-[#4d4326]">{l === "green" ? "under 60% of places" : l === "amber" ? "60–99%" : "full or over"}</span>
+          <span className="text-[#3e5566]">{l === "green" ? "under 60% of places" : l === "amber" ? "60–99%" : "full or over"}</span>
         </span>
       ))}
       <span className="flex items-center gap-2">
-        <span className="grid h-5 w-5 place-items-center rounded-full bg-[#b0298f] text-[10px] font-black text-white">3</span> people at a sticker
+        <span className="grid h-5 w-5 place-items-center rounded-full bg-[#0b7a75] text-[10px] font-black text-white">3</span> people at a sticker
       </span>
       <span className="flex items-center gap-2">
         <span className="h-4 w-4 rounded-full border-2 border-dashed border-[#c4242a]" /> wrong-turn hotspot
       </span>
-      <span className="basis-full text-[#4d4326]">
+      <span className="basis-full text-[#3e5566]">
         Based on {connected} connected {connected === 1 ? "visitor" : "visitors"} who agreed to anonymous movement tracking. A flow indicator, not a head-count.
       </span>
     </div>
@@ -362,9 +362,9 @@ function Simulator({ g, hospitalId, now }: { g: HospitalGraph; hospitalId: strin
   }, [on, g, hospitalId]);
 
   return (
-    <section className="rounded-[24px] bg-[#b0298f] p-6 text-white">
+    <section className="rounded-[24px] bg-[#0b7a75] p-6 text-white">
       <h2 className="text-xl font-black uppercase tracking-[-0.03em]">Simulate visitors</h2>
-      <p className="mt-1 text-sm text-[#f6d7ee]">
+      <p className="mt-1 text-sm text-[#c9ece6]">
         Demo only. Simulated patients walk real routes through the stickers and send real scan events. Runs while this page is open.
       </p>
       <div className="mt-4 flex items-center gap-3">
@@ -372,7 +372,7 @@ function Simulator({ g, hospitalId, now }: { g: HospitalGraph; hospitalId: strin
           whileTap={{ scale: 0.96 }}
           onClick={() => setOn((v) => !v)}
           aria-pressed={on}
-          className={`h-12 rounded-xl px-5 font-black uppercase ${on ? "bg-white text-[#0a0a0a]" : "bg-[#ffc013] text-[#0a0a0a]"}`}
+          className={`h-12 rounded-xl px-5 font-black uppercase ${on ? "bg-white text-[#0b2a3c]" : "bg-[#9fe5cf] text-[#0b2a3c]"}`}
         >
           {on ? "Stop" : "Start"}
         </motion.button>
@@ -389,7 +389,7 @@ function Simulator({ g, hospitalId, now }: { g: HospitalGraph; hospitalId: strin
           step={10}
           value={target}
           onChange={(e) => setTarget(Number(e.target.value))}
-          className="mt-2 w-full accent-[#ffc013]"
+          className="mt-2 w-full accent-[#9fe5cf]"
         />
       </label>
     </section>

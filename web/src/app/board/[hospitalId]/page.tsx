@@ -17,7 +17,7 @@ export function generateStaticParams() {
 
 export default function BoardPage({ params }: PageProps<"/board/[hospitalId]">) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0b2a3c]" />}>
       <Board params={params} />
     </Suspense>
   );

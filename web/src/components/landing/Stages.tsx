@@ -298,7 +298,7 @@ function FloorPlan() {
       <rect x="16" y="92" width="328" height="34" fill="#e3e9ee" />
       <rect x="16" y="16" width="96" height="68" fill="#dde3e8" />
       <rect x="122" y="16" width="96" height="68" fill="#dde3e8" />
-      <rect x="228" y="16" width="116" height="68" fill="#0a0a0a" />
+      <rect x="228" y="16" width="116" height="68" fill="#0b2a3c" />
       <text x="64" y="55" fill="#44606e" fontSize="14" textAnchor="middle">Room 1</text>
       <text x="170" y="55" fill="#44606e" fontSize="14" textAnchor="middle">Pharmacy</text>
       <text x="286" y="56" fill="#ffffff" fontSize="18" fontWeight="700" textAnchor="middle">Room 3</text>
@@ -307,14 +307,14 @@ function FloorPlan() {
       <rect x="122" y="134" width="96" height="60" fill="#eceff1" />
       <text x="170" y="186" fill="#8a96a0" fontSize="14" textAnchor="middle">Stairs</text>
       <path d="M152 146 L188 170 M152 170 L188 146" stroke="#c4242a" strokeWidth="3" />
-      <path d="M64 150 L64 109 L286 109 L286 84" fill="none" stroke="#b0298f" strokeWidth="6" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx="64" cy="150" r="9" fill="#b0298f" />
+      <path d="M64 150 L64 109 L286 109 L286 84" fill="none" stroke="#0b7a75" strokeWidth="6" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx="64" cy="150" r="9" fill="#0b7a75" />
       <circle cx="64" cy="150" r="4" fill="#ffffff" />
-      <rect x="166" y="102" width="14" height="14" fill="#ffc013" />
+      <rect x="166" y="102" width="14" height="14" fill="#9fe5cf" />
       <text x="234" y="152" fill="#44606e" fontSize="13">You are here</text>
       <text x="234" y="170" fill="#44606e" fontSize="13">Sticker on the route</text>
-      <rect x="220" y="160" width="10" height="10" fill="#ffc013" />
-      <circle cx="225" cy="148" r="5" fill="#b0298f" />
+      <rect x="220" y="160" width="10" height="10" fill="#9fe5cf" />
+      <circle cx="225" cy="148" r="5" fill="#0b7a75" />
     </svg>
   );
 }

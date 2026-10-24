@@ -84,7 +84,7 @@ function FacilityView({ staff, hospitalId, now }: ShellContext) {
       <UrgentBanner flags={data.urgent_flags} now={now} onSeen={refresh} />
 
       <PageBand
-        tone="sky"
+        tone="ward"
         title="Facility"
         lead={
           <>
@@ -128,7 +128,7 @@ function FacilityView({ staff, hospitalId, now }: ShellContext) {
       </PageBand>
 
       {data.fairness.length > 0 && (
-        <div className="mx-4 mt-5 rounded-2xl bg-[#ffc013] px-5 py-3.5 text-sm text-[#0a0a0a] sm:mx-8">
+        <div className="mx-4 mt-5 rounded-2xl border border-[#fde68a] bg-[#fffbeb] px-5 py-3.5 text-sm text-[#7a3f0a] sm:mx-8">
           <p>
             <strong>
               Fairness check: {data.fairness.length} Routine {data.fairness.length === 1 ? "patient has" : "patients have"} waited past the
@@ -249,13 +249,13 @@ function DeptTab({
       aria-selected={active}
       onClick={onClick}
       className={`relative flex h-11 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-bold transition-colors ${
-        active ? "text-white" : "bg-white/55 text-[#0a0a0a] hover:bg-white/85"
+        active ? "text-white" : "bg-white/55 text-[#0b2a3c] hover:bg-white/85"
       }`}
     >
       {active && (
         <motion.span
           layoutId="dept-pill"
-          className="absolute inset-0 rounded-full bg-[#0a0a0a]"
+          className="absolute inset-0 rounded-full bg-[#0b2a3c]"
           transition={{ type: "spring", stiffness: 420, damping: 34 }}
         />
       )}
@@ -265,7 +265,7 @@ function DeptTab({
         {level && level !== "green" && (
           <span
             className={`rounded-full px-2 py-0.5 text-xs ${
-              level === "red" ? "bg-[#c4242a] text-white" : "bg-[#ffc013] text-[#0a0a0a]"
+              level === "red" ? "bg-[#c4242a] text-white" : "bg-[#9fe5cf] text-[#0b2a3c]"
             }`}
           >
             {level === "red" ? "Overcrowded" : "Busy"}
@@ -301,7 +301,7 @@ function DoctorColumn({
       transition={{ type: "spring", stiffness: 220, damping: 26 }}
       className="flex w-[340px] shrink-0 flex-col overflow-hidden rounded-[20px] bg-white ring-1 ring-[var(--edge)]"
     >
-      <header className="bg-[#0a0a0a] p-4 text-white">
+      <header className="bg-[#0b2a3c] p-4 text-white">
         <div className="flex items-start justify-between gap-2">
           <div>
             <h2 className="text-lg font-black uppercase leading-tight tracking-[-0.02em]">{d.room}</h2>
@@ -318,13 +318,13 @@ function DoctorColumn({
             {status.label} ▾
           </button>
         </div>
-        {d.status_note && <p className="mt-1 text-[13px] text-[#ffc013]">“{d.status_note}”</p>}
+        {d.status_note && <p className="mt-1 text-[13px] text-[#9fe5cf]">“{d.status_note}”</p>}
         <p className="mt-2 text-[13px] tabular-nums text-[#b4b4b4]">
           {d.queue.length} waiting ({yellow} Priority) · seen {d.seen_today} · median {d.consult_min} min
         </p>
       </header>
 
-      <div className="border-b border-[var(--rule)] bg-[#cbe4f2] p-4">
+      <div className="border-b border-[var(--rule)] bg-[#dcecf7] p-4">
         {d.serving ? (
           <div>
             <p className="text-[13px] text-[#2d4a58]">With the doctor since {hhmm(d.serving.called_at)}</p>
@@ -360,7 +360,7 @@ function DoctorColumn({
         <button
           onClick={() => onQuick({ action: "call_next", doctor_id: d.id })}
           disabled={d.queue.length === 0 && !d.serving}
-          className="mt-3 min-h-12 w-full rounded-xl bg-[#b0298f] text-base font-black uppercase tracking-[-0.01em] text-white transition-transform hover:bg-[#951f78] active:scale-[0.98] disabled:opacity-40"
+          className="mt-3 min-h-12 w-full rounded-xl bg-[#0b7a75] text-base font-black uppercase tracking-[-0.01em] text-white transition-transform hover:bg-[#08615d] active:scale-[0.98] disabled:opacity-40"
         >
           Call next{d.queue[0] ? ` → ${d.queue[0].token}` : ""}
         </button>
@@ -484,7 +484,7 @@ function SmallBtn({
         danger
           ? "border-[#c4242a] bg-white text-[#a3161c] hover:bg-[#ffedea]"
           : primary
-            ? "border-[var(--ink)] bg-[var(--ink)] text-white hover:bg-[#2a2a2a]"
+            ? "border-[var(--ink)] bg-[var(--ink)] text-white hover:bg-[#204f65]"
             : "border-[var(--control)] bg-white hover:bg-[var(--raised)]"
       }`}
     >

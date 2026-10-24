@@ -12,27 +12,27 @@ import "./landing.css";
 const CHAPTERS = [
   {
     id: "road",
-    title: "Three hours on a snow road",
-    text: "Before Rafiq leaves his village, the hospital card tells him the doctor is in, the X-ray is down, and opens Google Maps to the gate.",
+    title: "Three hours to the gate",
+    text: "Before Rafiq leaves his village, the hospital card tells him the doctor is in and the X-ray is down, and opens Google Maps to the gate. He arrives knowing where to go.",
     link: { label: "See today’s board", href: "/board/H01" },
-    photo: { src: "/photos/verinag-chinar.jpg", w: 1600, h: 2844, alt: "Chinar trees over a snow-covered road near Verinag, Kashmir, in falling snow" },
-    field: "#262626",
+    photo: { src: "/photos/smhs-arrivals.jpg", w: 1280, h: 960, alt: "Patients and families arriving at SMHS Hospital, Srinagar, on a winter morning" },
+    field: "#0b2a3c",
   },
   {
     id: "offline",
     title: "No signal, still a token",
     text: "The slip, floor plans, routes and Emergency screen live on the phone. A token made offline says “waiting to be confirmed” until it syncs.",
     link: { label: "Try the slip", href: "#flow" },
-    photo: { src: "/photos/kishtwar-snow.jpg", w: 1600, h: 1067, alt: "Chowgan ground in Kishtwar under fresh snow, mountains behind" },
-    field: "#22364b",
+    photo: { src: "/photos/smh-inside-3.jpg", w: 1280, h: 1707, alt: "A long government hospital corridor with a direction sign and a guide line on the floor" },
+    field: "#164055",
   },
   {
     id: "home",
     title: "Back home, still cared for",
     text: "The doctor sets a follow-up. Two days before it, a reminder arrives by SMS in her own language: where, when and what to bring.",
     link: { label: "Open the dashboard", href: "/login" },
-    photo: { src: "/photos/trunkol-meadow.jpg", w: 1600, h: 1067, alt: "Horses grazing on Trunkol meadow on the way to Gangabal, Jammu and Kashmir" },
-    field: "#253520",
+    photo: { src: "/photos/bp-check.jpg", w: 1280, h: 851, alt: "A doctor checks a man's blood pressure at a free health check-up camp" },
+    field: "#0d4a46",
   },
 ];
 
@@ -163,14 +163,13 @@ export default function Landing() {
         <div className="ss-footer-legal">
           <p>
             Every hospital, doctor and patient on this site is made up for the demo. Pictures:{" "}
-            <a href="https://commons.wikimedia.org/wiki/File:Surroundings_of_Banihal_Qazigund_Road_Tunnel_covered_by_snow.jpg">Banihal Qazigund road</a> by TheAafi,{" "}
-            <a href="https://commons.wikimedia.org/wiki/File:A_view_of_snowclad_view_of_Verinag_road_with_a_Chinar_in_view_(Kashmir).jpg">Verinag road</a> by ThePoeticFrame,{" "}
-            <a href="https://commons.wikimedia.org/wiki/File:Chowgan_ground_in_Kishtwar,_Jammu,_India_(crop).jpg">Chowgan ground, Kishtwar</a> by Pradeep Parihar, derivative by UnpetitproleX, all{" "}
-            <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>;{" "}
-            <a href="https://commons.wikimedia.org/wiki/File:Horses_grazing_at_Trunkol_meadow,_Jammu_and_Kashmir,_India_(crop).jpg">Trunkol meadow</a> by UnpetitproleX,{" "}
-            <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>; clip{" "}
-            <a href="https://commons.wikimedia.org/wiki/File:Dal_Lake_Srinagar.webm">Dal Lake Srinagar</a> by Akankshasharma584,{" "}
-            <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>; via Wikimedia Commons.
+            <a href="https://commons.wikimedia.org/w/index.php?curid=189219724">SMHS Srinagar</a> by Salim Bin Yousuf,{" "}
+            <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>;{" "}
+            <a href="https://commons.wikimedia.org/w/index.php?curid=158526580">SMHS Hospital parking area</a> by Owais Khursheed, CC0;{" "}
+            <a href="https://commons.wikimedia.org/wiki/File:SMH_Inside-3.jpg">Hospital corridor</a> by Nkb 21, CC0;{" "}
+            <a href="https://commons.wikimedia.org/wiki/File:Blood_Pressure_Check_-_Howrah_-_2015-04-12_7660.JPG">Blood pressure check</a> by Biswarup Ganguly,{" "}
+            <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>;{" "}
+            <a href="https://commons.wikimedia.org/wiki/File:Kashmir_Mission_Hospital.jpg">The Kashmir Mission Hospital</a> (1914) by Ernest Neve, public domain; via Wikimedia Commons.
           </p>
           <a href="#top" className="ss-link">Back to top</a>
         </div>

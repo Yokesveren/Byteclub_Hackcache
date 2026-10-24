@@ -2,14 +2,14 @@
 
 import { motion } from "motion/react";
 
-export type BandTone = "sky" | "sand" | "mustard" | "magenta" | "night";
+export type BandTone = "ward" | "linen" | "mint" | "teal" | "night";
 
 const TONES: Record<BandTone, { bg: string; ink: string; soft: string }> = {
-  sky: { bg: "#cbe4f2", ink: "#0a0a0a", soft: "#2d4a58" },
-  sand: { bg: "#f1e3b5", ink: "#0a0a0a", soft: "#4d4326" },
-  mustard: { bg: "#ffc013", ink: "#0a0a0a", soft: "#4d3a00" },
-  magenta: { bg: "#b0298f", ink: "#ffffff", soft: "#f6d7ee" },
-  night: { bg: "#0a0a0a", ink: "#f2f2f2", soft: "#b4b4b4" },
+  ward: { bg: "#dcecf7", ink: "#0b2a3c", soft: "#2d4a58" },
+  linen: { bg: "#edf3f8", ink: "#0b2a3c", soft: "#3e5566" },
+  mint: { bg: "#9fe5cf", ink: "#0b2a3c", soft: "#164e3f" },
+  teal: { bg: "#0b7a75", ink: "#ffffff", soft: "#c9ece6" },
+  night: { bg: "#0b2a3c", ink: "#f2f2f2", soft: "#b4b4b4" },
 };
 
 /**

@@ -74,7 +74,7 @@ export function UrgentBanner({ flags, now, onSeen }: { flags: UrgentFlag[]; now:
   const soundPrompt = !soundOn && (
     <button
       onClick={enableSound}
-      className="rounded-full bg-[#ffc013] px-4 py-1.5 text-sm font-bold text-[#0a0a0a] hover:bg-[#ffd04d]"
+      className="rounded-full bg-[#9fe5cf] px-4 py-1.5 text-sm font-bold text-[#0b2a3c] hover:bg-[#b8ecdc]"
     >
       Turn on alarm sound
     </button>
@@ -82,7 +82,7 @@ export function UrgentBanner({ flags, now, onSeen }: { flags: UrgentFlag[]; now:
 
   if (!open) {
     return soundPrompt ? (
-      <div className="flex flex-wrap items-center gap-3 bg-[#0a0a0a] px-4 py-2.5 text-sm text-[#d6d6d6] sm:px-8">
+      <div className="flex flex-wrap items-center gap-3 bg-[#0b2a3c] px-4 py-2.5 text-sm text-[#d6d6d6] sm:px-8">
         Urgent-help alarm sound is off on this screen. {soundPrompt}
       </div>
     ) : null;

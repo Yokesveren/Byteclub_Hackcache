@@ -56,7 +56,7 @@ function Icon({ d }: { d: string }) {
 export function Mark({ size = 24 }: { size?: number }) {
   return (
     <svg viewBox="0 0 30 30" width={size} height={size} aria-hidden>
-      <rect width="30" height="30" rx="6" fill="#b0298f" />
+      <rect width="30" height="30" rx="6" fill="#0b7a75" />
       <path d="M5 21 Q15 5 25 21" fill="none" stroke="#ffffff" strokeWidth="3.4" />
       <rect x="4" y="21" width="22" height="3.4" fill="#ffffff" />
     </svg>
@@ -85,7 +85,7 @@ function ShellWaiting({ redirecting, message }: { redirecting: boolean; message?
           <motion.div className="mt-6 max-w-sm" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <p className="text-[#c9c9c9]">This is taking longer than it should. Close any other SevaSetu tabs, then try again.</p>
             <div className="mt-5 flex justify-center gap-3">
-              <button onClick={() => window.location.reload()} className="h-11 rounded-xl bg-[#ffc013] px-5 font-bold text-[#0a0a0a]">
+              <button onClick={() => window.location.reload()} className="h-11 rounded-xl bg-[#9fe5cf] px-5 font-bold text-[#0b2a3c]">
                 Reload
               </button>
               <button
@@ -93,7 +93,7 @@ function ShellWaiting({ redirecting, message }: { redirecting: boolean; message?
                   await supabase.auth.signOut().catch(() => undefined);
                   router.replace("/login");
                 }}
-                className="h-11 rounded-xl bg-[#262626] px-5 font-bold text-white"
+                className="h-11 rounded-xl bg-[#1c4a60] px-5 font-bold text-white"
               >
                 Sign in again
               </button>
@@ -171,7 +171,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
           <select
             value={hospitalId}
             onChange={(e) => setHospitalId(e.target.value)}
-            className="mt-1.5 h-10 w-full rounded-lg border-0 bg-[#1c1c1c] px-2.5 text-sm font-bold text-white outline-none ring-1 ring-[#2e2e2e] focus:ring-2 focus:ring-[#ffc013]"
+            className="mt-1.5 h-10 w-full rounded-lg border-0 bg-[#153e53] px-2.5 text-sm font-bold text-white outline-none ring-1 ring-[#22536a] focus:ring-2 focus:ring-[#9fe5cf]"
             aria-label="Hospital"
           >
             {HOSPITALS.map((h) => (
@@ -192,13 +192,13 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
               onClick={() => setMenu(false)}
               aria-current={active ? "page" : undefined}
               className={`relative flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-bold transition-colors ${
-                active ? "text-[#0a0a0a]" : "text-[#c9c9c9] hover:bg-[#1a1a1a] hover:text-white"
+                active ? "text-[#0b2a3c]" : "text-[#c9c9c9] hover:bg-[#143c51] hover:text-white"
               }`}
             >
               {active && (
                 <motion.span
                   layoutId="nav-pill"
-                  className="absolute inset-0 rounded-xl bg-[#ffc013]"
+                  className="absolute inset-0 rounded-xl bg-[#9fe5cf]"
                   transition={{ type: "spring", stiffness: 420, damping: 34 }}
                 />
               )}
@@ -213,7 +213,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
           href={`/board/${hospitalId}`}
           target="_blank"
           rel="noreferrer"
-          className="flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-bold text-[#c9c9c9] transition-colors hover:bg-[#1a1a1a] hover:text-white"
+          className="flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-bold text-[#c9c9c9] transition-colors hover:bg-[#143c51] hover:text-white"
         >
           <Icon d={ICONS.board} />
           Public board
@@ -224,10 +224,10 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
         <p className="text-xs text-[#9a9a9a]">Hospital time</p>
         <p className="mt-1 flex flex-wrap items-baseline gap-2 text-[28px] font-black leading-none tracking-[-0.03em] text-white tabular-nums" title="Demo clock">
           {now ? hhmmss(now) : "--:--:--"}
-          {speed !== 1 && <span className="rounded-md bg-[#ffc013] px-1.5 py-0.5 text-xs font-bold tracking-normal text-[#0a0a0a]">{speed}× speed</span>}
+          {speed !== 1 && <span className="rounded-md bg-[#9fe5cf] px-1.5 py-0.5 text-xs font-bold tracking-normal text-[#0b2a3c]">{speed}× speed</span>}
         </p>
-        <div className="mt-5 flex items-center gap-3 rounded-xl bg-[#161616] p-2.5">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#b0298f] text-sm font-black text-white" aria-hidden>
+        <div className="mt-5 flex items-center gap-3 rounded-xl bg-[#11364a] p-2.5">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#0b7a75] text-sm font-black text-white" aria-hidden>
             {staff.name.replace(/^(Dr\.|Nurse)\s+/, "").charAt(0)}
           </span>
           <span className="min-w-0 flex-1">
@@ -237,7 +237,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={signOut}
-            className="grid h-9 w-9 place-items-center rounded-lg text-[#c9c9c9] hover:bg-[#262626] hover:text-white"
+            className="grid h-9 w-9 place-items-center rounded-lg text-[#c9c9c9] hover:bg-[#1c4a60] hover:text-white"
             aria-label="Sign out"
             title="Sign out"
           >
@@ -266,7 +266,7 @@ export function StaffShell({ children }: { children: React.ReactNode }) {
             onClick={() => setMenu((m) => !m)}
             aria-expanded={menu}
             aria-label="Menu"
-            className="grid h-10 w-10 place-items-center rounded-lg hover:bg-[#1a1a1a]"
+            className="grid h-10 w-10 place-items-center rounded-lg hover:bg-[#143c51]"
           >
             <Icon d={menu ? "M6 6l12 12M18 6L6 18" : "M4 7h16M4 12h16M4 17h16"} />
           </button>

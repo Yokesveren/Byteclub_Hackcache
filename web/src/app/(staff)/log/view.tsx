@@ -48,7 +48,7 @@ function TransparencyLog({ hospitalId }: ShellContext) {
   return (
     <div>
       <PageBand
-        tone="mustard"
+        tone="mint"
         title="Transparency log"
         lead="Every queue decision: who made it, why, and the words the patient saw. Append-only; nobody can edit it."
       >

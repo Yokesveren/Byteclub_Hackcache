@@ -134,7 +134,7 @@ function Counter({ staff, hospitalId }: ShellContext) {
   return (
     <div>
     <PageBand
-      tone="sand"
+      tone="linen"
       title="Counter"
       lead="Register a patient who has no phone. The printed slip carries a QR code that works at every scanner and every waypoint."
     />
@@ -238,30 +238,30 @@ function Counter({ staff, hospitalId }: ShellContext) {
         </div>
 
         {error && <p className="font-semibold text-red-700">{error}</p>}
-        <button disabled={busy} className="min-h-14 w-full rounded-xl bg-[#b0298f] text-lg font-black uppercase tracking-[-0.01em] text-white transition-colors hover:bg-[#951f78] disabled:opacity-60">
+        <button disabled={busy} className="min-h-14 w-full rounded-xl bg-[#0b7a75] text-lg font-black uppercase tracking-[-0.01em] text-white transition-colors hover:bg-[#08615d] disabled:opacity-60">
           {busy ? "Registering…" : "Register and make slip"}
         </button>
       </form>
 
       <aside className="space-y-4">
-        <form onSubmit={findSlip} className="flex gap-2 rounded-[20px] bg-[#cbe4f2] p-3">
+        <form onSubmit={findSlip} className="flex gap-2 rounded-[20px] bg-[#dcecf7] p-3">
           <input
             value={lookup}
             onChange={(e) => setLookup(e.target.value)}
             placeholder="Find token, e.g. M-017"
             className="h-11 flex-1 rounded-xl bg-white px-3"
           />
-          <button className="h-11 rounded-xl bg-[#0a0a0a] px-4 font-bold text-white">Find</button>
+          <button className="h-11 rounded-xl bg-[#0b2a3c] px-4 font-bold text-white">Find</button>
         </form>
         {slip ? (
           <>
             <Slip slip={slip} />
-            <button onClick={() => window.print()} className="min-h-14 w-full rounded-xl bg-[#0a0a0a] text-lg font-black uppercase tracking-[-0.01em] text-white hover:bg-[#262626]">
+            <button onClick={() => window.print()} className="min-h-14 w-full rounded-xl bg-[#0b2a3c] text-lg font-black uppercase tracking-[-0.01em] text-white hover:bg-[#1c4a60]">
               Print slip
             </button>
           </>
         ) : (
-          <div className="grid min-h-64 place-items-center rounded-[24px] bg-[#f1e3b5] p-6 text-center">
+          <div className="grid min-h-64 place-items-center rounded-[24px] bg-[#edf3f8] p-6 text-center">
             <p className="text-2xl font-black uppercase leading-none tracking-[-0.03em]">
               The slip
               <br />
@@ -291,7 +291,7 @@ function Choice({ active, onClick, children }: { active: boolean; onClick: () =>
       onClick={onClick}
       aria-pressed={active}
       className={`min-h-12 rounded-xl px-4 text-sm font-bold transition-colors active:scale-[0.97] ${
-        active ? "bg-[#0a0a0a] text-white" : "bg-[#f1f4f6] text-[#0a0a0a] hover:bg-[#f1e3b5]"
+        active ? "bg-[#0b2a3c] text-white" : "bg-[#f1f4f6] text-[#0b2a3c] hover:bg-[#edf3f8]"
       }`}
     >
       {children}

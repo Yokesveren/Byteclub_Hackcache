@@ -70,7 +70,7 @@ interface Desk {
 }
 
 const STATUS_WORD: Record<Band, string> = { red: "Emergency now", yellow: "Priority", green: "Routine" };
-const STATUS_FILL: Record<Band, string> = { red: "#c4242a", yellow: "#ffc013", green: "#2f8a55" };
+const STATUS_FILL: Record<Band, string> = { red: "#c4242a", yellow: "#f2b01e", green: "#2f8a55" };
 const FOLLOW_UPS = [
   { days: null, label: "None" },
   { days: 3, label: "3 days" },
@@ -125,7 +125,7 @@ export default function DoctorView() {
   return (
     <div>
       <PageBand
-        tone="sand"
+        tone="linen"
         title={staff.role === "doctor" ? "My patients" : "Doctor’s desk"}
         lead={
           <>
@@ -134,7 +134,7 @@ export default function DoctorView() {
         }
         aside={
           staff.role !== "doctor" && (
-            <label className="flex items-center gap-2 font-bold text-[#0a0a0a]">
+            <label className="flex items-center gap-2 font-bold text-[#0b2a3c]">
               Viewing
               <select
                 value={picked ?? d.id}
@@ -166,9 +166,9 @@ export default function DoctorView() {
                   key={s}
                   onClick={() => s !== d.status && act("staff_action", { p: { action: "set_doctor_status", doctor_id: d.id, status: s } }, `You are now: ${DOCTOR_STATUS[s].label}`)}
                   aria-pressed={d.status === s}
-                  className={`relative h-10 rounded-xl px-4 text-sm font-bold transition-colors ${d.status === s ? "text-white" : "text-[#0a0a0a] hover:bg-white"}`}
+                  className={`relative h-10 rounded-xl px-4 text-sm font-bold transition-colors ${d.status === s ? "text-white" : "text-[#0b2a3c] hover:bg-white"}`}
                 >
-                  {d.status === s && <motion.span layoutId="doc-status" className="absolute inset-0 rounded-xl bg-[#0a0a0a]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+                  {d.status === s && <motion.span layoutId="doc-status" className="absolute inset-0 rounded-xl bg-[#0b2a3c]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                   <span className="relative">{DOCTOR_STATUS[s].label}</span>
                 </button>
               ))}
@@ -182,7 +182,7 @@ export default function DoctorView() {
           {data.serving ? (
             <WithYou key={data.serving.visit_id} s={data.serving} now={now} onAct={act} doctorId={d.id} />
           ) : (
-            <section className="grid min-h-[360px] place-items-center rounded-[28px] bg-[#cbe4f2] p-8 text-center">
+            <section className="grid min-h-[360px] place-items-center rounded-[28px] bg-[#dcecf7] p-8 text-center">
               <div>
                 <p className="text-3xl font-black uppercase tracking-[-0.04em]">No patient with you</p>
                 <p className="mt-2 text-lg">{next ? `${next.token} ${next.first_name} is next.` : "Nobody is waiting."}</p>
@@ -190,7 +190,7 @@ export default function DoctorView() {
                   whileTap={{ scale: 0.97 }}
                   disabled={!next || d.status !== "in"}
                   onClick={() => act("staff_action", { p: { action: "call_next", doctor_id: d.id } })}
-                  className="mt-6 h-14 rounded-xl bg-[#b0298f] px-8 text-lg font-black uppercase text-white hover:bg-[#951f78] disabled:opacity-40"
+                  className="mt-6 h-14 rounded-xl bg-[#0b7a75] px-8 text-lg font-black uppercase text-white hover:bg-[#08615d] disabled:opacity-40"
                 >
                   Call next{next ? ` → ${next.token}` : ""}
                 </motion.button>
@@ -202,7 +202,7 @@ export default function DoctorView() {
 
         <aside className="space-y-6">
           <section className="overflow-hidden rounded-[24px] bg-white ring-1 ring-[var(--edge)]">
-            <h2 className="bg-[#0a0a0a] px-5 py-3 text-lg font-black uppercase tracking-[-0.02em] text-white">Your queue · {data.queue.length}</h2>
+            <h2 className="bg-[#0b2a3c] px-5 py-3 text-lg font-black uppercase tracking-[-0.02em] text-white">Your queue · {data.queue.length}</h2>
             <ol className="max-h-[520px] divide-y divide-[var(--rule)] overflow-y-auto">
               <AnimatePresence initial={false}>
                 {data.queue.map((q) => (
@@ -220,7 +220,7 @@ export default function DoctorView() {
                         {q.age_years != null && ` ${q.age_years}y`}
                       </span>
                       {q.history.length > 0 && (
-                        <span className="flex items-center gap-1 font-bold text-[#0a0a0a]" title={`Past statuses: ${q.history.map((h) => STATUS_WORD[h]).join(", ")}`}>
+                        <span className="flex items-center gap-1 font-bold text-[#0b2a3c]" title={`Past statuses: ${q.history.map((h) => STATUS_WORD[h]).join(", ")}`}>
                           Returning
                           {q.history.map((h, i) => (
                             <span key={i} className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_FILL[h] }} />
@@ -264,7 +264,7 @@ export default function DoctorView() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-xl bg-[#0a0a0a] px-5 py-3 font-bold text-white shadow-lg"
+            className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-xl bg-[#0b2a3c] px-5 py-3 font-bold text-white shadow-lg"
           >
             {toast}
           </motion.div>
@@ -317,7 +317,7 @@ function WithYou({
       transition={{ type: "spring", stiffness: 220, damping: 26 }}
       className="overflow-hidden rounded-[28px] bg-white ring-1 ring-[var(--edge)]"
     >
-      <header className="flex flex-wrap items-end justify-between gap-4 bg-[#0a0a0a] p-6 text-white">
+      <header className="flex flex-wrap items-end justify-between gap-4 bg-[#0b2a3c] p-6 text-white">
         <div>
           <p className="text-sm text-[#b4b4b4]">With you since {hhmm(s.called_at)} · {now ? minutesSince(s.called_at, now) : "–"} min</p>
           <p className="mt-1 text-[clamp(2.5rem,2rem+2vw,3.5rem)] font-black leading-none tracking-[-0.04em]">
@@ -334,7 +334,7 @@ function WithYou({
 
       <div className="grid gap-6 p-6 lg:grid-cols-2">
         <div className="space-y-6">
-          <div className="rounded-2xl bg-[#cbe4f2] p-5">
+          <div className="rounded-2xl bg-[#dcecf7] p-5">
             <h3 className="text-sm font-black uppercase tracking-[-0.01em]">Symptom note</h3>
             <p className="mt-2 text-lg leading-snug">{s.doctor_note ?? "No note from the symptom check."}</p>
             <p className="mt-2 text-xs text-[#2d4a58]">From the app’s guided symptom check. Not a diagnosis.</p>
@@ -375,7 +375,7 @@ function WithYou({
         </div>
 
         <form
-          className="space-y-5 rounded-2xl bg-[#f1e3b5] p-5"
+          className="space-y-5 rounded-2xl bg-[#edf3f8] p-5"
           onSubmit={(e) => {
             e.preventDefault();
             void save(true);
@@ -392,9 +392,9 @@ function WithYou({
                   aria-pressed={status === b}
                   onClick={() => setStatus(b)}
                   className={`flex min-h-16 flex-col items-start justify-center rounded-xl px-3 text-left text-sm font-bold transition ${
-                    status === b ? "ring-4 ring-[#0a0a0a]" : "opacity-80 hover:opacity-100"
+                    status === b ? "ring-4 ring-[#0b2a3c]" : "opacity-80 hover:opacity-100"
                   }`}
-                  style={{ background: b === "red" ? "#c4242a" : b === "yellow" ? "#ffc013" : "#c9eed6", color: b === "red" ? "#fff" : "#0a0a0a" }}
+                  style={{ background: b === "red" ? "#c4242a" : b === "yellow" ? "#f2b01e" : "#c9eed6", color: b === "red" ? "#fff" : "#0b2a3c" }}
                 >
                   {b === "red" ? "◆" : b === "yellow" ? "▲" : "●"} {STATUS_WORD[b]}
                 </button>
@@ -410,7 +410,7 @@ function WithYou({
                   type="button"
                   aria-pressed={follow === f.days}
                   onClick={() => setFollow(f.days)}
-                  className={`h-10 rounded-xl px-3 text-sm font-bold ${follow === f.days ? "bg-[#0a0a0a] text-white" : "bg-white hover:bg-white/70"}`}
+                  className={`h-10 rounded-xl px-3 text-sm font-bold ${follow === f.days ? "bg-[#0b2a3c] text-white" : "bg-white hover:bg-white/70"}`}
                 >
                   {f.label}
                 </button>
@@ -438,11 +438,11 @@ function WithYou({
             <motion.button
               whileTap={{ scale: 0.97 }}
               disabled={busy}
-              className="h-12 flex-1 rounded-xl bg-[#b0298f] px-5 font-black uppercase text-white hover:bg-[#951f78] disabled:opacity-60"
+              className="h-12 flex-1 rounded-xl bg-[#0b7a75] px-5 font-black uppercase text-white hover:bg-[#08615d] disabled:opacity-60"
             >
               Save &amp; call next
             </motion.button>
-            <button type="button" disabled={busy} onClick={() => void save(false)} className="h-12 rounded-xl bg-[#0a0a0a] px-5 font-bold text-white disabled:opacity-60">
+            <button type="button" disabled={busy} onClick={() => void save(false)} className="h-12 rounded-xl bg-[#0b2a3c] px-5 font-bold text-white disabled:opacity-60">
               Save
             </button>
           </div>

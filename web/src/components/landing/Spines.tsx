@@ -20,9 +20,9 @@ const RULES = [
 
 // The open card takes the brand's colours in turn.
 const CARD = [
-  { bg: "#0a0a0a", ink: "#f2f2f2", soft: "#b4b4b4", mark: "#ffc013" },
-  { bg: "#b0298f", ink: "#ffffff", soft: "#f6d7ee", mark: "#ffc013" },
-  { bg: "#14324a", ink: "#f2f2f2", soft: "#b9d3e3", mark: "#cbe4f2" },
+  { bg: "#0b2a3c", ink: "#f2f2f2", soft: "#b4b4b4", mark: "#9fe5cf" },
+  { bg: "#0b7a75", ink: "#ffffff", soft: "#c9ece6", mark: "#9fe5cf" },
+  { bg: "#14324a", ink: "#f2f2f2", soft: "#b9d3e3", mark: "#dcecf7" },
 ];
 const GAP = 8;
 const UPCOMING = 40;

@@ -74,7 +74,7 @@ export default function DistrictView() {
   return (
     <div>
       <PageBand
-        tone="mustard"
+        tone="mint"
         title="District overview"
         lead={
           <>
@@ -124,7 +124,7 @@ export default function DistrictView() {
                   transition={{ delay: i * 0.08, type: "spring", stiffness: 200, damping: 24 }}
                   className="overflow-hidden rounded-[24px] bg-white ring-1 ring-[var(--edge)]"
                 >
-                  <header className="flex items-start justify-between gap-3 bg-[#0a0a0a] p-5 text-white">
+                  <header className="flex items-start justify-between gap-3 bg-[#0b2a3c] p-5 text-white">
                     <div>
                       <h3 className="text-xl font-black uppercase leading-tight tracking-[-0.03em]">{h.short_name}</h3>
                       <p className="text-sm text-[#b4b4b4]">{h.name.replace(" (Demo)", "")}</p>
@@ -173,7 +173,7 @@ export default function DistrictView() {
 
         {/* Load balancing (13.7) */}
         {data.balancing.length > 0 && (
-          <section className="rounded-[24px] bg-[#cbe4f2] p-6">
+          <section className="rounded-[24px] bg-[#dcecf7] p-6">
             <h2 className="text-2xl font-black uppercase tracking-[-0.03em]">Share the load</h2>
             <ul className="mt-4 space-y-3">
               {data.balancing.map((b, i) => (
@@ -182,7 +182,7 @@ export default function DistrictView() {
                   <span className="text-sm">
                     {b.department}: {b.from_waiting} waiting
                   </span>
-                  <span className="text-2xl font-black text-[#b0298f]" aria-hidden>
+                  <span className="text-2xl font-black text-[#0b7a75]" aria-hidden>
                     →
                   </span>
                   <span className="text-lg font-black">{b.to}</span>
@@ -245,7 +245,7 @@ export default function DistrictView() {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           {/* Outbreak early warning (13.6) */}
-          <section className="rounded-[24px] bg-[#0a0a0a] p-6 text-white">
+          <section className="rounded-[24px] bg-[#0b2a3c] p-6 text-white">
             <h2 className="text-2xl font-black uppercase tracking-[-0.03em]">Outbreak early warning</h2>
             <p className="mt-1 text-sm text-[#b4b4b4]">
               Symptom clusters by area today, against the area’s last four weeks. Anonymous counts only; areas with fewer than five cases are not shown (
@@ -260,7 +260,7 @@ export default function DistrictView() {
                     key={`${s.area}-${s.cluster}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#1c1c1c] p-4"
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#153e53] p-4"
                   >
                     <div>
                       <p className="text-xl font-black">
@@ -270,7 +270,7 @@ export default function DistrictView() {
                         {s.today} cases today · usually {s.usual} a day (±{s.sd})
                       </p>
                     </div>
-                    <span className="rounded-full bg-[#ffc013] px-3 py-1.5 text-sm font-black text-[#0a0a0a]">▲ Review advised</span>
+                    <span className="rounded-full bg-[#9fe5cf] px-3 py-1.5 text-sm font-black text-[#0b2a3c]">▲ Review advised</span>
                   </motion.li>
                 ))}
               </ul>
@@ -281,7 +281,7 @@ export default function DistrictView() {
           </section>
 
           {/* Follow-ups (11.2) */}
-          <section className="rounded-[24px] bg-[#f1e3b5] p-6">
+          <section className="rounded-[24px] bg-[#edf3f8] p-6">
             <h2 className="text-2xl font-black uppercase tracking-[-0.03em]">Follow-ups</h2>
             <dl className="mt-4 grid grid-cols-3 gap-3">
               <Mini label="Missed" value={data.followups.defaulted} tone="bad" />
@@ -289,7 +289,7 @@ export default function DistrictView() {
               <Mini label="Came back" value={data.followups.done} />
             </dl>
             <p className="mt-4 text-sm">Patients who miss a follow-up are called or sent an SMS by the hospital team. Every contact is logged.</p>
-            <Link href="/followups" className="mt-4 inline-flex h-11 items-center rounded-xl bg-[#0a0a0a] px-5 font-bold text-white hover:bg-[#262626]">
+            <Link href="/followups" className="mt-4 inline-flex h-11 items-center rounded-xl bg-[#0b2a3c] px-5 font-bold text-white hover:bg-[#1c4a60]">
               Open follow-ups →
             </Link>
           </section>
@@ -359,11 +359,11 @@ function ForecastPanel({ f }: { f: District["forecast"][number] }) {
                   d={`M${cx - barW / 2},${base} V${barTop + 4} q0,-4 4,-4 h${barW - 8} q4,0 4,4 V${base} Z`}
                   fill={isOver ? OVER : BAR}
                 />
-                <line x1={cx} x2={cx} y1={y(h.hi)} y2={y(h.lo)} stroke="#0a0a0a" strokeWidth={2} />
-                <line x1={cx - 5} x2={cx + 5} y1={y(h.hi)} y2={y(h.hi)} stroke="#0a0a0a" strokeWidth={2} />
-                <line x1={cx - 5} x2={cx + 5} y1={y(h.lo)} y2={y(h.lo)} stroke="#0a0a0a" strokeWidth={2} />
+                <line x1={cx} x2={cx} y1={y(h.hi)} y2={y(h.lo)} stroke="#0b2a3c" strokeWidth={2} />
+                <line x1={cx - 5} x2={cx + 5} y1={y(h.hi)} y2={y(h.hi)} stroke="#0b2a3c" strokeWidth={2} />
+                <line x1={cx - 5} x2={cx + 5} y1={y(h.lo)} y2={y(h.lo)} stroke="#0b2a3c" strokeWidth={2} />
                 {isOver && (
-                  <text x={cx} y={y(h.hi) - 6} textAnchor="middle" fontSize={12} fontWeight={900} fill="#0a0a0a">
+                  <text x={cx} y={y(h.hi) - 6} textAnchor="middle" fontSize={12} fontWeight={900} fill="#0b2a3c">
                     ▲
                   </text>
                 )}
@@ -373,13 +373,13 @@ function ForecastPanel({ f }: { f: District["forecast"][number] }) {
               </g>
             );
           })}
-          <line x1={pad.l} x2={W - pad.r} y1={y(f.capacity_per_hour)} y2={y(f.capacity_per_hour)} stroke="#0a0a0a" strokeWidth={2} strokeDasharray="6 4" />
-          <text x={W - pad.r} y={y(f.capacity_per_hour) - 6} textAnchor="end" fontSize={11} fontWeight={700} fill="#0a0a0a">
+          <line x1={pad.l} x2={W - pad.r} y1={y(f.capacity_per_hour)} y2={y(f.capacity_per_hour)} stroke="#0b2a3c" strokeWidth={2} strokeDasharray="6 4" />
+          <text x={W - pad.r} y={y(f.capacity_per_hour) - 6} textAnchor="end" fontSize={11} fontWeight={700} fill="#0b2a3c">
             capacity {f.capacity_per_hour}/h
           </text>
         </svg>
         {hover && (
-          <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 rounded-lg bg-[#0a0a0a] px-3 py-2 text-xs text-white shadow-lg">
+          <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 rounded-lg bg-[#0b2a3c] px-3 py-2 text-xs text-white shadow-lg">
             <strong>{hover.hour}:00–{hover.hour + 1}:00</strong> · expected {hover.mid} (likely {hover.lo}–{hover.hi}) · capacity {f.capacity_per_hour}
           </div>
         )}

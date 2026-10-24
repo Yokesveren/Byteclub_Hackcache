@@ -99,19 +99,14 @@ export function IntroFx() {
         transition={{ type: "spring", stiffness: 70, damping: 16 }}
         whileHover={{ rotate: 0, scale: 1.02 }}
       >
-        <video
-          src="/photos/dal-lake.webm"
-          poster="/photos/dal-lake-poster.jpg"
-          width={608}
-          height={1080}
-          muted
-          loop
-          autoPlay
-          playsInline
-          preload="metadata"
-          aria-label="Shikaras crossing Dal Lake, Srinagar, at dusk"
+        <Image
+          src="/photos/smhs-srinagar.jpg"
+          width={1280}
+          height={960}
+          sizes="(max-width: 720px) 80vw, 33vw"
+          alt="The Accident and Emergency gate of SMHS Hospital, Srinagar, with patients walking in"
         />
-        <figcaption>Dal Lake, Srinagar, at dusk.</figcaption>
+        <figcaption>SMHS Hospital, Srinagar: the Accident and Emergency gate.</figcaption>
       </motion.figure>
       <motion.figure
         className="ss-intro-chip"
@@ -122,13 +117,13 @@ export function IntroFx() {
         whileHover={{ rotate: 0, scale: 1.04 }}
       >
         <Image
-          src="/photos/banihal-road.jpg"
-          width={1600}
-          height={1197}
+          src="/photos/mission-hospital-1914.jpg"
+          width={1280}
+          height={1055}
           sizes="(max-width: 720px) 40vw, 16vw"
-          alt="Snow along the Banihal–Qazigund road by the tunnel, with the Pir Panjal range behind"
+          alt="The Kashmir Mission Hospital in Srinagar, photographed in 1914"
         />
-        <figcaption>The Banihal–Qazigund road, the way into the valley.</figcaption>
+        <figcaption>The Kashmir Mission Hospital, Srinagar, 1914. The queue has a long history.</figcaption>
       </motion.figure>
     </section>
   );

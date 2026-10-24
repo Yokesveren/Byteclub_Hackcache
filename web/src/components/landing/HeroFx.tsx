@@ -97,7 +97,7 @@ export function HeroFx() {
       >
         <Link href="/" className="ss-wordmark" aria-label="SevaSetu home">
           <svg className="ss-mark" viewBox="0 0 30 30" aria-hidden>
-            <rect width="30" height="30" fill="#b0298f" />
+            <rect width="30" height="30" fill="#0b7a75" />
             <path d="M5 21 Q15 5 25 21" fill="none" stroke="#ffffff" strokeWidth="3.4" />
             <rect x="4" y="21" width="22" height="3.4" fill="#ffffff" />
           </svg>

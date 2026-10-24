@@ -12,11 +12,11 @@ import type { StaffRole } from "@/lib/types";
 // Local demo accounts from supabase/seed.sql. Never ship these to a real deployment.
 // Each role gets one of the landing page's chapter colours.
 const DEMO_ACCOUNTS: { email: string; label: string; does: string; bg: string; ink: string }[] = [
-  { email: "triage@sevasetu.demo", label: "Triage nurse", does: "Queues, urgent flags, bands", bg: "#ffc013", ink: "#0a0a0a" },
-  { email: "counter@sevasetu.demo", label: "Counter", does: "Register, print the slip", bg: "#ffffff", ink: "#0a0a0a" },
-  { email: "doctor@sevasetu.demo", label: "Doctor", does: "Own queue, Room 3", bg: "#f1e3b5", ink: "#0a0a0a" },
-  { email: "admin@sevasetu.demo", label: "District officer", does: "All three hospitals", bg: "#0a0a0a", ink: "#f2f2f2" },
-  { email: "demo@sevasetu.demo", label: "Demo operator", does: "Clock, autopilot, reset", bg: "#b0298f", ink: "#ffffff" },
+  { email: "triage@sevasetu.demo", label: "Triage nurse", does: "Queues, urgent flags, bands", bg: "#9fe5cf", ink: "#0b2a3c" },
+  { email: "counter@sevasetu.demo", label: "Counter", does: "Register, print the slip", bg: "#ffffff", ink: "#0b2a3c" },
+  { email: "doctor@sevasetu.demo", label: "Doctor", does: "Own queue, Room 3", bg: "#edf3f8", ink: "#0b2a3c" },
+  { email: "admin@sevasetu.demo", label: "District officer", does: "All three hospitals", bg: "#0b2a3c", ink: "#f2f2f2" },
+  { email: "demo@sevasetu.demo", label: "Demo operator", does: "Clock, autopilot, reset", bg: "#0b7a75", ink: "#ffffff" },
 ];
 
 // The hospital as a graph of QR waypoints, drawing itself behind the headline.
@@ -73,7 +73,7 @@ export default function LoginPage() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="grid min-h-screen bg-[#0a0a0a] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="grid min-h-screen bg-[#0b2a3c] lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         {/* Left: the night chapter */}
         <section className="relative flex min-h-[46vh] flex-col justify-between overflow-hidden p-6 text-[#f2f2f2] sm:p-10">
           <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-90" viewBox="0 0 620 680" preserveAspectRatio="xMidYMid slice" aria-hidden>
@@ -84,7 +84,7 @@ export default function LoginPage() {
                 y1={NODES[a][1]}
                 x2={NODES[b][0]}
                 y2={NODES[b][1]}
-                stroke="#2a2a2a"
+                stroke="#204f65"
                 strokeWidth="2"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
@@ -94,7 +94,7 @@ export default function LoginPage() {
             <motion.path
               d={ROUTE}
               fill="none"
-              stroke="#e86ccb"
+              stroke="#5fd3c6"
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 y={y - 7}
                 width="14"
                 height="14"
-                fill="#ffc013"
+                fill="#9fe5cf"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 14, delay: 0.1 + i * 0.05 }}
@@ -156,7 +156,7 @@ export default function LoginPage() {
         </section>
 
         {/* Right: the sky chapter with the form */}
-        <section className="flex items-center bg-[#cbe4f2] p-4 sm:p-10 lg:rounded-l-[32px]">
+        <section className="flex items-center bg-[#dcecf7] p-4 sm:p-10 lg:rounded-l-[32px]">
           <motion.div
             className="mx-auto w-full max-w-[560px]"
             initial={{ opacity: 0, y: 40 }}
@@ -173,7 +173,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="username"
                   required
-                  className="mt-1.5 h-12 w-full rounded-xl bg-[#f1f4f6] px-4 text-base font-normal outline-none ring-[#0a0a0a] transition focus:bg-white focus:ring-2"
+                  className="mt-1.5 h-12 w-full rounded-xl bg-[#f1f4f6] px-4 text-base font-normal outline-none ring-[#0b2a3c] transition focus:bg-white focus:ring-2"
                 />
               </label>
               <label className="mt-4 block text-sm font-bold">
@@ -184,7 +184,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   required
-                  className="mt-1.5 h-12 w-full rounded-xl bg-[#f1f4f6] px-4 text-base font-normal outline-none ring-[#0a0a0a] transition focus:bg-white focus:ring-2"
+                  className="mt-1.5 h-12 w-full rounded-xl bg-[#f1f4f6] px-4 text-base font-normal outline-none ring-[#0b2a3c] transition focus:bg-white focus:ring-2"
                 />
               </label>
               <AnimatePresence>
@@ -202,7 +202,7 @@ export default function LoginPage() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 disabled={busy !== null}
-                className="mt-6 h-14 w-full rounded-xl bg-[#b0298f] text-lg font-black uppercase tracking-[-0.01em] text-white transition-colors hover:bg-[#951f78] disabled:opacity-60"
+                className="mt-6 h-14 w-full rounded-xl bg-[#0b7a75] text-lg font-black uppercase tracking-[-0.01em] text-white transition-colors hover:bg-[#08615d] disabled:opacity-60"
               >
                 {busy === "form" ? "Signing in…" : "Sign in"}
               </motion.button>

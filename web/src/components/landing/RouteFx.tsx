@@ -75,7 +75,7 @@ export function RouteFx() {
               <li key={s.title} aria-current={i === step ? "step" : undefined}>
                 <motion.span
                   className="ss-route-tick"
-                  animate={{ scaleY: i <= step ? 1 : 0.15, backgroundColor: i === step ? "#ffc013" : i < step ? "#f2f2f2" : "#3a3a3a" }}
+                  animate={{ scaleY: i <= step ? 1 : 0.15, backgroundColor: i === step ? "#9fe5cf" : i < step ? "#f2f2f2" : "#2b5e75" }}
                   transition={{ type: "spring", stiffness: 200, damping: 22 }}
                 />
                 <span>
@@ -103,7 +103,7 @@ export function RouteFx() {
           <svg viewBox="0 0 800 560" role="img" aria-label="Floor plan: the route from the gate past registration to the lift and Room 3, with a wrong turn towards the stairs re-routed">
             <defs>
               <pattern id="ss-dots" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1.2" fill="#2a2a2a" />
+                <circle cx="2" cy="2" r="1.2" fill="#204f65" />
               </pattern>
             </defs>
             <rect width="800" height="560" fill="url(#ss-dots)" />

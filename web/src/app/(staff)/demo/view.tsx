@@ -48,7 +48,7 @@ function DemoControls({ hospitalId, now, speed }: ShellContext) {
   return (
     <div>
     <PageBand
-      tone="magenta"
+      tone="teal"
       title="Demo controls"
       lead={
         <>
@@ -160,8 +160,8 @@ function Btn({
         danger
           ? "bg-[#c4242a] text-white hover:bg-[#a3161c]"
           : active
-            ? "bg-[#ffc013] text-[#0a0a0a]"
-            : "bg-[#f1f4f6] text-[#0a0a0a] hover:bg-[#cbe4f2]"
+            ? "bg-[#9fe5cf] text-[#0b2a3c]"
+            : "bg-[#f1f4f6] text-[#0b2a3c] hover:bg-[#dcecf7]"
       }`}
     >
       {children}

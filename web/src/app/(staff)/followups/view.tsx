@@ -68,7 +68,7 @@ export default function FollowupsView() {
   return (
     <div>
       <PageBand
-        tone="sky"
+        tone="ward"
         title="Follow-ups"
         lead={
           count("defaulted") > 0
@@ -90,7 +90,7 @@ export default function FollowupsView() {
               onClick={() => setFilter(f.id)}
               className={`relative h-11 rounded-full px-4 text-sm font-bold ${filter === f.id ? "text-white" : "bg-white/55 hover:bg-white/85"}`}
             >
-              {filter === f.id && <motion.span layoutId="fu-pill" className="absolute inset-0 rounded-full bg-[#0a0a0a]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+              {filter === f.id && <motion.span layoutId="fu-pill" className="absolute inset-0 rounded-full bg-[#0b2a3c]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
               <span className="relative">
                 {f.label} <span className="opacity-75 tabular-nums">{count(f.id)}</span>
               </span>
@@ -133,7 +133,7 @@ export default function FollowupsView() {
               <div className="space-y-3 p-5">
                 <p className="flex flex-wrap items-center gap-2 text-sm">
                   Last seen {day(r.last_visit)} by {r.doctor ?? "a doctor"}, {r.department} · <BandChip band={r.status} />
-                  {r.consult_ok && <span className="rounded-full bg-[#cbe4f2] px-2 py-0.5 text-xs font-bold">Text consult suitable</span>}
+                  {r.consult_ok && <span className="rounded-full bg-[#dcecf7] px-2 py-0.5 text-xs font-bold">Text consult suitable</span>}
                 </p>
                 {r.state !== "done" && (
                   <div className="flex flex-wrap gap-2">
@@ -144,7 +144,7 @@ export default function FollowupsView() {
                         disabled={busy !== null || (a.id !== "called" && a.id === "sms" && !r.phone)}
                         onClick={() => act(r.journey_id, a.id)}
                         className={`h-10 rounded-xl px-3 text-sm font-bold disabled:opacity-40 ${
-                          a.id === "called" ? "bg-[#b0298f] text-white hover:bg-[#951f78]" : "bg-[#f1f4f6] hover:bg-[#cbe4f2]"
+                          a.id === "called" ? "bg-[#0b7a75] text-white hover:bg-[#08615d]" : "bg-[#f1f4f6] hover:bg-[#dcecf7]"
                         }`}
                       >
                         {busy === `${r.journey_id}:${a.id}` ? "Saving…" : a.label}

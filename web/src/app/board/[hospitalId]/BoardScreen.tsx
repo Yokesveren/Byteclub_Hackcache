@@ -62,8 +62,8 @@ export function BoardScreen({ hospitalId }: { hospitalId: string }) {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="min-h-screen bg-[#0a0a0a] pb-20 text-white">
-      <header className="flex items-center justify-between gap-4 border-b border-[#222222] px-6 py-4">
+    <div className="min-h-screen bg-[#0b2a3c] pb-20 text-white">
+      <header className="flex items-center justify-between gap-4 border-b border-[#19455a] px-6 py-4">
         <div>
           <h1 className="text-4xl font-black uppercase tracking-[-0.04em]">{data?.hospital.name ?? "Waiting room"}</h1>
           <p className="text-lg text-[#b4b4b4]">OPD · Now serving</p>
@@ -76,7 +76,7 @@ export function BoardScreen({ hospitalId }: { hospitalId: string }) {
                 void audio.current.resume();
                 setChime(true);
               }}
-              className="rounded border border-[#3a3a3a] px-3 py-1 text-sm text-[#b4b4b4]"
+              className="rounded border border-[#2b5e75] px-3 py-1 text-sm text-[#b4b4b4]"
             >
               Turn on call chime
             </button>
@@ -96,7 +96,7 @@ export function BoardScreen({ hospitalId }: { hospitalId: string }) {
         {data?.doctors.map((d) => (
           <section
             key={d.doctor_id}
-            className={`rounded-[24px] border-4 bg-[#141414] p-6 ${isCalling(d.doctor_id) ? "border-[#ffc013]" : "border-[#222222]"}`}
+            className={`rounded-[24px] border-4 bg-[#103447] p-6 ${isCalling(d.doctor_id) ? "border-[#9fe5cf]" : "border-[#19455a]"}`}
           >
             <div className="flex items-baseline justify-between gap-2">
               <h2 className="text-5xl font-black uppercase tracking-[-0.04em]">{d.room}</h2>
@@ -106,16 +106,16 @@ export function BoardScreen({ hospitalId }: { hospitalId: string }) {
               {d.department} · {d.doctor_name}
             </p>
             {d.status !== "in" && (
-              <p className="mt-2 inline-block rounded bg-[#2a2a2a] px-2 py-1 text-lg">
+              <p className="mt-2 inline-block rounded bg-[#204f65] px-2 py-1 text-lg">
                 {d.status === "break" ? "Doctor on a short break" : d.status === "away" ? "Doctor away" : "Doctor running late"}
               </p>
             )}
-            <div className={`mt-4 rounded-2xl px-5 py-4 ${isCalling(d.doctor_id) ? "board-call" : "bg-[#1f1f1f]"}`}>
+            <div className={`mt-4 rounded-2xl px-5 py-4 ${isCalling(d.doctor_id) ? "board-call" : "bg-[#164055]"}`}>
               <p className="text-sm uppercase tracking-widest opacity-80">Now</p>
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.p
                   key={d.serving ? `${d.serving.token}-${d.serving.call_count}` : "none"}
-                  className={`text-7xl font-black tracking-[-0.04em] tabular-nums ${isCalling(d.doctor_id) ? "" : "text-[#ffc013]"}`}
+                  className={`text-7xl font-black tracking-[-0.04em] tabular-nums ${isCalling(d.doctor_id) ? "" : "text-[#9fe5cf]"}`}
                   initial={{ rotateX: -90, opacity: 0, y: 30 }}
                   animate={{ rotateX: 0, opacity: 1, y: 0 }}
                   exit={{ rotateX: 90, opacity: 0, y: -30 }}

@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* App tokens (framed sheet, brand kept: sky frame, ink, magenta only on the mark and the tab underline). */
-  --frame: #0a0a0a;
+  /* Hospital palette: navy ink and frame, scrub teal for actions, clinical mint highlights, ward-blue and linen fields.
+     Status colours (emergency red, priority amber, routine green) are separate and never reused as brand. */
+  --frame: #0b2a3c;
   --sheet: #ffffff;
   --raised: #f5f8fa;
   --edge: #e1e7ec;
   --rule: #eef2f5;
   --control: #c9d2d9;
-  --ink: #0a0a0a;
+  --ink: #0b2a3c;
   --muted: #56636b;
-  --accent: #b0298f;
-  --sky: #cbe4f2;
-  --sand: #f1e3b5;
-  --mustard: #ffc013;
+  --accent: #0b7a75;
+  --sky: #dcecf7;
+  --sand: #edf3f8;
+  --mustard: #9fe5cf;
   --background: var(--frame);
   --foreground: var(--ink);
 }
@@ -58,8 +59,8 @@ body {
 
 /* Waiting-room board: visual call for patients who cannot hear the call. */
 @keyframes board-call {
-  0%, 100% { background-color: #ffc013; color: #0a0a0a; }
-  50% { background-color: #0a0a0a; color: #ffc013; }
+  0%, 100% { background-color: #9fe5cf; color: #0b2a3c; }
+  50% { background-color: #0b2a3c; color: #9fe5cf; }
 }
 .board-call {
   animation: board-call 0.8s step-end infinite;
