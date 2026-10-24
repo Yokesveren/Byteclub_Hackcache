@@ -2,6 +2,9 @@ package app.sevasetu.patient.ui.info
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,36 +12,47 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.sevasetu.patient.SevaApplication
-import app.sevasetu.patient.data.model.DoctorDto
-import app.sevasetu.patient.data.model.HospitalDto
+import app.sevasetu.patient.ui.components.BigButton
+import app.sevasetu.patient.ui.components.ButtonType
 import app.sevasetu.patient.ui.components.InfoCard
-import app.sevasetu.patient.ui.components.LastUpdatedText
+import app.sevasetu.patient.ui.components.ScreenBand
 import app.sevasetu.patient.ui.components.SevaScaffold
 import app.sevasetu.patient.ui.components.StatusPill
+import app.sevasetu.patient.ui.theme.Ink
+import app.sevasetu.patient.ui.theme.LocalExtraColors
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+private val SERVICE_NAMES = mapOf("lab" to "Laboratory", "xray" to "X-ray", "pharmacy" to "Pharmacy", "ultrasound" to "Ultrasound", "ecg" to "ECG")
+
+/**
+ * Before you visit (PRD 8.1, 10): is my doctor in, is the X-ray working, and the way to the gate. From the hospital's
+ * public tables, refreshed when online and kept for offline use with the time it was last checked.
+ */
 @Composable
 fun BeforeYouVisitScreen(
     onBack: () -> Unit,
@@ -46,106 +60,111 @@ fun BeforeYouVisitScreen(
 ) {
     val context = LocalContext.current
     val app = SevaApplication.instance
-
-    var hospital by remember { mutableStateOf<HospitalDto?>(null) }
-    var doctors by remember { mutableStateOf<List<DoctorDto>>(emptyList()) }
+    val directory by app.directory.data.collectAsState()
+    var hospitalId by rememberSaveable { mutableStateOf(app.visits.active.value?.hospital?.id ?: app.prefs.current.hospitalId) }
+    var refreshing by rememberSaveable { mutableStateOf(true) }
+    var fresh by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        try {
-            hospital = app.backendGateway.listHospitals().firstOrNull()
-            doctors = app.backendGateway.listDoctors()
-        } catch (_: Exception) {}
+        fresh = app.directory.refresh()
+        refreshing = false
     }
 
+    val hospital = directory.hospitals.firstOrNull { it.id == hospitalId }
+    val doctors = directory.doctors.filter { it.id.startsWith("$hospitalId-") }
+    val checked = directory.fetchedAt.takeIf { it > 0 }?.let { SimpleDateFormat("HH:mm, d MMM", Locale.US).format(Date(it)) }
+
     SevaScaffold(
-        title = "Before You Visit",
+        title = "Before you visit",
         onBack = onBack,
+        isOffline = !refreshing && !fresh && app.isLive,
+        lastUpdatedTime = checked,
         onEmergencyClick = onEmergencyClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
-            Text(text = "Hospital Information & Service Status", style = MaterialTheme.typography.headlineLarge)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            hospital?.let { hosp ->
-                InfoCard {
-                    Text(text = hosp.name, style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = hosp.address, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedButton(
-                        onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${hosp.lat},${hosp.lng}"))
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(imageVector = Icons.Default.Map, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Open in Google Maps", fontWeight = FontWeight.Bold)
-                    }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                directory.hospitals.forEach { h ->
+                    val on = h.id == hospitalId
+                    Text(
+                        text = h.name.substringBefore(" ").uppercase(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (on) Color.White else Ink,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (on) LocalExtraColors.current.frame else LocalExtraColors.current.field)
+                            .clickable(onClickLabel = h.name) { hospitalId = h.id }
+                            .padding(vertical = 14.dp)
+                    )
                 }
+            }
+            Spacer(modifier = Modifier.height(14.dp))
 
+            hospital?.let { h ->
+                ScreenBand(title = h.name.removeSuffix(" (Demo)"), tone = "ward", lead = h.address.removeSuffix(" (fictional)"))
+                Spacer(modifier = Modifier.height(12.dp))
+                BigButton(
+                    text = "Directions to the gate",
+                    icon = Icons.Default.Map,
+                    type = ButtonType.SECONDARY,
+                    onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}")))
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Facilities Status
-                InfoCard {
-                    Text(text = "Facility Service Status", style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Laboratory (Sample collection)", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                        StatusPill(label = "UP / चालू", type = "green")
+                if (h.services.isNotEmpty()) {
+                    InfoCard {
+                        Text("SERVICES TODAY", style = MaterialTheme.typography.labelLarge)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        h.services.entries.forEachIndexed { i, (key, state) ->
+                            if (i > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = LocalExtraColors.current.edge)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(SERVICE_NAMES[key] ?: key.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                                StatusPill(label = if (state == "up") "Working" else "Not working", type = if (state == "up") "green" else "yellow")
+                            }
+                        }
                     }
-
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "X-Ray Machine", modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                        StatusPill(label = "DOWN / बंद", type = "red")
-                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Doctor Availability
                 InfoCard {
-                    Text(text = "Is My Doctor In?", style = MaterialTheme.typography.titleLarge)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    doctors.forEach { doc ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                    Text("IS MY DOCTOR IN?", style = MaterialTheme.typography.labelLarge)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    if (doctors.isEmpty()) {
+                        Text(
+                            if (refreshing) "Checking…" else "The doctor list is not on this phone yet. Connect once to download it.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    doctors.forEachIndexed { i, doc ->
+                        if (i > 0) HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = LocalExtraColors.current.edge)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(text = doc.name, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
-                                Text(text = "${doc.room} • Floor ${doc.floor}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(doc.name, style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    "${doc.room} · ${if (doc.floor == 0) "ground floor" else "floor ${doc.floor}"}" + (doc.statusNote?.let { " · $it" } ?: ""),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
                             StatusPill(
-                                label = if (doc.status == "in") "IN / उपस्थित" else "AWAY / अनुपस्थित",
+                                label = when (doc.status) { "in" -> "In"; "delayed" -> "Delayed"; "break" -> "On break"; "off" -> "Off today"; else -> "Away" },
                                 type = if (doc.status == "in") "green" else "yellow"
                             )
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(12.dp))
-                LastUpdatedText(time = "10:30")
+                checked?.let {
+                    Text("Checked at $it", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         }
     }

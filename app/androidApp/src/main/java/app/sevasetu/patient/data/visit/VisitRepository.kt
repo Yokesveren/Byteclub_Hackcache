@@ -46,6 +46,12 @@ class VisitRepository(private val dao: SevaDao) {
         _active.value = turn
     }
 
+    /** Ends the visit on this phone (seen by the doctor, or the patient starts again). */
+    suspend fun clear() = withContext(Dispatchers.IO) {
+        dao.clearStoredVisits()
+        _active.value = null
+    }
+
     /** True while the shown token is still the phone's own and the hospital has not confirmed it. */
     suspend fun isConfirmed(visitId: String): Boolean = withContext(Dispatchers.IO) {
         dao.getStoredVisit(visitId)?.isConfirmed ?: true

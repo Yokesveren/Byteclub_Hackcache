@@ -6,7 +6,11 @@ import app.sevasetu.patient.data.db.SevaDatabase
 import app.sevasetu.patient.data.gateway.BackendGateway
 import app.sevasetu.patient.data.gateway.FakeBackend
 import app.sevasetu.patient.data.gateway.RemoteBackend
+import app.sevasetu.patient.data.navigation.NavSession
+import app.sevasetu.patient.data.prefs.Prefs
+import app.sevasetu.patient.data.prefs.Speaker
 import app.sevasetu.patient.data.outbox.OutboxManager
+import app.sevasetu.patient.data.visit.Directory
 import app.sevasetu.patient.data.visit.VisitRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +35,18 @@ class SevaApplication : Application() {
     lateinit var visits: VisitRepository
         private set
 
+    lateinit var prefs: Prefs
+        private set
+
+    lateinit var speaker: Speaker
+        private set
+
+    lateinit var nav: NavSession
+        private set
+
+    lateinit var directory: Directory
+        private set
+
     /** True when the app talks to the shared hospital backend (the same one the staff website uses). */
     val isLive: Boolean get() = backendGateway is RemoteBackend
 
@@ -39,6 +55,8 @@ class SevaApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        prefs = Prefs(applicationContext)
+        speaker = Speaker(applicationContext, prefs)
 
         database = Room.databaseBuilder(
             applicationContext,
@@ -54,10 +72,13 @@ class SevaApplication : Application() {
             fakeBackend
         }
         visits = VisitRepository(database.dao())
+        directory = Directory(applicationContext, backendGateway)
         outboxManager = OutboxManager(database.dao(), backendGateway, applicationContext, visits)
+        nav = NavSession(applicationContext, prefs, outboxManager, appScope)
 
         appScope.launch {
             visits.load()
+            directory.refresh()
             // Anything queued while offline goes out as soon as the app starts again (urgent flags first).
             runCatching { outboxManager.flushOutbox() }
         }

@@ -79,8 +79,10 @@ class GraphRouterTest {
         val t2 = translateReasonCode("clinical_review")
         val t3 = translateReasonCode("token_confirmed")
 
-        assertTrue(t1.contains("priority patient", ignoreCase = true))
-        assertTrue(t2.contains("clinical review", ignoreCase = true))
-        assertTrue(t3.contains("offline token confirmed", ignoreCase = true))
+        assertTrue(t1.contains("needs care sooner", ignoreCase = true))
+        assertTrue(t2.contains("nurse reviewed", ignoreCase = true))
+        assertTrue(t3.contains("confirmed your offline token", ignoreCase = true))
+        // An unknown code falls back to the server's English message (contract section 4).
+        assertEquals("Moved by staff", translateReasonCode("something_new", "Moved by staff"))
     }
 }

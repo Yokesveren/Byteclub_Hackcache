@@ -77,7 +77,7 @@ data class DoctorDto(
     @SerialName("name") val name: String,
     @SerialName("room") val room: String,
     @SerialName("floor") val floor: Int,
-    @SerialName("room_waypoint_id") val roomWaypointId: String,
+    @SerialName("room_waypoint_id") val roomWaypointId: String? = null, // null: the room is not on a map yet (H02, H03)
     @SerialName("stair_free") val stairFree: Boolean = true,
     @SerialName("status") val status: String = "in", // in, delayed, break, away, off
     @SerialName("status_note") val statusNote: String? = null

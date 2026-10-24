@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.sevasetu.patient.ui.components.SevaScaffold
-import app.sevasetu.patient.ui.navigation.loadH01GraphFromAssets
+import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.ui.slip.generateQrBitmap
 
 @Composable
@@ -38,12 +38,12 @@ fun StickerSheetScreen(
     onBack: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val graph = remember { loadH01GraphFromAssets(context) }
-    val stickerNodes = remember(graph) { graph.nodes.filter { it.sticker } }
+    val app = SevaApplication.instance
+    val graph = remember { app.nav.graph(app.visits.active.value?.hospital?.id ?: app.prefs.current.hospitalId) ?: app.nav.graph("H01") }
+    val stickerNodes = remember(graph) { graph?.nodes?.filter { it.sticker }.orEmpty() }
 
     SevaScaffold(
-        title = "Printable Wall Sticker Sheet",
+        title = "Sticker sheet",
         onBack = onBack,
         onEmergencyClick = onEmergencyClick
     ) {

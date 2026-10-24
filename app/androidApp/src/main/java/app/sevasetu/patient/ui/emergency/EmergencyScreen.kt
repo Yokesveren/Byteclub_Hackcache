@@ -7,6 +7,9 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,22 +17,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,245 +41,301 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.data.gateway.NetworkException
 import app.sevasetu.patient.data.model.UrgentFlagDto
+import app.sevasetu.patient.data.navigation.Directions
+import app.sevasetu.patient.data.navigation.GraphRouter
+import app.sevasetu.patient.data.navigation.RouteOptions
+import app.sevasetu.patient.data.navigation.displayName
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
-import app.sevasetu.patient.ui.components.InfoCard
+import app.sevasetu.patient.ui.components.CardShape
 import app.sevasetu.patient.ui.components.ListenButton
+import app.sevasetu.patient.ui.components.displayTime
 import app.sevasetu.patient.ui.theme.ColorEmergency
+import app.sevasetu.patient.ui.theme.Frame
+import app.sevasetu.patient.ui.theme.Ink
+import app.sevasetu.patient.ui.theme.Mint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.channels.Channel
 import java.time.Instant
 import java.util.UUID
 
+/** The honest delivery state of an urgent request (S5). */
+private enum class FlagState { NONE, QUEUED, SENT, SEEN }
+
+/**
+ * Emergency (PRD 8.4, S1, S2): works with no network. The route to Casualty comes from the map on the phone;
+ * 112 and 108 dial directly. "I need urgent help" tells staff on the dashboard and says truthfully whether it
+ * has reached them. [autoRaise] is set when the symptom check found a warning sign.
+ */
 @Composable
 fun EmergencyScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    autoRaise: Boolean = false
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val app = SevaApplication.instance
 
-    var urgentFlagState by remember { mutableStateOf<UrgentFlagDto?>(null) }
-    var flagStatusText by remember { mutableStateOf("Press below if you need immediate hospital staff help") }
+    var flag by remember { mutableStateOf<UrgentFlagDto?>(null) }
+    var state by remember { mutableStateOf(FlagState.NONE) }
+    var raisedOnce by rememberSaveable { mutableStateOf(false) }
 
-    fun triggerVibration() {
+    val visit = app.visits.active.value
+    val hospitalId = visit?.hospital?.id ?: app.prefs.current.hospitalId
+    val graph = remember(hospitalId) { app.nav.graph(hospitalId) }
+    val position = app.nav.position.value
+    val steps = remember(graph, position) {
+        graph?.let { g ->
+            GraphRouter.route(g, position ?: g.entrance, g.emergency, RouteOptions(emergency = true))
+                ?.let { Directions.steps(g, it) }
+        }.orEmpty()
+    }
+    val emergencyName = graph?.nodes?.firstOrNull { it.id == graph.emergency }?.displayName() ?: "Emergency (Casualty)"
+
+    fun vibrate() {
         val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
+            (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
             @Suppress("DEPRECATION")
             context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
-        vibrator.vibrate(VibrationEffect.createOneShot(800, VibrationEffect.DEFAULT_AMPLITUDE))
+        vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 400, 200, 400), -1))
     }
 
-    fun dialNumber(number: String) {
-        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
-        context.startActivity(intent)
-    }
+    fun dial(number: String) = context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
 
-    // Honest three-state lifecycle (S5): not yet received (offline) -> sent to staff -> staff have seen it.
-    LaunchedEffect(urgentFlagState?.id) {
-        urgentFlagState?.id?.let { flagId ->
-            while (true) {
-                delay(3000)
-                val updated = try {
-                    app.backendGateway.getUrgentFlag(flagId)
-                } catch (e: NetworkException) {
-                    // Still offline: the outbox resends it first (priority 0) as soon as the phone is back online.
-                    runCatching { app.outboxManager.flushOutbox() }
-                    null
-                } catch (e: Exception) {
-                    null
-                }
-                if (updated != null) {
-                    urgentFlagState = updated
-                    if (updated.seenAt != null) {
-                        flagStatusText = "Staff have seen your request. Help is coming."
-                        triggerVibration()
-                        break
-                    } else if (updated.receivedAt != null) {
-                        flagStatusText = "Sent to staff. Waiting for a staff member to see it."
-                    }
-                }
+    fun raise(source: String) {
+        if (flag != null) return
+        val f = UrgentFlagDto(
+            id = UUID.randomUUID().toString(),
+            visitId = visit?.visitId,
+            hospitalId = hospitalId,
+            // Without a visit the server needs an anonymous session id (contract: raise_urgent_flag).
+            sessionId = if (visit == null) UUID.randomUUID().toString() else null,
+            source = source,
+            message = if (source == "symptom_check") "Warning sign in the symptom check" else "Patient pressed urgent help",
+            waypointId = position,
+            raisedAt = Instant.now().toString()
+        )
+        flag = f
+        raisedOnce = true
+        state = FlagState.QUEUED
+        scope.launch {
+            state = try {
+                flag = app.backendGateway.raiseUrgentFlag(f)
+                if (flag?.seenAt != null) FlagState.SEEN else FlagState.SENT
+            } catch (e: Exception) {
+                // Offline or refused: queued first in the outbox, sent the moment the phone is back online.
+                app.outboxManager.enqueueUrgentFlag(f)
+                FlagState.QUEUED
             }
         }
     }
 
-    // A full red field (the website's emergency colour), white capitals, white panels on top.
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = ColorEmergency
-    ) {
+    LaunchedEffect(Unit) {
+        if (autoRaise && !raisedOnce) raise("symptom_check")
+    }
+
+    // Seen by staff: live on the flag's channel, checked every 3 seconds as a fallback (S5).
+    LaunchedEffect(flag?.id) {
+        val id = flag?.id ?: return@LaunchedEffect
+        val wake = Channel<Unit>(Channel.CONFLATED)
+        launch {
+            val topic = if (flag?.visitId != null) "visit:${flag?.visitId}" else "flag:$id"
+            (app.backendGateway as? app.sevasetu.patient.data.gateway.RemoteBackend)
+                ?.broadcasts(listOf(topic))?.catch { }?.collect { wake.trySend(Unit) }
+        }
+        while (state != FlagState.SEEN) {
+            val updated = try {
+                app.backendGateway.getUrgentFlag(id)
+            } catch (e: NetworkException) {
+                runCatching { app.outboxManager.flushOutbox() }
+                null
+            } catch (e: Exception) {
+                null
+            }
+            if (updated != null) {
+                flag = updated
+                if (updated.seenAt != null) {
+                    state = FlagState.SEEN
+                    vibrate()
+                    app.speaker.speak("Staff have seen your request. Help is coming.", "स्टाफ ने आपका अनुरोध देख लिया है। मदद आ रही है।")
+                    break
+                } else if (updated.receivedAt != null) state = FlagState.SENT
+            }
+            withTimeoutOrNull(3_000) { wake.receive() }
+        }
+    }
+
+    fun speakAll() {
+        val route = steps.joinToString(" ") { it.instruction }
+        app.speaker.speak(
+            "Go to Emergency now. You do not need a token. $route",
+            "अभी इमरजेंसी जाइए। आपको टोकन की ज़रूरत नहीं है।",
+            "ابھی ایمرجنسی جائیں۔ آپ کو ٹوکن کی ضرورت نہیں ہے۔"
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(ColorEmergency)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
-                .padding(20.dp)
                 .verticalScroll(rememberScrollState())
+                .padding(20.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "◆ EMERGENCY / आपातकालीन",
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                ListenButton(onClick = {})
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0x33FFFFFF))
+                        .clickable(onClickLabel = "Go back", onClick = onBack),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go back", tint = Color.White)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                ListenButton(onClick = { speakAll() })
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            Text("◆ EMERGENCY", style = MaterialTheme.typography.labelLarge, color = Color.White)
+            Text("GO TO EMERGENCY NOW.", style = MaterialTheme.typography.displayMedium, color = Color.White)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "You do not need a token. Go straight to $emergencyName. It is open day and night.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White
+            )
+            Text("अभी इमरजेंसी जाइए। टोकन की ज़रूरत नहीं है।", style = MaterialTheme.typography.bodyLarge, color = Color.White)
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Call buttons: large, white on red
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CallTile("112", "Emergency", Modifier.weight(1f)) { dial("112") }
+                CallTile("108", "Ambulance", Modifier.weight(1f)) { dial("108") }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Primary Emergency Banner (S2 Rule)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(20.dp)
+            // Urgent help, with its honest state
+            Column(
+                modifier = Modifier.fillMaxWidth().clip(CardShape).background(Color.White).padding(20.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = ColorEmergency,
-                            modifier = Modifier.size(36.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Go to Emergency now.",
-                            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
-                            color = ColorEmergency,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "You do NOT need a token or appointment. Please go straight to Casualty.",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.Black
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Steps to Emergency Room
-            InfoCard {
-                Text(
-                    text = "Directions to Casualty (Ground Floor)",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = null, tint = ColorEmergency)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "1. From Main Gate: Walk straight 20m into Entrance Hall",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                Text("TELL THE STAFF", style = MaterialTheme.typography.titleLarge, color = Ink)
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "2. Turn left at Red Doors marked 'Emergency (Casualty)'",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Action Buttons: Call 112 & 108
-            Row(modifier = Modifier.fillMaxWidth()) {
-                BigButton(
-                    text = "Call 112",
-                    onClick = { dialNumber("112") },
-                    type = ButtonType.SECONDARY,
-                    icon = Icons.Default.Call,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                BigButton(
-                    text = "Call 108",
-                    onClick = { dialNumber("108") },
-                    type = ButtonType.SECONDARY,
-                    icon = Icons.Default.Call,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // "I Need Urgent Help" Button & Honest Lifecycle Status (S5 Rule)
-            InfoCard {
-                Text(
-                    text = "Hospital Staff Assistance",
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = flagStatusText,
-                    style = MaterialTheme.typography.bodyLarge,
+                    "Already in the hospital and feeling worse? This alerts the nurses' screen at once.",
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                BigButton(
-                    text = "I Need Urgent Help",
-                    onClick = {
-                        if (urgentFlagState != null) return@BigButton
-                        scope.launch {
-                            val visit = app.visits.active.value
-                            val flag = UrgentFlagDto(
-                                id = UUID.randomUUID().toString(),
-                                visitId = visit?.visitId,
-                                hospitalId = visit?.hospital?.id ?: "H01",
-                                // Without a visit the server needs an anonymous session id (contract: raise_urgent_flag).
-                                sessionId = if (visit == null) UUID.randomUUID().toString() else null,
-                                source = "patient_app",
-                                message = "Patient pressed urgent help on phone",
-                                waypointId = "SS:H01:F0:W001",
-                                raisedAt = Instant.now().toString()
-                            )
-                            urgentFlagState = flag
-                            flagStatusText = try {
-                                urgentFlagState = app.backendGateway.raiseUrgentFlag(flag)
-                                "Sent to staff. Waiting for a staff member to see it."
-                            } catch (e: NetworkException) {
-                                app.outboxManager.enqueueUrgentFlag(flag)
-                                "Not yet received by staff. Please tell a staff member."
-                            } catch (e: Exception) {
-                                app.outboxManager.enqueueUrgentFlag(flag)
-                                "Not yet received by staff. Please tell a staff member."
-                            }
-                        }
-                    },
-                    type = ButtonType.DANGER
-                )
+                Spacer(modifier = Modifier.height(14.dp))
+                when (state) {
+                    FlagState.NONE -> BigButton(
+                        text = "I need urgent help",
+                        type = ButtonType.DANGER,
+                        icon = Icons.Default.NotificationsActive,
+                        onClick = { raise("patient_app") }
+                    )
+                    FlagState.QUEUED -> FlagStatus(
+                        Icons.Default.WifiOff, Color(0xFFFFF1C2), Color(0xFF5C3D00),
+                        "NOT YET RECEIVED BY STAFF",
+                        "No connection yet. It will be sent the moment there is signal. Please tell a staff member now."
+                    )
+                    FlagState.SENT -> FlagStatus(
+                        Icons.Default.Schedule, Color(0xFFDCECF7), Ink,
+                        "SENT TO STAFF",
+                        "Waiting for a nurse to see it" + (flag?.receivedAt?.let { " · sent at ${displayTime(it)}" } ?: "") + "."
+                    )
+                    FlagState.SEEN -> FlagStatus(
+                        Icons.Default.CheckCircle, Mint, Ink,
+                        "STAFF HAVE SEEN YOUR REQUEST",
+                        "Help is coming. Stay where you are if you can."
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            BigButton(
-                text = "Back to Home",
-                onClick = onBack,
-                type = ButtonType.SECONDARY
-            )
+            // The way to Casualty, from the map on the phone (works offline)
+            if (steps.isNotEmpty()) {
+                Column(modifier = Modifier.fillMaxWidth().clip(CardShape).background(Color.White).padding(20.dp)) {
+                    Text("THE WAY TO EMERGENCY", style = MaterialTheme.typography.titleLarge, color = Ink)
+                    Text(
+                        if (position != null) "From where you last scanned." else "From the main gate.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    steps.forEachIndexed { i, s ->
+                        Row(modifier = Modifier.padding(vertical = 6.dp), verticalAlignment = Alignment.Top) {
+                            Box(
+                                modifier = Modifier.size(28.dp).clip(CircleShape).background(ColorEmergency),
+                                contentAlignment = Alignment.Center
+                            ) { Text("${i + 1}", color = Color.White, style = MaterialTheme.typography.labelMedium) }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(s.instruction, style = MaterialTheme.typography.titleMedium, color = Ink)
+                                s.landmark?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            BigButton(text = "Back", type = ButtonType.SECONDARY, onClick = onBack)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun CallTile(number: String, label: String, modifier: Modifier, onClick: () -> Unit) {
+    Column(
+        modifier = modifier
+            .clip(CardShape)
+            .background(Color.White)
+            .clickable(onClickLabel = "Call $number", onClick = onClick)
+            .padding(18.dp)
+    ) {
+        Icon(Icons.Default.Call, contentDescription = null, tint = ColorEmergency, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.height(6.dp))
+        Text("CALL $number", style = MaterialTheme.typography.headlineMedium, color = ColorEmergency)
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = Frame)
+    }
+}
+
+@Composable
+private fun FlagStatus(icon: ImageVector, bg: Color, ink: Color, title: String, text: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(bg).padding(16.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Icon(icon, contentDescription = null, tint = ink, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(title, style = MaterialTheme.typography.labelLarge, color = ink)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text, style = MaterialTheme.typography.bodyMedium, color = ink)
         }
     }
 }

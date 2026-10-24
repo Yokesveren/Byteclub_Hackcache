@@ -7,9 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import app.sevasetu.patient.data.model.MyTurnDto
+import app.sevasetu.patient.ui.components.EmptyState
+import app.sevasetu.patient.ui.components.SevaScaffold
 import app.sevasetu.patient.ui.consent.ConsentScreen
 import app.sevasetu.patient.ui.demo.DemoPanelScreen
 import app.sevasetu.patient.ui.demo.StickerSheetScreen
@@ -24,14 +28,16 @@ import app.sevasetu.patient.ui.myturn.CalledScreen
 import app.sevasetu.patient.ui.myturn.MyTurnScreen
 import app.sevasetu.patient.ui.navigation.IndoorNavigationScreen
 import app.sevasetu.patient.ui.register.RegistrationScreen
+import app.sevasetu.patient.ui.scanner.ScanMode
 import app.sevasetu.patient.ui.scanner.StickerScannerScreen
+import app.sevasetu.patient.ui.scanner.isSlip
 import app.sevasetu.patient.ui.settings.SettingsScreen
 import app.sevasetu.patient.ui.slip.IHaveMySlipScreen
 import app.sevasetu.patient.ui.slip.OpdSlipScreen
 import app.sevasetu.patient.ui.sms.SimulatedSmsScreen
 
 object Routes {
-    const val LANGUAGE = "language"
+    const val LANGUAGE = "language?again={again}"
     const val CONSENT = "consent"
     const val HOME = "home"
     const val REGISTER = "register"
@@ -40,8 +46,8 @@ object Routes {
     const val CALLED = "called"
     const val HAVE_SLIP = "haveslip"
     const val NAVIGATE = "navigate"
-    const val SCAN = "scan"
-    const val EMERGENCY = "emergency"
+    const val SCAN = "scan/{mode}"
+    const val EMERGENCY = "emergency?auto={auto}"
     const val JOURNEY = "journey"
     const val SETTINGS = "settings"
     const val PRE_VISIT = "previsit"
@@ -50,35 +56,54 @@ object Routes {
     const val READINESS = "readiness"
     const val DEMO = "demo"
     const val STICKERS = "stickers"
+
+    fun scan(mode: ScanMode) = "scan/${mode.name.lowercase()}"
+    fun emergency(auto: Boolean = false) = "emergency?auto=$auto"
+    fun language(again: Boolean) = "language?again=$again"
 }
+
+private const val SCANNED_SLIP = "scanned_slip"
 
 @Composable
 fun SevaNavGraph(
     navController: NavHostController,
-    startDestination: String = Routes.LANGUAGE,
-    onTextScaleChanged: (Float) -> Unit,
-    onHighContrastChanged: (Boolean) -> Unit
+    startDestination: String,
 ) {
-    // Remembered, so the ticket and the destination survive recomposition between screens.
+    val app = SevaApplication.instance
+    // Remembered, so the ticket survives recomposition between screens.
     var lastMyTurn by remember { mutableStateOf<MyTurnDto?>(null) }
-    var targetWaypointId by remember { mutableStateOf("SS:H01:F1:W103") }
-    val activeVisit by SevaApplication.instance.visits.active.collectAsState()
+    val activeVisit by app.visits.active.collectAsState()
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        composable(Routes.LANGUAGE) {
+    fun emergency() = navController.navigate(Routes.emergency()) { launchSingleTop = true }
+    fun home() = navController.navigate(Routes.HOME) {
+        popUpTo(Routes.HOME) { inclusive = true }
+        launchSingleTop = true
+    }
+    fun goTo(waypointId: String) {
+        app.nav.setDestination(waypointId)
+        navController.navigate(Routes.NAVIGATE) { launchSingleTop = true }
+    }
+
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable(
+            Routes.LANGUAGE,
+            arguments = listOf(navArgument("again") { type = NavType.BoolType; defaultValue = false })
+        ) { entry ->
+            val again = entry.arguments?.getBoolean("again") == true
             LanguageScreen(
-                onContinue = { navController.navigate(Routes.CONSENT) },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onContinue = {
+                    if (again) navController.popBackStack() else navController.navigate(Routes.CONSENT)
+                },
+                onEmergencyClick = ::emergency
             )
         }
 
         composable(Routes.CONSENT) {
             ConsentScreen(
-                onContinue = { navController.navigate(Routes.HOME) },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) },
+                onContinue = {
+                    navController.navigate(Routes.HOME) { popUpTo(0) { inclusive = true } }
+                },
+                onEmergencyClick = ::emergency,
                 onBack = { navController.popBackStack() }
             )
         }
@@ -88,13 +113,16 @@ fun SevaNavGraph(
                 onNavigateToRegister = { navController.navigate(Routes.REGISTER) },
                 onNavigateToHaveSlip = { navController.navigate(Routes.HAVE_SLIP) },
                 onNavigateToMyTurn = { navController.navigate(Routes.MY_TURN) },
-                onNavigateToFindPlace = { navController.navigate(Routes.NAVIGATE) },
+                onNavigateToSlip = { navController.navigate(Routes.SLIP) },
+                onNavigateToFindPlace = {
+                    if (app.nav.destination.value == null) app.nav.setDestination(activeVisit?.doctor?.roomWaypointId)
+                    navController.navigate(Routes.NAVIGATE)
+                },
                 onNavigateToJourney = { navController.navigate(Routes.JOURNEY) },
                 onNavigateToPreVisit = { navController.navigate(Routes.PRE_VISIT) },
                 onNavigateToHelp = { navController.navigate(Routes.HELP) },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
-                onNavigateToDemo = { navController.navigate(Routes.DEMO) },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onEmergencyClick = ::emergency
             )
         }
 
@@ -102,24 +130,29 @@ fun SevaNavGraph(
             RegistrationScreen(
                 onRegistrationComplete = { turn ->
                     lastMyTurn = turn
-                    navController.navigate(Routes.SLIP)
+                    navController.navigate(Routes.SLIP) { popUpTo(Routes.HOME) }
                 },
-                onEmergencyTriggered = { navController.navigate(Routes.EMERGENCY) },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) },
+                onEmergencyTriggered = {
+                    navController.navigate(Routes.emergency(auto = true)) { popUpTo(Routes.HOME) }
+                },
+                onEmergencyClick = ::emergency,
                 onBack = { navController.popBackStack() }
             )
         }
 
         composable(Routes.SLIP) {
-            (lastMyTurn ?: activeVisit)?.let { turn ->
+            val turn = activeVisit ?: lastMyTurn
+            if (turn == null) {
+                SevaScaffold(title = "OPD slip", onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency) {
+                    EmptyState("No slip yet. Register for OPD first.")
+                }
+            } else {
                 OpdSlipScreen(
                     myTurn = turn,
-                    onNavigateToRoom = { waypointId ->
-                        targetWaypointId = waypointId
-                        navController.navigate(Routes.NAVIGATE)
-                    },
+                    onNavigateToRoom = ::goTo,
+                    onOpenMyTurn = { navController.navigate(Routes.MY_TURN) { popUpTo(Routes.HOME) } },
                     onBack = { navController.popBackStack() },
-                    onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                    onEmergencyClick = ::emergency
                 )
             }
         }
@@ -129,109 +162,117 @@ fun SevaNavGraph(
                 visitId = activeVisit?.visitId,
                 onNavigateToCalled = { turn ->
                     lastMyTurn = turn
-                    navController.navigate(Routes.CALLED)
+                    navController.navigate(Routes.CALLED) { popUpTo(Routes.HOME) }
                 },
-                onNavigateToRoom = { waypointId ->
-                    targetWaypointId = waypointId
-                    navController.navigate(Routes.NAVIGATE)
-                },
+                onNavigateToRoom = ::goTo,
+                onShowSlip = { navController.navigate(Routes.SLIP) },
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onEmergencyClick = ::emergency
             )
         }
 
         composable(Routes.CALLED) {
-            (lastMyTurn ?: activeVisit)?.let { turn ->
+            (activeVisit ?: lastMyTurn)?.let { turn ->
                 CalledScreen(
                     myTurn = turn,
-                    onNavigateToRoom = { waypointId ->
-                        targetWaypointId = waypointId
-                        navController.navigate(Routes.NAVIGATE)
-                    }
+                    onNavigateToRoom = ::goTo,
+                    onHome = ::home,
+                    onEmergencyClick = ::emergency
                 )
             }
         }
 
-        composable(Routes.HAVE_SLIP) {
+        composable(Routes.HAVE_SLIP) { entry ->
+            val scanned by entry.savedStateHandle.getStateFlow<String?>(SCANNED_SLIP, null).collectAsState()
             IHaveMySlipScreen(
+                scanned = scanned,
+                onScannedConsumed = { entry.savedStateHandle[SCANNED_SLIP] = null },
                 onSlipLinked = { turn ->
                     lastMyTurn = turn
-                    navController.navigate(Routes.MY_TURN)
+                    navController.navigate(Routes.MY_TURN) { popUpTo(Routes.HOME) }
                 },
-                onOpenScanner = { navController.navigate(Routes.SCAN) },
+                onOpenScanner = { navController.navigate(Routes.scan(ScanMode.SLIP)) },
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onEmergencyClick = ::emergency
             )
         }
 
         composable(Routes.NAVIGATE) {
             IndoorNavigationScreen(
-                destinationWaypointId = targetWaypointId,
-                onOpenScanner = { navController.navigate(Routes.SCAN) },
+                onOpenScanner = { navController.navigate(Routes.scan(ScanMode.STICKER)) },
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onEmergencyClick = ::emergency
             )
         }
 
-        composable(Routes.SCAN) {
+        composable(
+            Routes.SCAN,
+            arguments = listOf(navArgument("mode") { type = NavType.StringType; defaultValue = "sticker" })
+        ) { entry ->
+            val mode = when (entry.arguments?.getString("mode")) {
+                "slip" -> ScanMode.SLIP
+                "any" -> ScanMode.ANY
+                else -> ScanMode.STICKER
+            }
             StickerScannerScreen(
-                onStickerScanned = { _ ->
-                    navController.navigate(Routes.NAVIGATE)
+                mode = mode,
+                onResult = { code ->
+                    if (isSlip(code)) {
+                        navController.previousBackStackEntry?.savedStateHandle?.set(SCANNED_SLIP, code)
+                        navController.popBackStack()
+                    } else {
+                        app.nav.scan(code)
+                        navController.popBackStack()
+                    }
                 },
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
+                onEmergencyClick = ::emergency
             )
         }
 
-        composable(Routes.EMERGENCY) {
+        composable(
+            Routes.EMERGENCY,
+            arguments = listOf(navArgument("auto") { type = NavType.BoolType; defaultValue = false })
+        ) { entry ->
             EmergencyScreen(
-                onBack = { navController.popBackStack() }
+                autoRaise = entry.arguments?.getBoolean("auto") == true,
+                onBack = {
+                    if (!navController.popBackStack()) home()
+                }
             )
         }
 
         composable(Routes.JOURNEY) {
-            HealthJourneyScreen(
-                onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
-            )
+            HealthJourneyScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
         }
 
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) },
+                onEmergencyClick = ::emergency,
+                onOpenLanguage = { navController.navigate(Routes.language(again = true)) },
                 onOpenReadiness = { navController.navigate(Routes.READINESS) },
-                onOpenDemoPanel = { navController.navigate(Routes.DEMO) },
-                onTextScaleChanged = onTextScaleChanged,
-                onHighContrastChanged = onHighContrastChanged
+                onOpenStickerSheet = { navController.navigate(Routes.STICKERS) },
+                onOpenDemoPanel = { navController.navigate(Routes.DEMO) }
             )
         }
 
         composable(Routes.PRE_VISIT) {
-            BeforeYouVisitScreen(
-                onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
-            )
+            BeforeYouVisitScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
         }
 
         composable(Routes.HELP) {
-            HelpCardsScreen(
-                onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
-            )
+            HelpCardsScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
         }
 
         composable(Routes.SMS) {
-            SimulatedSmsScreen(
-                onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
-            )
+            SimulatedSmsScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
         }
 
         composable(Routes.READINESS) {
             OfflineReadinessScreen(
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) },
+                onEmergencyClick = ::emergency,
                 onOpenDemoPanel = { navController.navigate(Routes.DEMO) }
             )
         }
@@ -239,16 +280,13 @@ fun SevaNavGraph(
         composable(Routes.DEMO) {
             DemoPanelScreen(
                 onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) },
+                onEmergencyClick = ::emergency,
                 onOpenStickerSheet = { navController.navigate(Routes.STICKERS) }
             )
         }
 
         composable(Routes.STICKERS) {
-            StickerSheetScreen(
-                onBack = { navController.popBackStack() },
-                onEmergencyClick = { navController.navigate(Routes.EMERGENCY) }
-            )
+            StickerSheetScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
         }
     }
 }

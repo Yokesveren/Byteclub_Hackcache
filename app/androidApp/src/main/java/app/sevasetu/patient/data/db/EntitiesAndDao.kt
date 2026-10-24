@@ -89,7 +89,7 @@ data class DoctorEntity(
     val name: String,
     val room: String,
     val floor: Int,
-    val roomWaypointId: String,
+    val roomWaypointId: String?,
     val stairFree: Boolean,
     val status: String,
     val statusNote: String?
@@ -133,6 +133,9 @@ interface SevaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsertStoredVisit(visit: StoredVisitEntity)
 
+    @Query("DELETE FROM stored_visits")
+    fun clearStoredVisits()
+
     // Drafts
     @Query("SELECT * FROM registration_drafts WHERE id = 'current_draft' LIMIT 1")
     fun getRegistrationDraft(): RegistrationDraftEntity?
@@ -147,7 +150,7 @@ interface SevaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun enqueueOutbox(item: OutboxItemEntity)
 
-    @Query("SELECT * FROM outbox_items WHERE state = 'PENDING' ORDER BY priority ASC, createdAt ASC")
+    @Query("SELECT * FROM outbox_items WHERE state IN ('PENDING', 'SENDING') ORDER BY priority ASC, createdAt ASC")
     fun getPendingOutboxItems(): List<OutboxItemEntity>
 
     @Update

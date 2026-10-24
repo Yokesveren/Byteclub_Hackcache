@@ -55,7 +55,7 @@ class RemoteBackendLiveTest {
         val hospitals = backend.listHospitals()
         assertTrue(hospitals.any { it.id == "H01" }, "H01 is listed")
         assertTrue(backend.listDepartments().any { it.code == "M" }, "General Medicine is listed")
-        assertTrue(backend.listDoctors().any { it.roomWaypointId.startsWith("SS:H01:") }, "doctors carry map waypoints")
+        assertTrue(backend.listDoctors().any { it.roomWaypointId?.startsWith("SS:H01:") == true }, "doctors carry map waypoints")
         assertTrue(backend.getClock().today.isNotBlank())
     }
 

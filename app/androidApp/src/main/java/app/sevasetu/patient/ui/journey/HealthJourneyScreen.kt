@@ -1,5 +1,7 @@
 package app.sevasetu.patient.ui.journey
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,12 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,121 +27,158 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.sevasetu.patient.SevaApplication
+import app.sevasetu.patient.data.db.CachedJourneyEntity
 import app.sevasetu.patient.data.model.MyJourneyDto
+import app.sevasetu.patient.ui.components.CardShape
+import app.sevasetu.patient.ui.components.EmptyState
 import app.sevasetu.patient.ui.components.InfoCard
-import app.sevasetu.patient.ui.components.ListenButton
+import app.sevasetu.patient.ui.components.LoadingState
 import app.sevasetu.patient.ui.components.SevaScaffold
 import app.sevasetu.patient.ui.components.StatusPill
+import app.sevasetu.patient.ui.theme.Accent
+import app.sevasetu.patient.ui.theme.ColorEmergency
+import app.sevasetu.patient.ui.theme.ColorPriorityEdge
+import app.sevasetu.patient.ui.theme.ColorRoutineEdge
+import app.sevasetu.patient.ui.theme.Ink
+import app.sevasetu.patient.ui.theme.Mint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
+private val DAY = DateTimeFormatter.ofPattern("d MMM yyyy")
+private fun day(iso: String): String = runCatching { LocalDate.parse(iso).format(DAY) }.getOrDefault(iso)
+
+/**
+ * My Health Journey (PRD 11.1, P1): past visits with the status staff recorded and the next follow-up.
+ * Read-only, large type, kept on the phone for offline reading.
+ */
 @Composable
 fun HealthJourneyScreen(
     onBack: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
     val app = SevaApplication.instance
-    var journeyState by remember { mutableStateOf<MyJourneyDto?>(null) }
+    val json = remember { Json { ignoreUnknownKeys = true } }
+    val visitId = app.visits.active.value?.visitId ?: if (app.isLive) null else "kamla-demo-visit"
+    var journey by remember { mutableStateOf<MyJourneyDto?>(null) }
+    var loading by remember { mutableStateOf(visitId != null) }
+    var offline by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(visitId) {
+        val id = visitId ?: return@LaunchedEffect
+        val dao = app.database.dao()
+        withContext(Dispatchers.IO) { dao.getCachedJourney(id) }?.let { cached ->
+            journey = runCatching { json.decodeFromString<MyJourneyDto>(cached.journeyJson) }.getOrNull()
+        }
         try {
-            val visitId = app.visits.active.value?.visitId ?: if (app.isLive) null else "kamla-demo-visit"
-            journeyState = visitId?.let { app.backendGateway.getMyJourney(it) }
-        } catch (_: Exception) {}
+            val fresh = app.backendGateway.getMyJourney(id)
+            journey = fresh
+            withContext(Dispatchers.IO) {
+                dao.saveCachedJourney(CachedJourneyEntity(id, json.encodeToString(MyJourneyDto.serializer(), fresh)))
+            }
+        } catch (e: Exception) {
+            offline = journey != null
+        }
+        loading = false
     }
 
-    val myJourney = journeyState
-
+    val j = journey
     SevaScaffold(
-        title = "My Health Journey",
+        title = "Health journey",
         onBack = onBack,
+        isOffline = offline,
+        onListen = j?.let { jj ->
+            {
+                val next = jj.nextFollowUp?.let { "Your next follow-up is on ${day(it.on)}. " } ?: ""
+                app.speaker.speak(
+                    next + jj.journey.joinToString(" ") { "On ${day(it.day)}, ${it.department} with ${it.doctor}. ${it.notes ?: ""}" }
+                )
+            }
+        },
         onEmergencyClick = onEmergencyClick
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+        when {
+            loading && j == null -> LoadingState("Loading your visits…")
+            visitId == null -> EmptyState("Your past visits will show here after you register or follow a slip.")
+            j == null || (j.journey.isEmpty() && j.nextFollowUp == null) -> EmptyState(
+                "No earlier visits recorded yet.\n\nAfter the doctor sees you, the visit and any follow-up date will appear here."
+            )
+            else -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
-                Text(
-                    text = "Health Timeline & Follow-ups",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.weight(1f)
-                )
-                ListenButton(onClick = {})
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Pinned Next Follow-up Card
-            myJourney?.nextFollowUp?.let { followUp ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.CalendarToday,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = "Next Follow-up Date",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Scheduled on ${followUp.on} (${followUp.state.uppercase()})",
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Please bring your previous prescription when you visit.",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-            Text(text = "Past Hospital Consultations", style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Timeline Items
-            myJourney?.journey?.forEach { item ->
-                InfoCard {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                j.nextFollowUp?.let { f ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth().clip(CardShape).background(Mint).padding(22.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = item.day, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
-                            Text(text = "${item.hospital} • ${item.department}", style = MaterialTheme.typography.bodyLarge)
-                            Text(text = "Doctor: ${item.doctor}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Ink)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("NEXT FOLLOW-UP", style = MaterialTheme.typography.labelLarge, color = Ink)
                         }
-                        StatusPill(
-                            label = when(item.status) { "red" -> "Emergency"; "yellow" -> "Priority"; else -> "Routine" },
-                            type = item.status
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(day(f.on), style = MaterialTheme.typography.headlineLarge, color = Ink)
+                        Text(
+                            when (f.state) {
+                                "done" -> "Done. Thank you for coming back."
+                                "defaulted" -> "Missed. Please come in soon, or ask a health worker to call you."
+                                else -> "Please come on this day and bring your previous prescription."
+                            },
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Ink
                         )
                     }
-                    if (!item.notes.isNullOrEmpty()) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        Text(text = "Clinical Notes: ${item.notes}", style = MaterialTheme.typography.bodyLarge)
-                    }
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+
+                Text("EARLIER VISITS", style = MaterialTheme.typography.labelLarge)
+                Spacer(modifier = Modifier.height(10.dp))
+                j.journey.sortedByDescending { it.day }.forEach { item ->
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .size(14.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    when (item.status) {
+                                        "red" -> ColorEmergency
+                                        "yellow" -> ColorPriorityEdge
+                                        else -> ColorRoutineEdge
+                                    }
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        InfoCard(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(day(item.day), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                                StatusPill(
+                                    label = when (item.status) { "red" -> "Emergency"; "yellow" -> "Priority"; else -> "Routine" },
+                                    type = item.status
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text("${item.department} · ${item.doctor}", style = MaterialTheme.typography.bodyLarge)
+                            Text(item.hospital, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            item.notes?.takeIf { it.isNotBlank() }?.let {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(it, style = MaterialTheme.typography.bodyLarge)
+                            }
+                            item.followUpOn?.let {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text("Follow-up: ${day(it)}", style = MaterialTheme.typography.labelLarge, color = Accent)
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
         }
     }

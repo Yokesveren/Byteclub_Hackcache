@@ -1,6 +1,5 @@
 package app.sevasetu.patient.ui.slip
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -23,204 +22,174 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.Print
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
-import app.sevasetu.patient.ui.components.LastUpdatedText
-import app.sevasetu.patient.ui.components.ListenButton
+import app.sevasetu.patient.ui.components.CardShape
 import app.sevasetu.patient.ui.components.SevaScaffold
 import app.sevasetu.patient.ui.components.StatusPill
+import app.sevasetu.patient.ui.components.displayTime
+import app.sevasetu.patient.ui.theme.ColorPriorityContainer
+import app.sevasetu.patient.ui.theme.ColorPriorityContent
+import app.sevasetu.patient.ui.theme.Ink
+import app.sevasetu.patient.ui.theme.LocalExtraColors
+import app.sevasetu.patient.ui.theme.Mint
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 
-fun generateQrBitmap(content: String, size: Int = 400): Bitmap {
-    val writer = QRCodeWriter()
-    val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, size, size)
-    val width = bitMatrix.width
-    val height = bitMatrix.height
-    val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-    for (x in 0 until width) {
-        for (y in 0 until height) {
-            bmp.setPixel(x, y, if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
-        }
+fun generateQrBitmap(content: String, size: Int = 512): Bitmap {
+    val matrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size, mapOf(EncodeHintType.MARGIN to 1))
+    val pixels = IntArray(matrix.width * matrix.height) { i ->
+        if (matrix.get(i % matrix.width, i / matrix.width)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
     }
-    return bmp
+    return Bitmap.createBitmap(pixels, matrix.width, matrix.height, Bitmap.Config.RGB_565)
 }
 
+/**
+ * The OPD slip (PRD 8.5): token, first name, department and room, the time window and a QR code that carries no
+ * health data (S9). Staff scan it at the counter; the patient can show it instead of a paper slip.
+ */
 @Composable
 fun OpdSlipScreen(
     myTurn: MyTurnDto,
     onNavigateToRoom: (destinationWaypointId: String) -> Unit,
+    onOpenMyTurn: () -> Unit,
     onBack: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val qrBitmap = remember(myTurn.slipQr) { generateQrBitmap(myTurn.slipQr) }
+    val app = SevaApplication.instance
+    val qr = remember(myTurn.slipQr) { generateQrBitmap(myTurn.slipQr) }
+    val est = myTurn.estimate
+    val unconfirmed = myTurn.offlineToken != null && myTurn.token == myTurn.offlineToken
+    val window = if (est != null && !est.paused && est.windowStart != null && est.windowEnd != null)
+        "${displayTime(est.windowStart)} – ${displayTime(est.windowEnd)}" else null
 
-    fun openGoogleMaps() {
-        val lat = myTurn.hospital.lat
-        val lng = myTurn.hospital.lng
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"))
-        context.startActivity(intent)
+    fun share() {
+        val text = buildString {
+            append("SevaSetu OPD token ${myTurn.token}\n")
+            append("${myTurn.firstName} · ${myTurn.department.name}\n")
+            append("${myTurn.doctor.name}, ${myTurn.doctor.room}\n")
+            append(myTurn.hospital.name.removeSuffix(" (Demo)"))
+            window?.let { append("\nLikely between $it") }
+        }
+        context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), "Share slip"))
     }
 
     SevaScaffold(
-        title = "OPD Slip",
+        title = "OPD slip",
         onBack = onBack,
+        onListen = {
+            app.speaker.speak(
+                "Your token is ${myTurn.token}. ${myTurn.department.name}. ${myTurn.doctor.name}, ${myTurn.doctor.room}." +
+                    (window?.let { " Likely between $it." } ?: ""),
+                "आपका टोकन ${myTurn.token} है। ${myTurn.doctor.room}।"
+            )
+        },
         onEmergencyClick = onEmergencyClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ticket Shaped Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = myTurn.hospital.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "OPD Registration Slip",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-                    // Token Display (56sp bold)
-                    Text(
-                        text = myTurn.token,
-                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 52.sp),
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    if (myTurn.offlineToken != null) {
+            // The ticket: mint head with the token, white body with the QR
+            Column(modifier = Modifier.fillMaxWidth().clip(CardShape).background(Color.White)) {
+                Column(modifier = Modifier.fillMaxWidth().background(Mint).padding(22.dp)) {
+                    Text(myTurn.hospital.name.removeSuffix(" (Demo)").uppercase(), style = MaterialTheme.typography.labelMedium, color = Ink)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(myTurn.token, style = MaterialTheme.typography.displayLarge, color = Ink, modifier = Modifier.weight(1f))
+                        StatusPill(label = myTurn.bandLabel, type = myTurn.band, provisional = myTurn.bandProvisional)
+                    }
+                    if (unconfirmed) {
+                        Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "(Waiting to be confirmed)",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error,
-                            fontWeight = FontWeight.Bold
+                            "WAITING TO BE CONFIRMED",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = ColorPriorityContent,
+                            modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(ColorPriorityContainer).padding(horizontal = 10.dp, vertical = 4.dp)
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    StatusPill(
-                        label = if (myTurn.bandProvisional) "${myTurn.bandLabel} (provisional)" else myTurn.bandLabel,
-                        type = myTurn.band
+                }
+                Column(modifier = Modifier.fillMaxWidth().padding(22.dp)) {
+                    SlipLine("Name", myTurn.firstName)
+                    SlipLine("Department", myTurn.department.name)
+                    SlipLine("Doctor", "${myTurn.doctor.name} · ${myTurn.doctor.room}" + if (myTurn.doctor.floor > 0) ", floor ${myTurn.doctor.floor}" else ", ground floor")
+                    if (est != null) {
+                        SlipLine("Ahead of you", if (est.peopleAhead == 0) "You are next" else "${est.peopleAhead} people")
+                    }
+                    window?.let { SlipLine("Likely seen", it) }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = LocalExtraColors.current.edge)
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Image(bitmap = qr.asImageBitmap(), contentDescription = "Slip QR code for token ${myTurn.token}", modifier = Modifier.size(220.dp))
+                    }
+                    Text(
+                        "Show this at the counter or the doctor's door.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(top = 6.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(text = "Patient: ${myTurn.firstName}", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                        Text(text = "Department: ${myTurn.department.name}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Doctor: ${myTurn.doctor.name}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Room: ${myTurn.doctor.room} (Floor ${myTurn.doctor.floor})", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-
-                        myTurn.estimate?.let { est ->
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "People ahead: ${est.peopleAhead}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            if (est.windowStart != null && est.windowEnd != null) {
-                                Text(
-                                    text = "Estimated window: ${est.windowStart} - ${est.windowEnd}",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    }
-
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-                    // QR Code Image
-                    Box(
-                        modifier = Modifier
-                            .background(Color.White, RoundedCornerShape(12.dp))
-                            .padding(12.dp)
-                    ) {
-                        Image(
-                            bitmap = qrBitmap.asImageBitmap(),
-                            contentDescription = "OPD Slip QR Code",
-                            modifier = Modifier.size(200.dp)
+                    displayTime(myTurn.lastUpdated)?.let {
+                        Text(
+                            "Last updated at $it",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LastUpdatedText(time = myTurn.lastUpdated)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Action Buttons Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ListenButton(onClick = {})
-                OutlinedButton(onClick = { openGoogleMaps() }) {
-                    Icon(imageVector = Icons.Default.Map, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Google Maps")
-                }
-                OutlinedButton(onClick = {}) {
-                    Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Share QR")
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            BigButton(
-                text = "Take me to my room",
-                onClick = { onNavigateToRoom(myTurn.doctor.roomWaypointId) },
-                icon = Icons.Default.Navigation,
-                type = ButtonType.PRIMARY
-            )
+            BigButton(text = "Open my turn", icon = Icons.Default.Schedule, onClick = onOpenMyTurn)
+            Spacer(modifier = Modifier.height(12.dp))
+            myTurn.doctor.roomWaypointId?.let { room ->
+                BigButton(text = "Take me to my room", icon = Icons.Default.Navigation, type = ButtonType.SECONDARY, onClick = { onNavigateToRoom(room) })
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                BigButton(
+                    text = "Directions",
+                    icon = Icons.Default.Map,
+                    type = ButtonType.SECONDARY,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${myTurn.hospital.lat},${myTurn.hospital.lng}"))
+                        )
+                    }
+                )
+                BigButton(text = "Share", icon = Icons.Default.Share, type = ButtonType.SECONDARY, modifier = Modifier.weight(1f), onClick = { share() })
+            }
         }
+    }
+}
+
+@Composable
+private fun SlipLine(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.Top) {
+        Text(label.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.width(120.dp))
+        Text(value, style = MaterialTheme.typography.titleMedium, color = Ink, modifier = Modifier.weight(1f))
     }
 }

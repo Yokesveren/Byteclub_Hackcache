@@ -13,96 +13,147 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
 import app.sevasetu.patient.ui.components.InfoCard
+import app.sevasetu.patient.ui.components.ScreenBand
 import app.sevasetu.patient.ui.components.SevaScaffold
+import app.sevasetu.patient.ui.symptom.loadSymptomRules
 import app.sevasetu.patient.ui.theme.Accent
+import app.sevasetu.patient.ui.theme.ColorPriorityEdge
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+/** What works with no signal on this phone right now (PRD 7.2), checked, not assumed; and what is waiting to send. */
 @Composable
 fun OfflineReadinessScreen(
     onBack: () -> Unit,
     onEmergencyClick: () -> Unit,
     onOpenDemoPanel: () -> Unit
 ) {
-    val items = listOf(
-        "Indoor Map (H01.json - 31 wall sticker nodes)",
-        "Symptom Rules Engine & Safety Checks",
-        "Hospital & Doctor Information Cache",
-        "Local Room Database & Outbox Queue",
-        "TTS Speech & Local Audio Guidance",
-        "OPD Slip QR Generator (ZXing offline)"
-    )
+    val app = SevaApplication.instance
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val directory by app.directory.data.collectAsState()
+    val visit by app.visits.active.collectAsState()
+    val hospitalId = visit?.hospital?.id ?: app.prefs.current.hospitalId
+    val hasMap = remember(hospitalId) { app.nav.graph(hospitalId) != null }
+    val rules = remember { runCatching { loadSymptomRules(context) }.getOrNull() }
+    var pending by remember { mutableIntStateOf(0) }
+    var failed by remember { mutableIntStateOf(0) }
+    var sending by remember { mutableStateOf(false) }
 
-    SevaScaffold(
-        title = "Offline Readiness",
-        onBack = onBack,
-        onEmergencyClick = onEmergencyClick
-    ) {
+    suspend fun count() = withContext(Dispatchers.IO) {
+        val all = app.database.dao().getAllOutboxItems()
+        pending = all.count { it.state != "FAILED" }
+        failed = all.count { it.state == "FAILED" }
+    }
+    LaunchedEffect(Unit) { count() }
+
+    SevaScaffold(title = "Ready offline?", onBack = onBack, onEmergencyClick = onEmergencyClick) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
-            Text(text = "Offline Mode Status", style = MaterialTheme.typography.headlineLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "SevaSetu stores all essential features directly on your phone so the app works without network signal.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ScreenBand(
+                title = "Works with no signal",
+                tone = "mint",
+                lead = "Emergency, the map, the symptom check and your last ticket all live on this phone."
             )
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             InfoCard {
-                Text(text = "Stored Data Checklist", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(12.dp))
+                Text("ON THIS PHONE", style = MaterialTheme.typography.labelLarge)
+                Spacer(modifier = Modifier.height(8.dp))
+                Check(true, "Emergency screen, 112 and 108")
+                Check(hasMap, if (hasMap) "Indoor map and directions" else "Indoor map (not drawn for this hospital yet)")
+                Check(rules != null, "Symptom check, ${rules?.warningSigns?.size ?: 0} warning signs (rules ${rules?.version ?: "missing"})")
+                Check(directory.fetchedAt > 0, if (directory.fetchedAt > 0) "Hospitals, departments and doctors" else "Hospital list (built-in copy; connect once to update)")
+                Check(visit != null, if (visit != null) "Your ticket ${visit?.token} and its QR slip" else "No ticket saved yet")
+            }
 
-                items.forEach { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = null,
-                            tint = Accent,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(text = item, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
-                    }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            InfoCard {
+                Text("WAITING TO SEND", style = MaterialTheme.typography.labelLarge)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    when {
+                        pending == 0 && failed == 0 -> "Nothing. Everything has reached the hospital."
+                        else -> "$pending waiting" + if (failed > 0) ", $failed refused by the hospital" else ""
+                    },
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    "Sent in this order when signal returns: urgent help first, then Priority and Routine registrations, then the rest.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                if (pending > 0) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    BigButton(
+                        text = if (sending) "Sending…" else "Send now",
+                        icon = Icons.Default.CloudUpload,
+                        enabled = !sending,
+                        onClick = {
+                            sending = true
+                            scope.launch {
+                                runCatching { app.outboxManager.flushOutbox() }
+                                count()
+                                sending = false
+                            }
+                        }
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            InfoCard {
-                Text(text = "Testing Offline Mode", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Turn on the 'Simulate No Internet Connection' switch in the Demo Panel to verify offline tokens and retry queues.",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "To try it: turn on airplane mode, then register, scan stickers or press urgent help. " +
+                    "Tickets made offline show \"Waiting to be confirmed\" until the hospital confirms them.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (!app.isLive) {
                 Spacer(modifier = Modifier.height(12.dp))
-                BigButton(
-                    text = "Open Demo Panel to Test Offline Mode",
-                    onClick = onOpenDemoPanel,
-                    type = ButtonType.SECONDARY
-                )
+                BigButton(text = "Simulator controls", type = ButtonType.SECONDARY, onClick = onOpenDemoPanel)
             }
         }
+    }
+}
+
+@Composable
+private fun Check(ok: Boolean, text: String) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            if (ok) Icons.Default.CheckCircle else Icons.Default.ErrorOutline,
+            contentDescription = if (ok) "Ready" else "Not ready",
+            tint = if (ok) Accent else ColorPriorityEdge,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }

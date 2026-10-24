@@ -3,16 +3,14 @@ package app.sevasetu.patient
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.rememberNavController
@@ -31,24 +29,17 @@ class MainActivity : ComponentActivity() {
         )
         super.onCreate(savedInstanceState)
 
-        setContent {
-            var textScaleFactor by remember { mutableFloatStateOf(1.0f) }
-            var isHighContrast by remember { mutableStateOf(false) }
+        val prefs = SevaApplication.instance.prefs
+        // Language and consent are asked once; after that the app opens on Home.
+        val start = if (prefs.current.onboarded) Routes.HOME else Routes.LANGUAGE
 
-            SevaTheme(
-                textScaleFactor = textScaleFactor,
-                isHighContrast = isHighContrast
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+        setContent {
+            val settings by prefs.settings.collectAsState()
+            SevaTheme(textScaleFactor = settings.textScale, isHighContrast = settings.highContrast) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    SevaNavGraph(
-                        navController = navController,
-                        onTextScaleChanged = { scale -> textScaleFactor = scale },
-                        onHighContrastChanged = { highContrast -> isHighContrast = highContrast }
-                    )
+                    val startDestination = remember { start }
+                    SevaNavGraph(navController = navController, startDestination = startDestination)
                 }
             }
         }
