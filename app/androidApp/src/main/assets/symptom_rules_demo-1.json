@@ -1,0 +1,93 @@
+{
+  "ruleset_version": "demo-1",
+  "warning_signs": [
+    {
+      "id": "chest_pain",
+      "text": {
+        "en": "Chest pain, tightness or pressure",
+        "hi": "छाती में दर्द, जकड़न या दबाव",
+        "ta": "நெஞ்சு வலி, இறுக்கம் அல்லது அழுத்தம்"
+      }
+    },
+    {
+      "id": "breathing_difficulty",
+      "text": {
+        "en": "Difficulty breathing or severe shortness of breath",
+        "hi": "सांस लेने में तकलीफ या बहुत ज्यादा सांस फूलना",
+        "ta": "மூச்சு விடுவதில் சிரமம்"
+      }
+    },
+    {
+      "id": "fainting",
+      "text": {
+        "en": "Fainting, collapse or not responding",
+        "hi": "बेहोशी, गिर जाना या जवाब न देना",
+        "ta": "மயக்கம் அல்லது பதில் அளிக்க இயலாமை"
+      }
+    },
+    {
+      "id": "fits",
+      "text": {
+        "en": "Fits, seizures or convulsions",
+        "hi": "दौरे या झटके आना",
+        "ta": "வலிப்பு"
+      }
+    },
+    {
+      "id": "heavy_bleeding",
+      "text": {
+        "en": "Heavy bleeding that won't stop",
+        "hi": "भारी रक्तस्राव जो रुक न रहा हो",
+        "ta": "நிற்காத அதிக இரத்தப்போக்கு"
+      }
+    },
+    {
+      "id": "severe_injury",
+      "text": {
+        "en": "Severe injury or broken bone with deformity",
+        "hi": "गंभीर चोट या विकृति के साथ टूटी हड्डी",
+        "ta": "கடுமையான காயம்"
+      }
+    },
+    {
+      "id": "pregnancy_warning",
+      "text": {
+        "en": "Bleeding or severe abdominal pain in pregnancy",
+        "hi": "गर्भावस्था में रक्तस्राव या गंभीर पेट दर्द",
+        "ta": "கர்ப்ப காலத்தில் இரத்தப்போக்கு அல்லது கடுமையான வயிற்று வலி"
+      }
+    },
+    {
+      "id": "baby_warning",
+      "text": {
+        "en": "Baby not feeding, unusually sleepy or turning blue",
+        "hi": "बच्चा दूध नहीं पी रहा, बहुत सुस्त है या नीला पड़ रहा है",
+        "ta": "குழந்தை பால் குடிக்கவில்லை அல்லது நீல நிறமாக மாறுகிறது"
+      }
+    },
+    {
+      "id": "fever_stiff_neck",
+      "text": {
+        "en": "High fever with stiff neck, severe headache or confusion",
+        "hi": "गर्दन में जकड़न, तेज सिरदर्द या भ्रम के साथ तेज बुखार",
+        "ta": "கடுமையான காய்ச்சல் மற்றும் கழுத்து விறைப்பு"
+      }
+    },
+    {
+      "id": "stroke_warning",
+      "text": {
+        "en": "Face drooping, arm weakness or slurred speech",
+        "hi": "चेहरा लटकना, हाथ में कमजोरी या बोली लड़खड़ाना",
+        "ta": "முகம் தொங்குதல், கை பலவீனம் அல்லது தெளிவற்ற பேச்சு"
+      }
+    },
+    {
+      "id": "poisoning",
+      "text": {
+        "en": "Suspected poisoning, snake bite or chemical exposure",
+        "hi": "जहर, सांप का काटना या रासायनिक संपर्क की आशंका",
+        "ta": "நச்சு அல்லது பாம்பு கடி"
+      }
+    }
+  ]
+}
