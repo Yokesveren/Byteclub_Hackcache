@@ -26,6 +26,7 @@ import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
 import app.sevasetu.patient.ui.components.InfoCard
 import app.sevasetu.patient.ui.components.SevaScaffold
+import app.sevasetu.patient.ui.theme.Accent
 
 @Composable
 fun OfflineReadinessScreen(
@@ -77,7 +78,7 @@ fun OfflineReadinessScreen(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = Color(0xFF1B5E34),
+                            tint = Accent,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))

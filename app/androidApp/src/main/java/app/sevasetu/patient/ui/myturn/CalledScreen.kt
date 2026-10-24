@@ -31,6 +31,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.ui.components.BigButton
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import app.sevasetu.patient.ui.theme.Mint
+import app.sevasetu.patient.ui.theme.Ink
 
 @Composable
 fun CalledScreen(
@@ -52,11 +56,13 @@ fun CalledScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF1B5E34) // Calm Green Card Background
+        color = Mint // the website board's call colour
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -73,9 +79,8 @@ fun CalledScreen(
                 ) {
                     Text(
                         text = "IT'S YOUR TURN!",
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp),
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF1B5E34)
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Ink
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -91,8 +96,7 @@ fun CalledScreen(
                     Text(
                         text = myTurn.doctor.room,
                         style = MaterialTheme.typography.displayLarge.copy(fontSize = 60.sp),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = Ink,
                         textAlign = TextAlign.Center
                     )
 

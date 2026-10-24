@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.sevasetu.patient.SevaApplication
+import app.sevasetu.patient.data.gateway.NetworkException
 import app.sevasetu.patient.data.model.UrgentFlagDto
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
@@ -53,6 +56,7 @@ import app.sevasetu.patient.ui.components.ListenButton
 import app.sevasetu.patient.ui.theme.ColorEmergency
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.UUID
 
 @Composable
@@ -82,32 +86,44 @@ fun EmergencyScreen(
         context.startActivity(intent)
     }
 
+    // Honest three-state lifecycle (S5): not yet received (offline) -> sent to staff -> staff have seen it.
     LaunchedEffect(urgentFlagState?.id) {
         urgentFlagState?.id?.let { flagId ->
             while (true) {
                 delay(3000)
-                val updated = app.fakeBackend.getUrgentFlag(flagId)
+                val updated = try {
+                    app.backendGateway.getUrgentFlag(flagId)
+                } catch (e: NetworkException) {
+                    // Still offline: the outbox resends it first (priority 0) as soon as the phone is back online.
+                    runCatching { app.outboxManager.flushOutbox() }
+                    null
+                } catch (e: Exception) {
+                    null
+                }
                 if (updated != null) {
                     urgentFlagState = updated
                     if (updated.seenAt != null) {
-                        flagStatusText = "Staff have seen your request!"
+                        flagStatusText = "Staff have seen your request. Help is coming."
                         triggerVibration()
                         break
                     } else if (updated.receivedAt != null) {
-                        flagStatusText = "Sent to staff. Waiting for staff acknowledgment."
+                        flagStatusText = "Sent to staff. Waiting for a staff member to see it."
                     }
                 }
             }
         }
     }
 
+    // A full red field (the website's emergency colour), white capitals, white panels on top.
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFF7A1C1C) // Tinted Red Safety Background
+        color = ColorEmergency
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -116,10 +132,9 @@ fun EmergencyScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "EMERGENCY / आपातकालीन",
+                    text = "◆ EMERGENCY / आपातकालीन",
                     color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.weight(1f)
                 )
                 ListenButton(onClick = {})
@@ -223,18 +238,31 @@ fun EmergencyScreen(
                 BigButton(
                     text = "I Need Urgent Help",
                     onClick = {
+                        if (urgentFlagState != null) return@BigButton
                         scope.launch {
+                            val visit = app.visits.active.value
                             val flag = UrgentFlagDto(
                                 id = UUID.randomUUID().toString(),
-                                hospitalId = "H01",
+                                visitId = visit?.visitId,
+                                hospitalId = visit?.hospital?.id ?: "H01",
+                                // Without a visit the server needs an anonymous session id (contract: raise_urgent_flag).
+                                sessionId = if (visit == null) UUID.randomUUID().toString() else null,
                                 source = "patient_app",
                                 message = "Patient pressed urgent help on phone",
                                 waypointId = "SS:H01:F0:W001",
-                                raisedAt = System.currentTimeMillis().toString()
+                                raisedAt = Instant.now().toString()
                             )
-                            val sent = app.fakeBackend.raiseUrgentFlag(flag)
-                            urgentFlagState = sent
-                            flagStatusText = "Sent to staff. Waiting for staff response."
+                            urgentFlagState = flag
+                            flagStatusText = try {
+                                urgentFlagState = app.backendGateway.raiseUrgentFlag(flag)
+                                "Sent to staff. Waiting for a staff member to see it."
+                            } catch (e: NetworkException) {
+                                app.outboxManager.enqueueUrgentFlag(flag)
+                                "Not yet received by staff. Please tell a staff member."
+                            } catch (e: Exception) {
+                                app.outboxManager.enqueueUrgentFlag(flag)
+                                "Not yet received by staff. Please tell a staff member."
+                            }
                         }
                     },
                     type = ButtonType.DANGER

@@ -15,3 +15,16 @@ This file records architecture and design choices made during the development of
 - Built entirely with Jetpack Compose Material 3.
 - Supports 4 text scales (100%, 125%, 150%, 200%) and a High-Contrast theme mode with 2dp solid outlines.
 - Navigation uses Compose Navigation with string route constants.
+
+## 4. Joined with the website and the shared backend (Oct 2026)
+- The app moved into `app/` of the main repo (subtree merge, history kept), next to `web/` and `supabase/`.
+- `RemoteBackend` implements `BackendGateway` against the shared Supabase backend (docs/CONTRACT.md) with OkHttp:
+  RPCs over REST with the anon key, public tables, and Realtime broadcast over one websocket. `FakeBackend` stays as
+  the simulator (used when no backend URL is configured) and for the demo panel.
+- The current visit is stored on the phone (`VisitRepository`, Room `stored_visits`); Home, My Turn, the slip,
+  Health Journey and the queue watcher all read it instead of the hard-coded demo visit.
+- Hilt was declared but never wired (no plugin, no component); it was removed along with the unused Kotlin
+  Multiplatform template (`shared/`, `iosApp/`, the template `MainActivity`). Dependencies are created in
+  `SevaApplication`.
+- The UI adopted the website's design language (see README "Design").
+

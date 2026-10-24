@@ -40,13 +40,21 @@ import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
+import app.sevasetu.patient.ui.components.EmptyState
+import app.sevasetu.patient.ui.components.displayTime
 import app.sevasetu.patient.ui.components.InfoCard
 import app.sevasetu.patient.ui.components.LastUpdatedText
 import app.sevasetu.patient.ui.components.SevaScaffold
 import app.sevasetu.patient.ui.components.StatusPill
 import app.sevasetu.patient.ui.theme.ColorEmergency
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import app.sevasetu.patient.ui.theme.ColorPriorityContent
+import app.sevasetu.patient.ui.theme.ColorPriorityContainer
 
 fun translateReasonCode(code: String): String {
     return when (code.lowercase()) {
@@ -64,31 +72,54 @@ fun translateReasonCode(code: String): String {
 
 @Composable
 fun MyTurnScreen(
-    visitId: String,
+    visitId: String?,
     onNavigateToCalled: (MyTurnDto) -> Unit,
     onNavigateToRoom: (destinationWaypointId: String) -> Unit,
     onBack: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
     val app = SevaApplication.instance
-    var myTurnState by remember { mutableStateOf<MyTurnDto?>(null) }
+    // Start from the ticket saved on the phone, so My Turn opens instantly and still reads offline.
+    var myTurnState by remember(visitId) { mutableStateOf(app.visits.active.value?.takeIf { it.visitId == visitId }) }
     var isOffline by remember { mutableStateOf(false) }
 
+    if (visitId == null) {
+        SevaScaffold(title = "My Turn", onBack = onBack, onEmergencyClick = onEmergencyClick) {
+            EmptyState("No ticket yet. Register for OPD, or use \"I have my slip\" to follow your token.")
+        }
+        return
+    }
+
     LaunchedEffect(visitId) {
+        // Realtime (contract section 5) wakes the loop at once when staff move the queue; polling every
+        // 5 seconds remains the fallback when live updates are unavailable.
+        val wake = Channel<Unit>(Channel.CONFLATED)
+        launch {
+            app.backendGateway.observeVisit(visitId, myTurnState?.hospital?.id)
+                .retryWhen { _, attempt -> delay(minOf(30_000L, 2_000L shl attempt.toInt().coerceAtMost(4))); true }
+                .catch { }
+                .collect { wake.trySend(Unit) }
+        }
         while (true) {
             try {
                 val updated = app.backendGateway.getMyTurn(visitId)
                 myTurnState = updated
                 isOffline = false
+                app.visits.save(updated, confirmed = updated.offlineToken == null || updated.token != updated.offlineToken)
 
                 if (updated.status == "called") {
                     onNavigateToCalled(updated)
                     break
                 }
+                if (updated.status == "emergency") {
+                    // Staff sent the patient to Emergency (contract enum): show the Emergency screen.
+                    onEmergencyClick()
+                    break
+                }
             } catch (e: Exception) {
                 isOffline = true
             }
-            delay(5000)
+            withTimeoutOrNull(5000) { wake.receive() }
         }
     }
 
@@ -99,7 +130,7 @@ fun MyTurnScreen(
         onBack = onBack,
         onEmergencyClick = onEmergencyClick,
         isOffline = isOffline,
-        lastUpdatedTime = myTurn?.lastUpdated
+        lastUpdatedTime = displayTime(myTurn?.lastUpdated)
     ) {
         if (myTurn == null) {
             Column(
@@ -155,17 +186,17 @@ fun MyTurnScreen(
                             if (estimate.paused) {
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+                                    colors = CardDefaults.cardColors(containerColor = ColorPriorityContainer)
                                 ) {
                                     Text(
                                         text = "Doctor is currently on a break or away. Queue estimate is paused.",
                                         modifier = Modifier.padding(12.dp),
-                                        style = MaterialTheme.typography.bodyLarge.copy(color = Color(0xFFE65100))
+                                        style = MaterialTheme.typography.bodyLarge.copy(color = ColorPriorityContent)
                                     )
                                 }
                             } else if (estimate.windowStart != null && estimate.windowEnd != null) {
                                 Text(
-                                    text = "Likely between ${estimate.windowStart} and ${estimate.windowEnd}",
+                                    text = "Likely between ${displayTime(estimate.windowStart)} and ${displayTime(estimate.windowEnd)}",
                                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )

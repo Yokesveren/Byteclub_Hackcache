@@ -46,7 +46,8 @@ fun HealthJourneyScreen(
 
     LaunchedEffect(Unit) {
         try {
-            journeyState = app.backendGateway.getMyJourney("kamla-demo-visit")
+            val visitId = app.visits.active.value?.visitId ?: if (app.isLive) null else "kamla-demo-visit"
+            journeyState = visitId?.let { app.backendGateway.getMyJourney(it) }
         } catch (_: Exception) {}
     }
 

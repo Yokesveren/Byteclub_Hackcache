@@ -10,25 +10,26 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.sevasetu.patient.data.db.OutboxItemEntity
 import app.sevasetu.patient.data.db.SevaDao
+import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.data.gateway.BackendGateway
+import app.sevasetu.patient.data.gateway.NetworkException
 import app.sevasetu.patient.data.model.JourneyEventDto
 import app.sevasetu.patient.data.model.RegisterVisitParamDto
 import app.sevasetu.patient.data.model.SymptomCheckDto
 import app.sevasetu.patient.data.model.UrgentFlagDto
+import app.sevasetu.patient.data.visit.VisitRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class OutboxManager @Inject constructor(
+class OutboxManager(
     private val dao: SevaDao,
     private val backendGateway: BackendGateway,
-    private val context: Context
+    private val context: Context,
+    private val visits: VisitRepository
 ) {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -42,7 +43,7 @@ class OutboxManager @Inject constructor(
             priority = 0,
             createdAt = System.currentTimeMillis()
         )
-        dao.enqueueOutbox(item)
+        withContext(Dispatchers.IO) { dao.enqueueOutbox(item) }
         flushOutbox()
     }
 
@@ -56,7 +57,7 @@ class OutboxManager @Inject constructor(
             priority = priority,
             createdAt = System.currentTimeMillis()
         )
-        dao.enqueueOutbox(item)
+        withContext(Dispatchers.IO) { dao.enqueueOutbox(item) }
         flushOutbox()
     }
 
@@ -69,7 +70,7 @@ class OutboxManager @Inject constructor(
             priority = 3,
             createdAt = System.currentTimeMillis()
         )
-        dao.enqueueOutbox(item)
+        withContext(Dispatchers.IO) { dao.enqueueOutbox(item) }
         flushOutbox()
     }
 
@@ -82,7 +83,7 @@ class OutboxManager @Inject constructor(
             priority = 4,
             createdAt = System.currentTimeMillis()
         )
-        dao.enqueueOutbox(item)
+        withContext(Dispatchers.IO) { dao.enqueueOutbox(item) }
         flushOutbox()
     }
 
@@ -102,7 +103,8 @@ class OutboxManager @Inject constructor(
                     }
                     "registerVisit" -> {
                         val reg = json.decodeFromString<RegisterVisitParamDto>(item.argsJson)
-                        backendGateway.registerVisit(reg)
+                        // The official token replaces the phone's offline one (S8); My Turn shows token_confirmed.
+                        visits.save(backendGateway.registerVisit(reg), confirmed = true)
                     }
                     "recordSymptomCheck" -> {
                         val check = json.decodeFromString<SymptomCheckDto>(item.argsJson)
@@ -113,10 +115,16 @@ class OutboxManager @Inject constructor(
                         backendGateway.ingestJourneyEvents(listOf(event))
                     }
                 }
-                dao.updateOutboxItem(item.copy(state = "DONE"))
-            } catch (e: Exception) {
+                dao.deleteOutboxItem(item.id)
+            } catch (e: NetworkException) {
+                // Still offline: keep it queued, in order, for the next attempt.
                 allSuccess = false
-                dao.updateOutboxItem(item.copy(state = "FAILED", lastError = e.localizedMessage ?: "Sync error"))
+                dao.updateOutboxItem(updatedSending.copy(state = "PENDING", lastError = e.localizedMessage))
+                break
+            } catch (e: Exception) {
+                // The server refused it (a rule or validation error); resending the same request cannot succeed.
+                allSuccess = false
+                dao.updateOutboxItem(updatedSending.copy(state = "FAILED", lastError = e.localizedMessage ?: "Sync error"))
             }
         }
         allSuccess
@@ -144,8 +152,6 @@ class OutboxWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result {
-        // Background sync task
-        return Result.success()
-    }
+    override suspend fun doWork(): Result =
+        if (SevaApplication.instance.outboxManager.flushOutbox()) Result.success() else Result.retry()
 }

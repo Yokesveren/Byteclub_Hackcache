@@ -75,8 +75,24 @@ fun RegistrationScreen(
     var abhaRef by remember { mutableStateOf("") }
     var symptomResult by remember { mutableStateOf<SymptomResult?>(null) }
     var isSubmitting by remember { mutableStateOf(false) }
+    var submitError by remember { mutableStateOf<String?>(null) }
 
     val totalSteps = 6
+
+    // The symptom check is a full screen with its own bar; inside this scrolling column it would get
+    // unbounded height (a runtime crash), so step 5 replaces the registration screen instead.
+    if (step == 5) {
+        SymptomCheckScreen(
+            onEmergencyTriggered = onEmergencyTriggered,
+            onComplete = { result ->
+                symptomResult = result
+                step = 6
+            },
+            onEmergencyClick = onEmergencyClick,
+            onBack = { step = 4 }
+        )
+        return
+    }
 
     SevaScaffold(
         title = "OPD Registration",
@@ -252,18 +268,7 @@ fun RegistrationScreen(
                     BigButton(text = "Next to Symptom Check", onClick = { step = 5 })
                 }
 
-                5 -> {
-                    // Symptom Check Step
-                    SymptomCheckScreen(
-                        onEmergencyTriggered = onEmergencyTriggered,
-                        onComplete = { result ->
-                            symptomResult = result
-                            step = 6
-                        },
-                        onEmergencyClick = onEmergencyClick,
-                        onBack = { step = 4 }
-                    )
-                }
+                5 -> Unit // shown full-screen above
 
                 6 -> {
                     // Review & Submit
@@ -285,6 +290,7 @@ fun RegistrationScreen(
                         enabled = !isSubmitting,
                         onClick = {
                             isSubmitting = true
+                            submitError = null
                             scope.launch {
                                 val visitId = UUID.randomUUID().toString()
                                 val patientId = UUID.randomUUID().toString()
@@ -317,22 +323,40 @@ fun RegistrationScreen(
 
                                 try {
                                     val result = app.backendGateway.registerVisit(param)
+                                    app.visits.save(result, confirmed = true)
                                     onRegistrationComplete(result)
                                 } catch (e: NetworkException) {
-                                    // Handle Offline registration submission (F22)
+                                    // Offline (F22, S8): a phone-made token marked "Waiting to be confirmed"; the outbox
+                                    // sends the registration (with its offline time, capped server-side) once online.
                                     val isPriority = param.suggestedBand == "yellow" || p.ageGroup in listOf("infant", "elderly")
-                                    val offlineToken = "${param.departmentCode}-x4F2"
-                                    val offlineParam = param.copy(offlineToken = offlineToken)
+                                    val offlineParam = param.copy(
+                                        offlineToken = offlineToken(param.departmentCode),
+                                        createdAt = java.time.Instant.now().toString()
+                                    )
                                     app.outboxManager.enqueueRegisterVisit(offlineParam, isPriority)
-
-                                    val provisionalMyTurn = app.fakeBackend.registerVisit(param)
-                                    onRegistrationComplete(provisionalMyTurn)
+                                    val provisional = app.fakeBackend.provisionalTicket(offlineParam)
+                                    app.visits.save(provisional, confirmed = false)
+                                    onRegistrationComplete(provisional)
+                                } catch (e: Exception) {
+                                    // The hospital refused it (a rule or validation error): say so, keep the answers.
+                                    submitError = e.localizedMessage ?: "The hospital could not register this visit. Please ask at the help desk."
+                                    isSubmitting = false
                                 }
                             }
                         }
                     )
+                    submitError?.let {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(text = it, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error)
+                    }
                 }
             }
         }
     }
+}
+
+/** A device-local token such as `M-x4F2` (S8): unique enough to tell offline tickets apart until confirmed. */
+private fun offlineToken(departmentCode: String): String {
+    val chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789"
+    return "$departmentCode-x" + (1..3).map { chars.random() }.joinToString("")
 }

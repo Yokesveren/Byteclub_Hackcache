@@ -27,5 +27,6 @@ interface BackendGateway {
     suspend fun listHospitals(): List<HospitalDto>
     suspend fun listDepartments(): List<DepartmentDto>
     suspend fun listDoctors(): List<DoctorDto>
-    fun observeVisit(visitId: String): Flow<Unit>
+    /** Emits when this visit (or, with [hospitalId], that hospital's queue) changes; callers then refetch. */
+    fun observeVisit(visitId: String, hospitalId: String? = null): Flow<Unit>
 }

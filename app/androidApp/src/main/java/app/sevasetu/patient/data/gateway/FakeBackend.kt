@@ -19,6 +19,7 @@ import app.sevasetu.patient.data.model.UrgentFlagDto
 import app.sevasetu.patient.data.model.WaitEstimateDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -35,11 +36,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class FakeBackend @Inject constructor(
+class FakeBackend(
     private val dao: SevaDao
 ) : BackendGateway {
 
@@ -151,9 +149,9 @@ class FakeBackend @Inject constructor(
         }
     }
 
-    override suspend fun registerVisit(p: RegisterVisitParamDto): MyTurnDto {
+    override suspend fun registerVisit(p: RegisterVisitParamDto): MyTurnDto = withContext(Dispatchers.IO) {
         checkOnline()
-        return registerVisitInternal(p)
+        return@withContext registerVisitInternal(p)
     }
 
     private suspend fun registerVisitInternal(p: RegisterVisitParamDto, tokenOverride: String? = null): MyTurnDto {
@@ -213,9 +211,18 @@ class FakeBackend @Inject constructor(
         return getMyTurnInternal(p.visitId)
     }
 
-    override suspend fun getMyTurn(visitId: String): MyTurnDto {
+    /**
+     * A provisional ticket built on the phone while the hospital is unreachable (S8). The token shown is the
+     * phone's own [RegisterVisitParamDto.offlineToken]; the official one arrives when the outbox syncs.
+     */
+    suspend fun provisionalTicket(p: RegisterVisitParamDto): MyTurnDto = withContext(Dispatchers.IO) {
+        val local = registerVisitInternal(p)
+        local.copy(token = p.offlineToken ?: local.token, estimate = null, nowServing = null)
+    }
+
+    override suspend fun getMyTurn(visitId: String): MyTurnDto = withContext(Dispatchers.IO) {
         checkOnline()
-        return getMyTurnInternal(visitId)
+        return@withContext getMyTurnInternal(visitId)
     }
 
     private suspend fun getMyTurnInternal(visitId: String): MyTurnDto {
@@ -319,40 +326,40 @@ class FakeBackend @Inject constructor(
         )
     }
 
-    override suspend fun linkSlip(hospitalId: String, token: String): MyTurnDto? {
+    override suspend fun linkSlip(hospitalId: String, token: String): MyTurnDto? = withContext(Dispatchers.IO) {
         checkOnline()
-        val visit = dao.getFakeBackendVisitByToken(hospitalId, token) ?: return null
-        return getMyTurnInternal(visit.visitId)
+        val visit = dao.getFakeBackendVisitByToken(hospitalId, token) ?: return@withContext null
+        return@withContext getMyTurnInternal(visit.visitId)
     }
 
-    override suspend fun raiseUrgentFlag(p: UrgentFlagDto): UrgentFlagDto {
+    override suspend fun raiseUrgentFlag(p: UrgentFlagDto): UrgentFlagDto = withContext(Dispatchers.IO) {
         checkOnline()
         val receivedAt = formatIsoTime()
         val updated = p.copy(receivedAt = receivedAt)
         p.visitId?.let { urgentFlagsMap[it] = updated }
         _visitEventFlow.emit(p.visitId ?: p.id)
-        return updated
+        return@withContext updated
     }
 
-    override suspend fun getUrgentFlag(id: String): UrgentFlagDto? {
+    override suspend fun getUrgentFlag(id: String): UrgentFlagDto? = withContext(Dispatchers.IO) {
         checkOnline()
-        return urgentFlagsMap.values.firstOrNull { it.id == id || it.visitId == id }
+        return@withContext urgentFlagsMap.values.firstOrNull { it.id == id || it.visitId == id }
     }
 
-    override suspend fun recordSymptomCheck(p: SymptomCheckDto) {
+    override suspend fun recordSymptomCheck(p: SymptomCheckDto) = withContext(Dispatchers.IO) {
         checkOnline()
         // Recorded locally in fake backend log
     }
 
-    override suspend fun ingestJourneyEvents(list: List<JourneyEventDto>): Int {
+    override suspend fun ingestJourneyEvents(list: List<JourneyEventDto>): Int = withContext(Dispatchers.IO) {
         checkOnline()
         journeyEventsLog.addAll(list)
-        return list.size
+        return@withContext list.size
     }
 
-    override suspend fun getMyJourney(visitId: String): MyJourneyDto {
+    override suspend fun getMyJourney(visitId: String): MyJourneyDto = withContext(Dispatchers.IO) {
         checkOnline()
-        return MyJourneyDto(
+        return@withContext MyJourneyDto(
             firstName = "Kamla",
             journey = listOf(
                 PastJourneyItemDto("2026-08-13", "Chinar DH", "General Medicine", "Dr. Aamir Lone", "green", "2026-09-03", true, "Routine follow-up completed. Vitals stable."),
@@ -367,40 +374,40 @@ class FakeBackend @Inject constructor(
         )
     }
 
-    override suspend fun getClock(): ClockInfoDto {
+    override suspend fun getClock(): ClockInfoDto = withContext(Dispatchers.IO) {
         checkOnline()
         val ms = getSimulatedTimeMs()
         val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("Asia/Kolkata") }.format(Date(ms))
-        return ClockInfoDto(
+        return@withContext ClockInfoDto(
             now = formatIsoTime(ms),
             speed = clockSpeed,
             today = todayStr
         )
     }
 
-    override suspend fun listHospitals(): List<HospitalDto> {
+    override suspend fun listHospitals(): List<HospitalDto> = withContext(Dispatchers.IO) {
         checkOnline()
-        return dao.getHospitals().map { HospitalDto(it.id, it.name, it.address, it.lat, it.lng) }
+        return@withContext dao.getHospitals().map { HospitalDto(it.id, it.name, it.address, it.lat, it.lng) }
     }
 
-    override suspend fun listDepartments(): List<DepartmentDto> {
+    override suspend fun listDepartments(): List<DepartmentDto> = withContext(Dispatchers.IO) {
         checkOnline()
-        return dao.getDepartments().map { DepartmentDto(it.id, it.code, it.name, json.decodeFromString(it.nameI18nJson)) }
+        return@withContext dao.getDepartments().map { DepartmentDto(it.id, it.code, it.name, json.decodeFromString(it.nameI18nJson)) }
     }
 
-    override suspend fun listDoctors(): List<DoctorDto> {
+    override suspend fun listDoctors(): List<DoctorDto> = withContext(Dispatchers.IO) {
         checkOnline()
-        return dao.getDoctors().map { DoctorDto(it.id, it.name, it.room, it.floor, it.roomWaypointId, it.stairFree, it.status, it.statusNote) }
+        return@withContext dao.getDoctors().map { DoctorDto(it.id, it.name, it.room, it.floor, it.roomWaypointId, it.stairFree, it.status, it.statusNote) }
     }
 
-    override fun observeVisit(visitId: String): Flow<Unit> {
+    override fun observeVisit(visitId: String, hospitalId: String?): Flow<Unit> {
         return _visitEventFlow.asSharedFlow()
             .filter { it == visitId || it == "ALL" }
             .map { Unit }
     }
 
     // Demo panel staff actions
-    suspend fun callNext(doctorId: String) {
+    suspend fun callNext(doctorId: String) = withContext(Dispatchers.IO) {
         val currentCalled = dao.getCalledVisitForDoctor(doctorId)
         if (currentCalled != null) {
             val finished = currentCalled.copy(status = "done", lastReasonCode = "consultation_completed", lastReasonMessage = "Consultation completed.")
@@ -416,21 +423,21 @@ class FakeBackend @Inject constructor(
         }
     }
 
-    suspend fun confirmPriority(visitId: String) {
-        val v = dao.getFakeBackendVisit(visitId) ?: return
+    suspend fun confirmPriority(visitId: String) = withContext(Dispatchers.IO) {
+        val v = dao.getFakeBackendVisit(visitId) ?: return@withContext
         val updated = v.copy(band = "yellow", bandLabel = "Priority", bandProvisional = false, lastReasonCode = "clinical_review", lastReasonMessage = "Priority confirmed by clinical review.")
         dao.saveFakeBackendVisit(updated)
         _visitEventFlow.emit(visitId)
     }
 
-    suspend fun sendToEmergency(visitId: String) {
-        val v = dao.getFakeBackendVisit(visitId) ?: return
+    suspend fun sendToEmergency(visitId: String) = withContext(Dispatchers.IO) {
+        val v = dao.getFakeBackendVisit(visitId) ?: return@withContext
         val updated = v.copy(status = "emergency", band = "red", bandLabel = "Emergency", lastReasonCode = "emergency_transfer", lastReasonMessage = "Referred immediately to Casualty/Emergency.")
         dao.saveFakeBackendVisit(updated)
         _visitEventFlow.emit(visitId)
     }
 
-    suspend fun markFlagSeen(visitIdOrFlagId: String) {
+    suspend fun markFlagSeen(visitIdOrFlagId: String) = withContext(Dispatchers.IO) {
         val flag = urgentFlagsMap[visitIdOrFlagId]
             ?: urgentFlagsMap.values.firstOrNull { it.id == visitIdOrFlagId || it.visitId == visitIdOrFlagId }
         if (flag != null) {
@@ -441,7 +448,7 @@ class FakeBackend @Inject constructor(
         }
     }
 
-    suspend fun addPatients(count: Int) {
+    suspend fun addPatients(count: Int) = withContext(Dispatchers.IO) {
         val doctors = dao.getDoctors()
         var currentTotal = dao.getAllFakeBackendVisits().size + 20
         for (i in 1..count) {
@@ -455,11 +462,11 @@ class FakeBackend @Inject constructor(
         }
     }
 
-    suspend fun loadDemoPatientKamla(): MyTurnDto {
+    suspend fun loadDemoPatientKamla(): MyTurnDto = withContext(Dispatchers.IO) {
         val visitId = "kamla-demo-visit"
         val existing = dao.getFakeBackendVisit(visitId)
         if (existing != null) {
-            return getMyTurnInternal(visitId)
+            return@withContext getMyTurnInternal(visitId)
         }
         val p = PatientDto(
             id = "patient-kamla-123",
@@ -483,7 +490,7 @@ class FakeBackend @Inject constructor(
             preferredDoctorId = null,
             patient = p
         )
-        return registerVisitInternal(param, "M-017")
+        return@withContext registerVisitInternal(param, "M-017")
     }
 
     fun getJourneyEventsLog(): List<JourneyEventDto> = journeyEventsLog.toList()

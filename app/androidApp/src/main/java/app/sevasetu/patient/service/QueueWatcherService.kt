@@ -48,7 +48,9 @@ class QueueWatcherService : Service() {
             while (true) {
                 delay(5000)
                 try {
-                    val turn = app.backendGateway.getMyTurn("kamla-demo-visit")
+                    val visitId = app.visits.active.value?.visitId ?: continue
+                    val turn = app.backendGateway.getMyTurn(visitId)
+                    app.visits.save(turn)
                     val ahead = turn.estimate?.peopleAhead ?: 10
 
                     if (ahead <= 3 && !alertedAt3Ahead) {

@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -14,8 +15,6 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":shared"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
@@ -38,21 +37,28 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.datastore.preferences)
 
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
-
     implementation(libs.camerax.core)
     implementation(libs.camerax.camera2)
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.view)
     implementation(libs.mlkit.barcode.scanning)
     implementation(libs.zxing.core)
+    implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
 }
+
+// Live backend (the shared Supabase project the staff website uses). Leave both empty to run on the
+// built-in simulator. Set them in app/local.properties (never committed):
+//   sevasetu.supabaseUrl=http://<laptop LAN IP>:54321
+//   sevasetu.supabaseAnonKey=<ANON_KEY from `npx supabase status`>
+val localProps = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+fun backendSetting(key: String): String =
+    (localProps.getProperty(key) ?: providers.gradleProperty(key).orNull ?: "").trim()
 
 android {
     namespace = "app.sevasetu.patient"
@@ -65,6 +71,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SUPABASE_URL", "\"${backendSetting("sevasetu.supabaseUrl")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${backendSetting("sevasetu.supabaseAnonKey")}\"")
     }
     packaging {
         resources {
@@ -86,5 +94,6 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }

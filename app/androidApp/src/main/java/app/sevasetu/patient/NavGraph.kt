@@ -1,6 +1,11 @@
 package app.sevasetu.patient
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,8 +59,10 @@ fun SevaNavGraph(
     onTextScaleChanged: (Float) -> Unit,
     onHighContrastChanged: (Boolean) -> Unit
 ) {
-    var lastMyTurn: MyTurnDto? = null
-    var targetWaypointId: String = "SS:H01:F1:W103"
+    // Remembered, so the ticket and the destination survive recomposition between screens.
+    var lastMyTurn by remember { mutableStateOf<MyTurnDto?>(null) }
+    var targetWaypointId by remember { mutableStateOf("SS:H01:F1:W103") }
+    val activeVisit by SevaApplication.instance.visits.active.collectAsState()
 
     NavHost(
         navController = navController,
@@ -104,7 +111,7 @@ fun SevaNavGraph(
         }
 
         composable(Routes.SLIP) {
-            lastMyTurn?.let { turn ->
+            (lastMyTurn ?: activeVisit)?.let { turn ->
                 OpdSlipScreen(
                     myTurn = turn,
                     onNavigateToRoom = { waypointId ->
@@ -119,7 +126,7 @@ fun SevaNavGraph(
 
         composable(Routes.MY_TURN) {
             MyTurnScreen(
-                visitId = "kamla-demo-visit",
+                visitId = activeVisit?.visitId,
                 onNavigateToCalled = { turn ->
                     lastMyTurn = turn
                     navController.navigate(Routes.CALLED)
@@ -134,7 +141,7 @@ fun SevaNavGraph(
         }
 
         composable(Routes.CALLED) {
-            lastMyTurn?.let { turn ->
+            (lastMyTurn ?: activeVisit)?.let { turn ->
                 CalledScreen(
                     myTurn = turn,
                     onNavigateToRoom = { waypointId ->

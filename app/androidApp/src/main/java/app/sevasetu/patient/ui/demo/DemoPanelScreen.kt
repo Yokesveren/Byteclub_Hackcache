@@ -34,6 +34,7 @@ import app.sevasetu.patient.SevaApplication
 import app.sevasetu.patient.ui.components.BigButton
 import app.sevasetu.patient.ui.components.ButtonType
 import app.sevasetu.patient.ui.components.InfoCard
+import app.sevasetu.patient.ui.components.ScreenBand
 import app.sevasetu.patient.ui.components.SevaScaffold
 import kotlinx.coroutines.launch
 
@@ -62,25 +63,26 @@ fun DemoPanelScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Dark striped simulation header
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E292B))
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "SIMULATION: STAFF & ENVIRONMENT SIDE",
-                        color = Color(0xFFFFB74D),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Controls here act as hospital staff or system events. They allow testing offline mode, queue movement, and alerts.",
-                        color = Color.White,
-                        fontSize = 14.sp
-                    )
-                }
+            if (app.isLive) {
+                // Live: the queue lives on the shared backend, so staff actions happen on the website.
+                ScreenBand(
+                    title = "Live hospital",
+                    tone = "teal",
+                    lead = "This phone is connected to the hospital server. Move the queue, call patients and see urgent " +
+                        "flags from the website: the Facility, Doctor desk and Demo pages. Changes appear here within seconds."
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "The simulator controls below only affect the on-phone simulator, not the live queue.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                ScreenBand(
+                    title = "Simulator",
+                    tone = "night",
+                    lead = "Controls here act as hospital staff or system events, for testing offline mode, queue movement and alerts without a server."
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -7,7 +7,7 @@ See `SevaSetu_PRD_v1_0_Complete.docx`.
 |---|---|---|
 | Backend (Postgres rules, RPCs, realtime) | `supabase/` | website team |
 | PHC Dashboard (web) | `web/` | website team |
-| Patient App (PWA) | `app/` (suggested) | app team: start with [`APP_README.md`](APP_README.md), codes against [`docs/CONTRACT.md`](docs/CONTRACT.md) |
+| Patient App (Android, Jetpack Compose) | `app/` | app team: build and connect with [`app/README.md`](app/README.md). Guide: [`APP_README.md`](APP_README.md), contract: [`docs/CONTRACT.md`](docs/CONTRACT.md) |
 
 All hospitals, doctors and patients are made up.
 

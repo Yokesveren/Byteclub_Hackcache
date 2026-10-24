@@ -55,6 +55,10 @@ import app.sevasetu.patient.ui.components.InfoCard
 import app.sevasetu.patient.ui.components.ListenButton
 import app.sevasetu.patient.ui.components.SevaScaffold
 import kotlinx.serialization.json.Json
+import app.sevasetu.patient.ui.theme.Ward
+import app.sevasetu.patient.ui.theme.Frame
+import app.sevasetu.patient.ui.theme.Control
+import app.sevasetu.patient.ui.theme.Accent
 
 fun loadH01GraphFromAssets(context: android.content.Context): HospitalGraphDto {
     val jsonString = context.assets.open("graph/H01.json").bufferedReader().use { it.readText() }
@@ -180,7 +184,7 @@ fun IndoorNavigationScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(260.dp)
-                        .background(Color(0xFFE0F2F1), RoundedCornerShape(16.dp))
+                        .background(Ward, RoundedCornerShape(24.dp))
                 ) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val canvasW = size.width
@@ -202,7 +206,7 @@ fun IndoorNavigationScreen(
                                 size = Size(rw, rh)
                             )
                             drawRect(
-                                color = Color(0xFFB8C7C4),
+                                color = Control,
                                 topLeft = Offset(rx, ry),
                                 size = Size(rw, rh),
                                 style = Stroke(width = 2f)
@@ -215,7 +219,7 @@ fun IndoorNavigationScreen(
                             val n1 = floorPathNodes[i]
                             val n2 = floorPathNodes[i + 1]
                             drawLine(
-                                color = Color(0xFF0B6E6E),
+                                color = Accent,
                                 start = Offset(n1.x * scaleX, n1.y * scaleY),
                                 end = Offset(n2.x * scaleX, n2.y * scaleY),
                                 strokeWidth = 8f
@@ -226,7 +230,7 @@ fun IndoorNavigationScreen(
                         val startNode = nodesById[lastScannedSticker]
                         if (startNode != null && startNode.floor == currentFloor) {
                             drawCircle(
-                                color = Color(0xFFC62828),
+                                color = Frame,
                                 radius = 14f,
                                 center = Offset(startNode.x * scaleX, startNode.y * scaleY)
                             )

@@ -24,6 +24,14 @@ In government district hospitals, long queue wait times, complex hospital layout
 - **Accessible Indoor Navigation**: Uses Dijkstra shortest-path routing over wall QR stickers (`SS:<hospital>:F<floor>:W<id>`) with an interactive Compose Canvas floor plan renderer, stair-free options, wrong-turn auto re-routing, and lost recovery.
 - **Elderly & Low-Literacy Friendly**: High-contrast theme, 4 text scale levels (100% to 200%), picture cards, spoken text-to-speech guidance ("Listen" button), and multi-language support (English, Hindi, Tamil).
 
+### Design
+The app uses the SevaSetu website's design language, so patients and staff see one product: the navy frame
+(`#0b2a3c`), scrub teal for actions (`#0b7a75`), clinical mint highlights, ward-blue and linen fields, the Chivo
+typeface with black-weight capital headings, 24dp panels and 12dp controls, and the website's band chips (a word and
+an icon every time, a dashed edge while a band is unconfirmed). Tokens live in `ui/theme/Theme.kt`; shared pieces
+(`SevaScaffold`, `BigButton`, `StatusPill`, `ScreenBand`, `SetuMark`) in `ui/components/Components.kt`. Chivo is
+bundled under the SIL Open Font License (`androidApp/OFL-Chivo.txt`).
+
 ---
 
 ## 🔄 Key Workflows
@@ -116,7 +124,35 @@ In government district hospitals, long queue wait times, complex hospital layout
 
 ## 🌐 Backend & Website Developer Integration Guide
 
-When connecting this app to a live backend (Supabase / REST server), replace `FakeBackend` with `RemoteBackend` by changing the Hilt binding for `BackendGateway`.
+The app now lives in `app/` next to the website (`web/`) and the shared backend (`supabase/`), and talks to that
+backend through `RemoteBackend` (`data/gateway/RemoteBackend.kt`): the patient RPCs over REST with the anon key, the
+public tables, and Realtime broadcast for instant queue updates. Whatever the patient does shows up on the staff
+website, and whatever staff do reaches the phone.
+
+**Connect to the backend**
+
+1. From the repo root, with Docker running: `npx supabase start`, then `npx supabase status` for the `ANON_KEY`.
+2. Create `app/local.properties` (git-ignored) next to `settings.gradle.kts`:
+   ```properties
+   sdk.dir=C\:\Users\<you>\AppData\Local\Android\Sdk
+   sevasetu.supabaseUrl=http://<your laptop's LAN IP>:54321
+   sevasetu.supabaseAnonKey=<ANON_KEY>
+   ```
+   Use the LAN IP (not `127.0.0.1`) so a real phone on the same Wi-Fi can reach it. Debug builds allow plain http
+   for this; release builds stay https-only, so a hosted backend needs an `https://` URL.
+3. Build and install. Home shows **● Connected to the hospital**. Leave both settings empty to run on the built-in
+   simulator instead (**● Simulator mode**), exactly as before.
+
+Offline still works the same way: an unreachable server raises `NetworkException`, registrations get a phone-made
+token marked "Waiting to be confirmed" (S8), urgent flags go first in the outbox, and the outbox resends everything
+when the app starts or WorkManager sees a connection. A request the server *refuses* (a rule or validation error)
+raises `BackendException` instead and is shown to the patient rather than queued forever.
+
+**Check the wiring:** `RemoteBackendLiveTest` runs the real client against the backend (skipped unless configured):
+```bash
+SEVASETU_TEST_URL=http://127.0.0.1:54321 SEVASETU_TEST_ANON_KEY=<ANON_KEY> ./gradlew :androidApp:testDebugUnitTest
+```
+It creates fictional visits, so point it at a local or demo backend only.
 
 ### RPCs & Endpoints to Sync with Website/Staff Dashboard
 
@@ -142,8 +178,7 @@ Subscribe to Supabase Realtime broadcast channels and refetch `getMyTurn`:
 
 ## 🔮 Pending / Future Features
 
-1. **Live Remote Backend Wiring**:
-   - Replace `FakeBackend` with `RemoteBackend` using `@supabase/supabase-js` or Ktor REST client.
+1. ~~**Live Remote Backend Wiring**~~: done (`RemoteBackend`, see the integration guide above).
 2. **Additional Local Language Audio Files**:
    - Add pre-recorded Kashmiri (`ks`) and Dogri (`doi`) audio files under `res/raw/` for complete regional voice guidance.
 3. **Bluetooth Low Energy (BLE) Beacon Indoor Positioning**:
@@ -155,7 +190,7 @@ Subscribe to Supabase Realtime broadcast channels and refetch `getMyTurn`:
 
 ### Requirements
 - Android Studio Ladybug or newer
-- JDK 17 / Kotlin 2.0+
+- JDK 21 (Gradle 9.5 daemon toolchain) / Kotlin 2.4
 - Min SDK 26 (Android 8.0) | Target SDK 37
 
 ### Build Commands

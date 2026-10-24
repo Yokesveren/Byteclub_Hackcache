@@ -89,9 +89,16 @@ fun IHaveMySlipScreen(
                     onClick = {
                         isLinking = true
                         scope.launch {
-                            val result = app.backendGateway.linkSlip("H01", tokenInput.trim())
+                            val result = try {
+                                app.backendGateway.linkSlip("H01", tokenInput.trim().uppercase())
+                            } catch (e: Exception) {
+                                isLinking = false
+                                errorMessage = "Could not reach the hospital. Please try again, or show your slip at the help desk."
+                                return@launch
+                            }
                             isLinking = false
                             if (result != null) {
+                                app.visits.save(result)
                                 onSlipLinked(result)
                             } else {
                                 errorMessage = "We could not find this token today. Please check the number or visit the help desk."

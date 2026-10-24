@@ -1,4 +1,4 @@
-rootProject.name = "SevaSetu_app2"
+rootProject.name = "SevaSetuPatient"
 
 pluginManagement {
     repositories {
@@ -28,4 +28,3 @@ dependencyResolutionManagement {
 }
 
 include(":androidApp")
-include(":shared")
