@@ -1,0 +1,1533 @@
+{
+ "hospital_id": "H01",
+ "name": "Chinar District Hospital (Demo)",
+ "version": 1,
+ "units": "Plan pixels; 10 px = 1 m. Edges are walkable both ways.",
+ "floors": [
+  {
+   "floor": 0,
+   "name": "Ground floor",
+   "width": 1000,
+   "height": 560
+  },
+  {
+   "floor": 1,
+   "name": "First floor",
+   "width": 1000,
+   "height": 560
+  }
+ ],
+ "entrance": "SS:H01:F0:W001",
+ "emergency": "SS:H01:F0:W005",
+ "nodes": [
+  {
+   "id": "SS:H01:F0:W001",
+   "floor": 0,
+   "x": 70,
+   "y": 500,
+   "sticker": true,
+   "tags": [
+    "entrance",
+    "exit"
+   ],
+   "name": {
+    "en": "Main gate"
+   },
+   "landmark": {
+    "en": "Under the green hospital sign"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W005",
+   "floor": 0,
+   "x": 120,
+   "y": 200,
+   "sticker": true,
+   "tags": [
+    "emergency"
+   ],
+   "name": {
+    "en": "Emergency (Casualty)"
+   },
+   "landmark": {
+    "en": "Red doors, open all day and night"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W002",
+   "floor": 0,
+   "x": 150,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Entrance hall"
+   },
+   "landmark": {
+    "en": "Beside the visitor notice board"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W003",
+   "floor": 0,
+   "x": 300,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "registration"
+   ],
+   "name": {
+    "en": "Registration counter"
+   },
+   "landmark": {
+    "en": "Windows 1 to 4"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W004",
+   "floor": 0,
+   "x": 430,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "help"
+   ],
+   "name": {
+    "en": "Help desk"
+   },
+   "landmark": {
+    "en": "Blue counter with the help sign"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W012",
+   "floor": 0,
+   "x": 560,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "pharmacy"
+   ],
+   "name": {
+    "en": "Pharmacy"
+   },
+   "landmark": {
+    "en": "Medicine window"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W013",
+   "floor": 0,
+   "x": 720,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "lab"
+   ],
+   "name": {
+    "en": "Laboratory"
+   },
+   "landmark": {
+    "en": "Sample collection"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W014",
+   "floor": 0,
+   "x": 870,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "xray"
+   ],
+   "name": {
+    "en": "X-ray"
+   },
+   "landmark": {
+    "en": "Yellow radiation sign"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W020",
+   "floor": 0,
+   "x": 310,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "waiting"
+   ],
+   "name": {
+    "en": "Waiting area, ground floor"
+   },
+   "landmark": {
+    "en": "Rows of green chairs"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W016",
+   "floor": 0,
+   "x": 440,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "lift"
+   ],
+   "name": {
+    "en": "Lift, ground floor"
+   },
+   "landmark": {
+    "en": "Steel doors"
+   }
+  },
+  {
+   "id": "SS:H01:F0:W017",
+   "floor": 0,
+   "x": 510,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "stairs"
+   ],
+   "name": {
+    "en": "Stairs, ground floor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W007",
+   "floor": 0,
+   "x": 590,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 7 (Paediatrics)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W008",
+   "floor": 0,
+   "x": 680,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 8 (Paediatrics)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W010",
+   "floor": 0,
+   "x": 770,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 10 (Maternal Health)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W011",
+   "floor": 0,
+   "x": 860,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 11 (Maternal Health)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W015",
+   "floor": 0,
+   "x": 935,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "toilet"
+   ],
+   "name": {
+    "en": "Toilets, ground floor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V300",
+   "floor": 0,
+   "x": 300,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V310",
+   "floor": 0,
+   "x": 310,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W006",
+   "floor": 0,
+   "x": 430,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor by the help desk"
+   },
+   "landmark": {
+    "en": "Green notice board"
+   }
+  },
+  {
+   "id": "SS:H01:F0:V440",
+   "floor": 0,
+   "x": 440,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V510",
+   "floor": 0,
+   "x": 510,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V560",
+   "floor": 0,
+   "x": 560,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V590",
+   "floor": 0,
+   "x": 590,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W009",
+   "floor": 0,
+   "x": 680,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor centre"
+   },
+   "landmark": {
+    "en": "Water cooler"
+   }
+  },
+  {
+   "id": "SS:H01:F0:V720",
+   "floor": 0,
+   "x": 720,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V770",
+   "floor": 0,
+   "x": 770,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:W018",
+   "floor": 0,
+   "x": 860,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor east end"
+   },
+   "landmark": {
+    "en": "Fire extinguisher"
+   }
+  },
+  {
+   "id": "SS:H01:F0:V870",
+   "floor": 0,
+   "x": 870,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F0:V935",
+   "floor": 0,
+   "x": 935,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W016",
+   "floor": 1,
+   "x": 440,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "lift"
+   ],
+   "name": {
+    "en": "Lift, first floor"
+   },
+   "landmark": {
+    "en": "Steel doors"
+   }
+  },
+  {
+   "id": "SS:H01:F1:W017",
+   "floor": 1,
+   "x": 510,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "stairs"
+   ],
+   "name": {
+    "en": "Stairs, first floor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W103",
+   "floor": 1,
+   "x": 300,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 3 (General Medicine)"
+   },
+   "landmark": {
+    "en": "Next to the green notice board"
+   }
+  },
+  {
+   "id": "SS:H01:F1:W104",
+   "floor": 1,
+   "x": 560,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 4 (General Medicine)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W105",
+   "floor": 1,
+   "x": 720,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 5 (General Medicine)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W114",
+   "floor": 1,
+   "x": 870,
+   "y": 260,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 14 (Orthopaedics)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W111",
+   "floor": 1,
+   "x": 310,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "waiting"
+   ],
+   "name": {
+    "en": "Waiting area, first floor"
+   },
+   "landmark": {
+    "en": "Rows of blue chairs"
+   }
+  },
+  {
+   "id": "SS:H01:F1:W115",
+   "floor": 1,
+   "x": 680,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "room"
+   ],
+   "name": {
+    "en": "Room 15 (Orthopaedics)"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W116",
+   "floor": 1,
+   "x": 935,
+   "y": 350,
+   "sticker": true,
+   "tags": [
+    "toilet"
+   ],
+   "name": {
+    "en": "Toilets, first floor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W110",
+   "floor": 1,
+   "x": 300,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor west, first floor"
+   },
+   "landmark": {
+    "en": "Green notice board"
+   }
+  },
+  {
+   "id": "SS:H01:F1:V310",
+   "floor": 1,
+   "x": 310,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:V440",
+   "floor": 1,
+   "x": 440,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W112",
+   "floor": 1,
+   "x": 510,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor by the stairs"
+   },
+   "landmark": {
+    "en": "Window over the courtyard"
+   }
+  },
+  {
+   "id": "SS:H01:F1:V560",
+   "floor": 1,
+   "x": 560,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:V680",
+   "floor": 1,
+   "x": 680,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:W113",
+   "floor": 1,
+   "x": 720,
+   "y": 305,
+   "sticker": true,
+   "tags": [
+    "junction"
+   ],
+   "name": {
+    "en": "Corridor east, first floor"
+   },
+   "landmark": {
+    "en": "Water cooler"
+   }
+  },
+  {
+   "id": "SS:H01:F1:V870",
+   "floor": 1,
+   "x": 870,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  },
+  {
+   "id": "SS:H01:F1:V935",
+   "floor": 1,
+   "x": 935,
+   "y": 305,
+   "sticker": false,
+   "tags": [
+    "corridor"
+   ],
+   "name": {
+    "en": "Corridor"
+   },
+   "landmark": null
+  }
+ ],
+ "edges": [
+  {
+   "from": "SS:H01:F0:W002",
+   "to": "SS:H01:F0:V300",
+   "distance_m": 15.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V300",
+   "to": "SS:H01:F0:V310",
+   "distance_m": 1.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V310",
+   "to": "SS:H01:F0:W006",
+   "distance_m": 12.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W006",
+   "to": "SS:H01:F0:V440",
+   "distance_m": 1.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V440",
+   "to": "SS:H01:F0:V510",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V510",
+   "to": "SS:H01:F0:V560",
+   "distance_m": 5.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V560",
+   "to": "SS:H01:F0:V590",
+   "distance_m": 3.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V590",
+   "to": "SS:H01:F0:W009",
+   "distance_m": 9.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W009",
+   "to": "SS:H01:F0:V720",
+   "distance_m": 4.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V720",
+   "to": "SS:H01:F0:V770",
+   "distance_m": 5.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V770",
+   "to": "SS:H01:F0:W018",
+   "distance_m": 9.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W018",
+   "to": "SS:H01:F0:V870",
+   "distance_m": 1.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:V870",
+   "to": "SS:H01:F0:V935",
+   "distance_m": 6.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W001",
+   "to": "SS:H01:F0:W002",
+   "distance_m": 21.1,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W005",
+   "to": "SS:H01:F0:W002",
+   "distance_m": 10.9,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W003",
+   "to": "SS:H01:F0:V300",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W020",
+   "to": "SS:H01:F0:V310",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W004",
+   "to": "SS:H01:F0:W006",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W016",
+   "to": "SS:H01:F0:V440",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W017",
+   "to": "SS:H01:F0:V510",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W012",
+   "to": "SS:H01:F0:V560",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F0:W007",
+   "to": "SS:H01:F0:V590",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W008",
+   "to": "SS:H01:F0:W009",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W013",
+   "to": "SS:H01:F0:V720",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W010",
+   "to": "SS:H01:F0:V770",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W011",
+   "to": "SS:H01:F0:W018",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W014",
+   "to": "SS:H01:F0:V870",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W015",
+   "to": "SS:H01:F0:V935",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W110",
+   "to": "SS:H01:F1:V310",
+   "distance_m": 1.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:V310",
+   "to": "SS:H01:F1:V440",
+   "distance_m": 13.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:V440",
+   "to": "SS:H01:F1:W112",
+   "distance_m": 7.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:W112",
+   "to": "SS:H01:F1:V560",
+   "distance_m": 5.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:V560",
+   "to": "SS:H01:F1:V680",
+   "distance_m": 12.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:V680",
+   "to": "SS:H01:F1:W113",
+   "distance_m": 4.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:W113",
+   "to": "SS:H01:F1:V870",
+   "distance_m": 15.0,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:V870",
+   "to": "SS:H01:F1:V935",
+   "distance_m": 6.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:W103",
+   "to": "SS:H01:F1:W110",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W111",
+   "to": "SS:H01:F1:V310",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": true
+  },
+  {
+   "from": "SS:H01:F1:W016",
+   "to": "SS:H01:F1:V440",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W017",
+   "to": "SS:H01:F1:W112",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W104",
+   "to": "SS:H01:F1:V560",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W115",
+   "to": "SS:H01:F1:V680",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W105",
+   "to": "SS:H01:F1:W113",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W114",
+   "to": "SS:H01:F1:V870",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F1:W116",
+   "to": "SS:H01:F1:V935",
+   "distance_m": 4.5,
+   "stairs": false,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W016",
+   "to": "SS:H01:F1:W016",
+   "distance_m": 6,
+   "stairs": false,
+   "lift": true,
+   "ramp": false,
+   "crowd_prone": false
+  },
+  {
+   "from": "SS:H01:F0:W017",
+   "to": "SS:H01:F1:W017",
+   "distance_m": 8,
+   "stairs": true,
+   "lift": false,
+   "ramp": false,
+   "crowd_prone": false
+  }
+ ],
+ "areas": [
+  {
+   "id": "F0-emergency",
+   "floor": 0,
+   "label": "Emergency",
+   "kind": "emergency",
+   "x": 40,
+   "y": 60,
+   "w": 160,
+   "h": 130,
+   "capacity": 15,
+   "waypoints": [
+    "SS:H01:F0:W005"
+   ]
+  },
+  {
+   "id": "F0-hall",
+   "floor": 0,
+   "label": "Entrance hall",
+   "kind": "hall",
+   "x": 40,
+   "y": 200,
+   "w": 160,
+   "h": 340,
+   "capacity": 25,
+   "waypoints": [
+    "SS:H01:F0:W001",
+    "SS:H01:F0:W002"
+   ]
+  },
+  {
+   "id": "F0-registration",
+   "floor": 0,
+   "label": "Registration",
+   "kind": "service",
+   "x": 220,
+   "y": 60,
+   "w": 150,
+   "h": 190,
+   "capacity": 25,
+   "waypoints": [
+    "SS:H01:F0:W003"
+   ]
+  },
+  {
+   "id": "F0-help",
+   "floor": 0,
+   "label": "Help desk",
+   "kind": "service",
+   "x": 380,
+   "y": 60,
+   "w": 100,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W004"
+   ]
+  },
+  {
+   "id": "F0-pharmacy",
+   "floor": 0,
+   "label": "Pharmacy",
+   "kind": "service",
+   "x": 490,
+   "y": 60,
+   "w": 140,
+   "h": 190,
+   "capacity": 15,
+   "waypoints": [
+    "SS:H01:F0:W012"
+   ]
+  },
+  {
+   "id": "F0-lab",
+   "floor": 0,
+   "label": "Laboratory",
+   "kind": "service",
+   "x": 640,
+   "y": 60,
+   "w": 150,
+   "h": 190,
+   "capacity": 12,
+   "waypoints": [
+    "SS:H01:F0:W013"
+   ]
+  },
+  {
+   "id": "F0-xray",
+   "floor": 0,
+   "label": "X-ray",
+   "kind": "service",
+   "x": 800,
+   "y": 60,
+   "w": 160,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W014"
+   ]
+  },
+  {
+   "id": "F0-corridor",
+   "floor": 0,
+   "label": "Main corridor",
+   "kind": "corridor",
+   "x": 200,
+   "y": 280,
+   "w": 760,
+   "h": 50,
+   "capacity": 20,
+   "waypoints": [
+    "SS:H01:F0:W006",
+    "SS:H01:F0:W009",
+    "SS:H01:F0:W018",
+    "SS:H01:F0:V300",
+    "SS:H01:F0:V310",
+    "SS:H01:F0:V440",
+    "SS:H01:F0:V510",
+    "SS:H01:F0:V560",
+    "SS:H01:F0:V590",
+    "SS:H01:F0:V720",
+    "SS:H01:F0:V770",
+    "SS:H01:F0:V870",
+    "SS:H01:F0:V935"
+   ]
+  },
+  {
+   "id": "F0-waiting",
+   "floor": 0,
+   "label": "Waiting area",
+   "kind": "waiting",
+   "x": 220,
+   "y": 340,
+   "w": 180,
+   "h": 190,
+   "capacity": 40,
+   "waypoints": [
+    "SS:H01:F0:W020"
+   ]
+  },
+  {
+   "id": "F0-lift",
+   "floor": 0,
+   "label": "Lift",
+   "kind": "lift",
+   "x": 410,
+   "y": 340,
+   "w": 60,
+   "h": 70,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F0:W016"
+   ]
+  },
+  {
+   "id": "F0-stairs",
+   "floor": 0,
+   "label": "Stairs",
+   "kind": "stairs",
+   "x": 480,
+   "y": 340,
+   "w": 60,
+   "h": 70,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F0:W017"
+   ]
+  },
+  {
+   "id": "F0-room7",
+   "floor": 0,
+   "label": "Room 7",
+   "kind": "room",
+   "x": 550,
+   "y": 340,
+   "w": 80,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W007"
+   ]
+  },
+  {
+   "id": "F0-room8",
+   "floor": 0,
+   "label": "Room 8",
+   "kind": "room",
+   "x": 640,
+   "y": 340,
+   "w": 80,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W008"
+   ]
+  },
+  {
+   "id": "F0-room10",
+   "floor": 0,
+   "label": "Room 10",
+   "kind": "room",
+   "x": 730,
+   "y": 340,
+   "w": 80,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W010"
+   ]
+  },
+  {
+   "id": "F0-room11",
+   "floor": 0,
+   "label": "Room 11",
+   "kind": "room",
+   "x": 820,
+   "y": 340,
+   "w": 80,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F0:W011"
+   ]
+  },
+  {
+   "id": "F0-toilets",
+   "floor": 0,
+   "label": "Toilets",
+   "kind": "toilet",
+   "x": 910,
+   "y": 340,
+   "w": 50,
+   "h": 190,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F0:W015"
+   ]
+  },
+  {
+   "id": "F1-room3",
+   "floor": 1,
+   "label": "Room 3",
+   "kind": "room",
+   "x": 220,
+   "y": 60,
+   "w": 150,
+   "h": 190,
+   "capacity": 10,
+   "waypoints": [
+    "SS:H01:F1:W103"
+   ]
+  },
+  {
+   "id": "F1-room4",
+   "floor": 1,
+   "label": "Room 4",
+   "kind": "room",
+   "x": 490,
+   "y": 60,
+   "w": 140,
+   "h": 190,
+   "capacity": 10,
+   "waypoints": [
+    "SS:H01:F1:W104"
+   ]
+  },
+  {
+   "id": "F1-room5",
+   "floor": 1,
+   "label": "Room 5",
+   "kind": "room",
+   "x": 640,
+   "y": 60,
+   "w": 150,
+   "h": 190,
+   "capacity": 10,
+   "waypoints": [
+    "SS:H01:F1:W105"
+   ]
+  },
+  {
+   "id": "F1-room14",
+   "floor": 1,
+   "label": "Room 14",
+   "kind": "room",
+   "x": 800,
+   "y": 60,
+   "w": 160,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F1:W114"
+   ]
+  },
+  {
+   "id": "F1-corridor",
+   "floor": 1,
+   "label": "First-floor corridor",
+   "kind": "corridor",
+   "x": 220,
+   "y": 280,
+   "w": 740,
+   "h": 50,
+   "capacity": 18,
+   "waypoints": [
+    "SS:H01:F1:W110",
+    "SS:H01:F1:W112",
+    "SS:H01:F1:W113",
+    "SS:H01:F1:V310",
+    "SS:H01:F1:V440",
+    "SS:H01:F1:V560",
+    "SS:H01:F1:V680",
+    "SS:H01:F1:V870",
+    "SS:H01:F1:V935"
+   ]
+  },
+  {
+   "id": "F1-waiting",
+   "floor": 1,
+   "label": "Waiting area",
+   "kind": "waiting",
+   "x": 220,
+   "y": 340,
+   "w": 180,
+   "h": 190,
+   "capacity": 30,
+   "waypoints": [
+    "SS:H01:F1:W111"
+   ]
+  },
+  {
+   "id": "F1-lift",
+   "floor": 1,
+   "label": "Lift",
+   "kind": "lift",
+   "x": 410,
+   "y": 340,
+   "w": 60,
+   "h": 70,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F1:W016"
+   ]
+  },
+  {
+   "id": "F1-stairs",
+   "floor": 1,
+   "label": "Stairs",
+   "kind": "stairs",
+   "x": 480,
+   "y": 340,
+   "w": 60,
+   "h": 70,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F1:W017"
+   ]
+  },
+  {
+   "id": "F1-room15",
+   "floor": 1,
+   "label": "Room 15",
+   "kind": "room",
+   "x": 640,
+   "y": 340,
+   "w": 80,
+   "h": 190,
+   "capacity": 8,
+   "waypoints": [
+    "SS:H01:F1:W115"
+   ]
+  },
+  {
+   "id": "F1-toilets",
+   "floor": 1,
+   "label": "Toilets",
+   "kind": "toilet",
+   "x": 910,
+   "y": 340,
+   "w": 50,
+   "h": 190,
+   "capacity": 6,
+   "waypoints": [
+    "SS:H01:F1:W116"
+   ]
+  }
+ ]
+}
