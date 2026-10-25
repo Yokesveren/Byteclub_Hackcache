@@ -9,8 +9,10 @@ import { safeNext } from "@/lib/routes";
 import { supabase } from "@/lib/supabase";
 import type { StaffRole } from "@/lib/types";
 
-// Local demo accounts from supabase/seed.sql. Never ship these to a real deployment.
+// Demo accounts from supabase/seed.sql, shown so judges and visitors can sign in with one tap. They see only the demo
+// hospitals. A real hospital deployment turns them off with NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=false.
 // Each role gets one of the landing page's chapter colours.
+const SHOW_DEMO = process.env.NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS !== "false";
 const DEMO_ACCOUNTS: { email: string; label: string; does: string; bg: string; ink: string }[] = [
   { email: "triage@sevasetu.demo", label: "Triage nurse", does: "Queues, urgent flags, bands", bg: "#9fe5cf", ink: "#0b2a3c" },
   { email: "counter@sevasetu.demo", label: "Counter", does: "Register, print the slip", bg: "#ffffff", ink: "#0b2a3c" },
@@ -163,6 +165,37 @@ export default function LoginPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.2 }}
           >
+            {SHOW_DEMO && (
+              <div className="mb-6">
+                <p className="text-sm font-bold">Trying SevaSetu? Tap a role to sign in. No password needed.</p>
+                <motion.div
+                  className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3"
+                  initial="hidden"
+                  animate="show"
+                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.4 } } }}
+                >
+                  {DEMO_ACCOUNTS.map((a) => (
+                    <motion.button
+                      key={a.email}
+                      type="button"
+                      disabled={busy !== null}
+                      onClick={() => signIn(undefined, { email: a.email, password: "sevasetu-demo" })}
+                      variants={{ hidden: { opacity: 0, y: 20, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1 } }}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.96 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="flex min-h-[104px] flex-col justify-between rounded-2xl p-4 text-left disabled:opacity-60"
+                      style={{ background: a.bg, color: a.ink }}
+                    >
+                      <span className="text-lg font-black uppercase leading-[0.95] tracking-[-0.03em]">
+                        {busy === a.email ? "Signing in…" : a.label}
+                      </span>
+                      <span className="mt-2 text-xs font-bold opacity-80">{a.does}</span>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              </div>
+            )}
             <form onSubmit={signIn} className="rounded-[24px] bg-white p-6 sm:p-8">
               <h2 className="text-2xl font-black uppercase tracking-[-0.03em]">Your account</h2>
               <label className="mt-6 block text-sm font-bold">
@@ -206,39 +239,13 @@ export default function LoginPage() {
               >
                 {busy === "form" ? "Signing in…" : "Sign in"}
               </motion.button>
+              {SHOW_DEMO && (
+                <p className="mt-4 text-sm text-[#56636b]">
+                  Demo accounts use the password <span className="font-bold text-[#0b2a3c]">sevasetu-demo</span>.
+                </p>
+              )}
             </form>
 
-            {process.env.NODE_ENV !== "production" && (
-              <div className="mt-6">
-                <p className="text-sm font-bold">Demo accounts, local only: one tap signs in</p>
-                <motion.div
-                  className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3"
-                  initial="hidden"
-                  animate="show"
-                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06, delayChildren: 0.4 } } }}
-                >
-                  {DEMO_ACCOUNTS.map((a) => (
-                    <motion.button
-                      key={a.email}
-                      type="button"
-                      disabled={busy !== null}
-                      onClick={() => signIn(undefined, { email: a.email, password: "sevasetu-demo" })}
-                      variants={{ hidden: { opacity: 0, y: 20, scale: 0.95 }, show: { opacity: 1, y: 0, scale: 1 } }}
-                      whileHover={{ y: -4 }}
-                      whileTap={{ scale: 0.96 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="flex min-h-[104px] flex-col justify-between rounded-2xl p-4 text-left disabled:opacity-60"
-                      style={{ background: a.bg, color: a.ink }}
-                    >
-                      <span className="text-lg font-black uppercase leading-[0.95] tracking-[-0.03em]">
-                        {busy === a.email ? "Signing in…" : a.label}
-                      </span>
-                      <span className="mt-2 text-xs font-bold opacity-80">{a.does}</span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              </div>
-            )}
           </motion.div>
         </section>
       </div>

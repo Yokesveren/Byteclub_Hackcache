@@ -39,8 +39,10 @@ What works today, checked against the code and the live backend (October 2026). 
 - **Delivery:** the APK is a debug build served from the website's `/patient-app` page. A hosted backend (https) is
   needed for phones away from the laptop.
 
+- **SMS and missed call:** SLIP, REG, HELP and a missed call through a mock gateway on the backend; the "No data? Use
+  SMS" screen opens the phone's own SMS app with the command written in. A real SMS provider is still needed.
+- **Help chat:** online only, rule-based on the backend; answers where, when and what to bring, never medical advice.
+
 ## Not built
 
-- SMS / missed-call fallback for phones without data (PRD 7.2 step 3); `ui/sms` is a simulator screen only.
-- Chatbot (P1, online only).
 - ABHA lookup (mocked field only).
