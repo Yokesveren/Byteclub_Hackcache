@@ -270,20 +270,21 @@ private fun TicketCard(visit: MyTurnDto, onOpen: () -> Unit, onSlip: () -> Unit)
             .clickable(onClickLabel = tr("Open my turn"), role = Role.Button) { onOpen() }
             .padding(22.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                when {
-                    emergency -> tr("GO TO EMERGENCY NOW")
-                    called -> tr("IT'S YOUR TURN")
-                    else -> tr("YOUR TOKEN")
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = ink,
-                modifier = Modifier.weight(1f)
-            )
-            if (!emergency) StatusPill(label = visit.bandLabel, type = visit.band, provisional = visit.bandProvisional)
+        Text(
+            when {
+                emergency -> tr("GO TO EMERGENCY NOW")
+                called -> tr("IT'S YOUR TURN")
+                else -> tr("YOUR TOKEN")
+            },
+            style = MaterialTheme.typography.labelLarge,
+            color = ink
+        )
+        // The token on one line and the band chip under it, so large text never breaks either.
+        Text(visit.token, style = MaterialTheme.typography.displayLarge, color = ink, maxLines = 1, softWrap = false)
+        if (!emergency) {
+            StatusPill(label = visit.bandLabel, type = visit.band, provisional = visit.bandProvisional)
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        Text(visit.token, style = MaterialTheme.typography.displayLarge, color = ink)
         if (visit.offlineToken != null && visit.token == visit.offlineToken) {
             Text(
                 tr("Waiting to be confirmed by the hospital"),

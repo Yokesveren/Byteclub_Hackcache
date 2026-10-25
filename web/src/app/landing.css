@@ -635,6 +635,8 @@
   overflow: hidden;
   padding: 24px;
 }
+/* The wrapper takes the card's width; left to shrink-wrap, it grew to the unwrapped text and pushed the card left. */
+.ss-flow-phone .ss-fragment-wrap { width: min(400px, 100%); }
 .ss-flow-phone .ss-app { max-height: calc(100svh - 300px); overflow: hidden; }
 
 @media (max-width: 900px) {

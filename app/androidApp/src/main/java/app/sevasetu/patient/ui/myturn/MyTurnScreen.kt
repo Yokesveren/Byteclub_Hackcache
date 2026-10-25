@@ -176,12 +176,14 @@ fun MyTurnScreen(
                     .background(Frame)
                     .padding(22.dp)
             ) {
+                // The token on its own line: a long band chip must never squeeze it onto two lines.
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(tr("TOKEN"), style = MaterialTheme.typography.labelLarge, color = Mint)
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(t.token, style = MaterialTheme.typography.headlineLarge, color = Color.White, modifier = Modifier.weight(1f))
-                    StatusPill(label = t.bandLabel, type = t.band, provisional = t.bandProvisional)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(t.token, style = MaterialTheme.typography.headlineLarge, color = Color.White, maxLines = 1, softWrap = false)
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                StatusPill(label = t.bandLabel, type = t.band, provisional = t.bandProvisional)
                 if (!confirmed) {
                     Text(tr("Waiting to be confirmed by the hospital"), style = MaterialTheme.typography.labelMedium, color = Color(0xFFF2B01E))
                 }
@@ -265,23 +267,12 @@ fun MyTurnScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                t.doctor.roomWaypointId?.let { room ->
-                    BigButton(
-                        text = tr("Take me there"),
-                        onClick = { onNavigateToRoom(room) },
-                        icon = Icons.Default.Navigation,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                BigButton(
-                    text = tr("Show slip"),
-                    onClick = onShowSlip,
-                    type = ButtonType.SECONDARY,
-                    icon = Icons.Default.QrCode2,
-                    modifier = Modifier.weight(1f)
-                )
+            // Full-width buttons: side by side, the labels did not fit at large text sizes.
+            t.doctor.roomWaypointId?.let { room ->
+                BigButton(text = tr("Take me there"), onClick = { onNavigateToRoom(room) }, icon = Icons.Default.Navigation)
+                Spacer(modifier = Modifier.height(12.dp))
             }
+            BigButton(text = tr("Show slip"), onClick = onShowSlip, type = ButtonType.SECONDARY, icon = Icons.Default.QrCode2)
 
             Spacer(modifier = Modifier.height(16.dp))
 

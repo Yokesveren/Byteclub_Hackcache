@@ -139,10 +139,12 @@ fun SevaTheme(
         ExtraThemeColors()
     }
 
+    // Reading text grows the full amount; the big display and headline sizes grow at most 1.35x, because doubling
+    // 56sp capitals cannot fit a phone and broke tokens and labels letter by letter at the largest setting.
     fun style(size: Int, line: Int, weight: FontWeight, tracking: Double = -0.01) = TextStyle(
         fontFamily = Chivo,
-        fontSize = (size * textScaleFactor).sp,
-        lineHeight = (line * textScaleFactor).sp,
+        fontSize = (size * if (size >= 22) minOf(textScaleFactor, 1.35f) else textScaleFactor).sp,
+        lineHeight = (line * if (size >= 22) minOf(textScaleFactor, 1.35f) else textScaleFactor).sp,
         fontWeight = weight,
         letterSpacing = tracking.em,
         color = colorScheme.onSurface,

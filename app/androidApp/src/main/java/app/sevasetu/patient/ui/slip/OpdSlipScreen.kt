@@ -119,10 +119,10 @@ fun OpdSlipScreen(
                 Column(modifier = Modifier.fillMaxWidth().background(Mint).padding(22.dp)) {
                     Text(myTurn.hospital.name.removeSuffix(" (Demo)").uppercase(), style = MaterialTheme.typography.labelMedium, color = Ink)
                     Spacer(modifier = Modifier.height(6.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(myTurn.token, style = MaterialTheme.typography.displayLarge, color = Ink, modifier = Modifier.weight(1f))
-                        StatusPill(label = myTurn.bandLabel, type = myTurn.band, provisional = myTurn.bandProvisional)
-                    }
+                    // The token on its own line, the band chip under it, so neither squeezes the other.
+                    Text(myTurn.token, style = MaterialTheme.typography.displayLarge, color = Ink, maxLines = 1, softWrap = false)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    StatusPill(label = myTurn.bandLabel, type = myTurn.band, provisional = myTurn.bandProvisional)
                     if (unconfirmed) {
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(

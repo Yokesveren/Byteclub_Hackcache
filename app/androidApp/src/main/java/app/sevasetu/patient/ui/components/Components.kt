@@ -236,7 +236,8 @@ fun BigButton(
                 Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp))
                 Spacer(modifier = Modifier.width(10.dp))
             }
-            Text(text = text.uppercase(), style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center)
+            // White on every button colour: the theme's text styles carry navy, which would otherwise win over the button's content colour.
+            Text(text = text.uppercase(), style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center, color = Color.White)
         }
     }
 }
