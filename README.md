@@ -5,6 +5,10 @@ continuity-of-care system for government hospitals in Jammu and Kashmir. Patient
 anywhere nearby, find the doctor's room by scanning QR stickers on the walls, and reach Emergency in one tap, even with
 no signal. Hospital staff see every queue and every urgent request live on one dashboard.
 
+**Live demo: https://sevasetu-self.vercel.app** · Staff dashboard: [Sign in](https://sevasetu-self.vercel.app/login)
+(tap a role, no password) · Android app: [download the APK](https://github.com/Yokesveren/Byteclub_Hackcache/releases/latest/download/sevasetu-patient.apk)
+or open [Get the app](https://sevasetu-self.vercel.app/patient-app) on your phone.
+
 > All hospitals, doctors and patients in this repository are fictional demo data.
 
 <p>
@@ -64,11 +68,12 @@ and a staff action reaches the patient's phone at once.
 
 ## Try it in two minutes
 
-1. Start everything locally ([Run it locally](#run-it-locally)), then open http://localhost:3000.
+1. Open **https://sevasetu-self.vercel.app** (or run everything locally: [Run it locally](#run-it-locally)).
 2. Click **Sign in**, then **tap a role**: no password needed. (Every demo account uses the password
    `sevasetu-demo` if you prefer to type: `triage@`, `counter@`, `doctor@`, `admin@` or `demo@sevasetu.demo`.)
-3. Install the patient app on an Android phone ([Run the patient app](#3-the-patient-app-android)), register
-   yourself, and watch your token appear on the **Facility** screen.
+3. On an Android phone, open https://sevasetu-self.vercel.app/patient-app, download and install the app (allow
+   installs from your browser when Android asks), register yourself, and watch your token appear on the
+   **Facility** screen. It works over mobile data from anywhere.
 4. On the phone, press **Emergency** then **I need urgent help**: the Facility screen raises an alarm until a nurse
    taps **Seen**, and the phone shows that it was seen.
 5. Open **Demo** to speed up the hospital clock or turn on autopilot, and watch your place in the queue move.
@@ -297,6 +302,23 @@ cd web && npm run lint && npx tsc --noEmit
 
 ---
 
+## Deployment
+
+The live demo runs on free tiers:
+
+| Part | Where | How to update it |
+|---|---|---|
+| Backend | Supabase Cloud, Mumbai region (`ap-south-1`) | `npx supabase db push --linked` after adding a migration |
+| Website | Vercel, project `sevasetu`, root folder `web/` | `cd web && npx vercel deploy --prod` |
+| Android app | GitHub Releases, file `sevasetu-patient.apk` | Build with the cloud URL and key in `app/local.properties`, then upload to a new release |
+
+The website reads `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_DEFAULT_HOSPITAL` and
+`NEXT_PUBLIC_APK_URL` from Vercel's environment settings. To restart the demo from 10:30 AM, sign in as
+**Demo operator** and use **Reset** on the Demo screen. A free Supabase project pauses after a week without use:
+open it in the Supabase dashboard to wake it.
+
+---
+
 ## Repository layout
 
 ```
@@ -342,9 +364,7 @@ APP_README.md      guide to the backend rules for anyone building on the patient
 
 **Still open:**
 
-- **Hosting.** The backend and website run on a laptop; phones reach it over USB or the same Wi-Fi. A hosted
-  backend (Supabase Cloud, https) and website (Vercel) are the next step, and the app's release build already
-  requires https.
+- **App signing.** The downloadable APK is a debug build; a signed release build is needed for the Play Store.
 - **Translations.** Hindi and Urdu are drafts that need a native speaker's review; Kashmiri and Dogri fall back to
   Urdu and Hindi for most text. See [`app/TRANSLATION_REVIEW.md`](app/TRANSLATION_REVIEW.md).
 - **SMS** goes through a mock gateway; a real provider is needed for real phones.

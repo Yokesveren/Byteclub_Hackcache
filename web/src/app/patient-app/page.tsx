@@ -8,7 +8,8 @@ export const metadata: Metadata = {
   description: "The SevaSetu patient app for Android: a token without the counter queue, your turn live, and the way to the doctor's room.",
 };
 
-const APK = "/download/sevasetu-patient.apk";
+// On a hosted site the APK lives outside git (for example a GitHub Release); locally it is copied into public/download.
+const APK = process.env.NEXT_PUBLIC_APK_URL || "/download/sevasetu-patient.apk";
 
 const FEATURES = [
   { title: "Register without the queue", note: "One question per screen. Warning signs first: any yes goes straight to Emergency, no token.", bg: "#9fe5cf" },
