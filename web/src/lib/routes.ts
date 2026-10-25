@@ -17,6 +17,7 @@ export const STAFF_ROUTES: { href: string; label: string; roles: StaffRole[] }[]
   { href: "/counter", label: "Counter", roles: ["counter", "triage", "admin", "demo"] },
   { href: "/flow", label: "Patient flow", roles: ["triage", "admin", "demo"] },
   { href: "/followups", label: "Follow-ups", roles: ["triage", "admin", "demo"] },
+  { href: "/messages", label: "Messages", roles: ["triage", "counter", "admin", "demo"] },
   { href: "/log", label: "Transparency log", roles: ["triage", "admin", "demo"] },
   { href: "/demo", label: "Demo controls", roles: ["demo", "admin"] },
 ];

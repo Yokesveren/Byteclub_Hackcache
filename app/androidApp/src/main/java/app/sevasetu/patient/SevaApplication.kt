@@ -77,8 +77,8 @@ class SevaApplication : Application() {
         nav = NavSession(applicationContext, prefs, outboxManager, appScope)
 
         appScope.launch {
-            visits.load()
-            directory.refresh()
+            runCatching { visits.load() }
+            runCatching { directory.refresh() }
             // Anything queued while offline goes out as soon as the app starts again (urgent flags first).
             runCatching { outboxManager.flushOutbox() }
         }

@@ -227,7 +227,7 @@ interface SevaDao {
         FakeBackendStateEntity::class,
         FakeBackendVisitEntity::class
     ],
-    version = 1,
+    version = 2, // 2: doctors.roomWaypointId may be null (rooms not on a map); upgrades rebuild the cache
     exportSchema = false
 )
 abstract class SevaDatabase : RoomDatabase() {

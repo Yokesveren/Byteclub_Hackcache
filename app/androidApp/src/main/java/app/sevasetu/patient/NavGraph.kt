@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.ui.components.EmptyState
 import app.sevasetu.patient.ui.components.SevaScaffold
+import app.sevasetu.patient.ui.chat.ChatScreen
 import app.sevasetu.patient.ui.consent.ConsentScreen
 import app.sevasetu.patient.ui.demo.DemoPanelScreen
 import app.sevasetu.patient.ui.demo.StickerSheetScreen
@@ -53,6 +54,7 @@ object Routes {
     const val PRE_VISIT = "previsit"
     const val HELP = "help"
     const val SMS = "sms"
+    const val CHAT = "chat"
     const val READINESS = "readiness"
     const val DEMO = "demo"
     const val STICKERS = "stickers"
@@ -121,6 +123,8 @@ fun SevaNavGraph(
                 onNavigateToJourney = { navController.navigate(Routes.JOURNEY) },
                 onNavigateToPreVisit = { navController.navigate(Routes.PRE_VISIT) },
                 onNavigateToHelp = { navController.navigate(Routes.HELP) },
+                onNavigateToChat = { navController.navigate(Routes.CHAT) },
+                onNavigateToSms = { navController.navigate(Routes.SMS) },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) },
                 onEmergencyClick = ::emergency
             )
@@ -263,6 +267,30 @@ fun SevaNavGraph(
 
         composable(Routes.HELP) {
             HelpCardsScreen(onBack = { navController.popBackStack() }, onEmergencyClick = ::emergency)
+        }
+
+        composable(Routes.CHAT) {
+            ChatScreen(
+                onEmergency = { navController.navigate(Routes.emergency()) { launchSingleTop = true } },
+                onGoToPlace = { tag ->
+                    val hospital = activeVisit?.hospital?.id ?: app.prefs.current.hospitalId
+                    app.nav.graph(hospital)?.nodes?.firstOrNull { it.sticker && tag in it.tags }?.let { goTo(it.id) }
+                },
+                onOpenScreen = { screen ->
+                    when (screen) {
+                        "register" -> navController.navigate(Routes.REGISTER)
+                        "myturn" -> navController.navigate(Routes.MY_TURN)
+                        "haveslip" -> navController.navigate(Routes.HAVE_SLIP)
+                        "navigate" -> navController.navigate(Routes.NAVIGATE)
+                        "journey" -> navController.navigate(Routes.JOURNEY)
+                        "settings" -> navController.navigate(Routes.SETTINGS)
+                        "sms" -> navController.navigate(Routes.SMS)
+                    }
+                },
+                onOpenHelpCards = { navController.navigate(Routes.HELP) },
+                onBack = { navController.popBackStack() },
+                onEmergencyClick = ::emergency
+            )
         }
 
         composable(Routes.SMS) {

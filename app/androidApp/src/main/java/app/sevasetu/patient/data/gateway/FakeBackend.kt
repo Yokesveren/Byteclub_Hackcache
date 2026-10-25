@@ -1,6 +1,7 @@
 package app.sevasetu.patient.data.gateway
 
 import app.sevasetu.patient.data.db.SevaDao
+import app.sevasetu.patient.data.model.ChatReplyDto
 import app.sevasetu.patient.data.model.ClockInfoDto
 import app.sevasetu.patient.data.model.ConsentDto
 import app.sevasetu.patient.data.model.DepartmentDto
@@ -14,6 +15,7 @@ import app.sevasetu.patient.data.model.NextFollowUpDto
 import app.sevasetu.patient.data.model.PastJourneyItemDto
 import app.sevasetu.patient.data.model.PatientDto
 import app.sevasetu.patient.data.model.RegisterVisitParamDto
+import app.sevasetu.patient.data.model.SmsDto
 import app.sevasetu.patient.data.model.SymptomCheckDto
 import app.sevasetu.patient.data.model.UrgentFlagDto
 import app.sevasetu.patient.data.model.WaitEstimateDto
@@ -405,6 +407,12 @@ class FakeBackend(
             .filter { it == visitId || it == "ALL" }
             .map { Unit }
     }
+
+    // The help chat is online only (PRD 7.3); the simulator has no hospital to ask, so it answers as if offline.
+    override suspend fun chatAsk(hospitalId: String, lang: String, text: String, sessionId: String, visitId: String?): ChatReplyDto =
+        throw NetworkException("Chat is available when you are online")
+
+    override suspend fun getMySms(visitId: String): List<SmsDto> = emptyList()
 
     // Demo panel staff actions
     suspend fun callNext(doctorId: String) = withContext(Dispatchers.IO) {

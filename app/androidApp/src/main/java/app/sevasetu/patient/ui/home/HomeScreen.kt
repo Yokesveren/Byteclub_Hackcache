@@ -27,6 +27,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.PersonAdd
@@ -53,6 +55,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.sevasetu.patient.SevaApplication
+import app.sevasetu.patient.data.gateway.BackendException
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.service.QueueWatcherService
 import app.sevasetu.patient.ui.components.CardShape
@@ -81,6 +84,8 @@ fun HomeScreen(
     onNavigateToJourney: () -> Unit,
     onNavigateToPreVisit: () -> Unit,
     onNavigateToHelp: () -> Unit,
+    onNavigateToChat: () -> Unit,
+    onNavigateToSms: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onEmergencyClick: () -> Unit
 ) {
@@ -101,9 +106,18 @@ fun HomeScreen(
             runCatching { app.visits.save(app.fakeBackend.loadDemoPatientKamla()) }
         } else if (saved != null) {
             // Refresh the saved ticket; offline, the saved one keeps showing (S8).
-            val fresh = runCatching { app.backendGateway.getMyTurn(saved.visitId) }.getOrNull()
-            online = fresh != null
-            fresh?.let { app.visits.save(it, confirmed = it.offlineToken == null || it.token != it.offlineToken) }
+            try {
+                val fresh = app.backendGateway.getMyTurn(saved.visitId)
+                online = true
+                app.visits.save(fresh, confirmed = fresh.offlineToken == null || fresh.token != fresh.offlineToken)
+            } catch (e: BackendException) {
+                // The hospital has no such visit (for example after the demo was reset): forget it on this phone,
+                // unless it is still waiting in the outbox to be registered.
+                online = true
+                if (e.status == 404 && app.visits.isConfirmed(saved.visitId)) app.visits.clear()
+            } catch (e: Exception) {
+                online = false
+            }
         }
         if (online == null) online = app.directory.refresh()
         if (app.visits.active.value?.status == "waiting") {
@@ -185,7 +199,11 @@ fun HomeScreen(
             InfoCard {
                 ListItemRow(title = tr("Before you visit"), subtitle = tr("Is the doctor in? Is the X-ray working?"), icon = Icons.Default.LocalHospital, onClick = onNavigateToPreVisit)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
+                ListItemRow(title = tr("Help chat"), subtitle = tr("Ask where, when, what to bring"), icon = Icons.Default.Forum, onClick = onNavigateToChat)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
                 ListItemRow(title = tr("Help and questions"), subtitle = null, icon = Icons.AutoMirrored.Filled.Help, onClick = onNavigateToHelp)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
+                ListItemRow(title = tr("No data? Use SMS"), subtitle = tr("Token and alerts by text, from any phone"), icon = Icons.Default.Sms, onClick = onNavigateToSms)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = LocalExtraColors.current.edge)
                 ListItemRow(title = tr("Settings"), subtitle = tr("Text size, language, alerts"), icon = Icons.Default.Settings, onClick = onNavigateToSettings)
             }

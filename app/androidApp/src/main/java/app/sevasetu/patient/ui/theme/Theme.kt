@@ -149,17 +149,24 @@ fun SevaTheme(
     )
 
     // Display and headline sizes are the website's black-weight capitals: tight tracking, short leading.
+    // Every style is set here, all with letter spacing in em: Material's defaults use sp, and Compose cannot blend
+    // the two (a text field's label animates from bodyLarge to bodySmall and crashes on a mix).
     val scaledTypography = Typography(
         displayLarge = style(56, 58, FontWeight.Black, -0.05),
         displayMedium = style(44, 46, FontWeight.Black, -0.05),
+        displaySmall = style(36, 40, FontWeight.Black, -0.04),
         headlineLarge = style(30, 32, FontWeight.Black, -0.04),
         headlineMedium = style(24, 27, FontWeight.Black, -0.03),
+        headlineSmall = style(22, 26, FontWeight.Black, -0.02),
         titleLarge = style(22, 28, FontWeight.Black, -0.02),
         titleMedium = style(18, 24, FontWeight.Bold),
+        titleSmall = style(16, 22, FontWeight.Bold),
         bodyLarge = style(18, 26, FontWeight.Normal),
         bodyMedium = style(16, 23, FontWeight.Normal),
+        bodySmall = style(14, 20, FontWeight.Normal),
         labelLarge = style(16, 20, FontWeight.Black, 0.0),
         labelMedium = style(14, 18, FontWeight.Bold, 0.02),
+        labelSmall = style(12, 16, FontWeight.Bold, 0.02),
     )
 
     CompositionLocalProvider(

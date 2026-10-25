@@ -217,9 +217,13 @@ private fun QrCamera(accept: (String) -> Boolean, onFound: (String) -> Unit) {
     }
     val mainExecutor = remember { ContextCompat.getMainExecutor(context) }
     var lastRejected by remember { mutableStateOf("") }
+    val bound = remember { arrayOfNulls<ProcessCameraProvider>(1) }
 
     DisposableEffect(Unit) {
         onDispose {
+            // Stop the camera before its worker thread, so no frame arrives at a closed executor.
+            done.set(true)
+            runCatching { bound[0]?.unbindAll() }
             executor.shutdown()
             scanner.close()
         }
@@ -231,7 +235,9 @@ private fun QrCamera(accept: (String) -> Boolean, onFound: (String) -> Unit) {
             val previewView = PreviewView(ctx).apply { scaleType = PreviewView.ScaleType.FILL_CENTER }
             val providerFuture = ProcessCameraProvider.getInstance(ctx)
             providerFuture.addListener({
-                val provider = providerFuture.get()
+                val provider = runCatching { providerFuture.get() }.getOrNull() ?: return@addListener
+                if (done.get()) return@addListener
+                bound[0] = provider
                 val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
                 val analysis = ImageAnalysis.Builder()
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -241,7 +247,12 @@ private fun QrCamera(accept: (String) -> Boolean, onFound: (String) -> Unit) {
                     if (media == null || done.get()) {
                         proxy.close(); return@setAnalyzer
                     }
-                    scanner.process(InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees))
+                    val task = try {
+                        scanner.process(InputImage.fromMediaImage(media, proxy.imageInfo.rotationDegrees))
+                    } catch (e: Exception) {
+                        proxy.close(); return@setAnalyzer // the reader closed as the screen left
+                    }
+                    task
                         .addOnSuccessListener(mainExecutor) { codes ->
                             val text = codes.firstNotNullOfOrNull { it.rawValue?.trim() } ?: return@addOnSuccessListener
                             if (done.get()) return@addOnSuccessListener

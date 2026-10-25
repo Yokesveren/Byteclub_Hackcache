@@ -60,7 +60,8 @@ data class HospitalDto(
     @SerialName("address") val address: String,
     @SerialName("lat") val lat: Double,
     @SerialName("lng") val lng: Double,
-    @SerialName("services") val services: Map<String, String> = mapOf("lab" to "up", "xray" to "down")
+    @SerialName("services") val services: Map<String, String> = mapOf("lab" to "up", "xray" to "down"),
+    @SerialName("phone") val phone: String? = null // the hospital's number for SMS and missed calls
 )
 
 @Serializable
@@ -179,4 +180,29 @@ data class ClockInfoDto(
     @SerialName("now") val now: String,
     @SerialName("speed") val speed: Int = 1, // 1, 30, 120
     @SerialName("today") val today: String
+)
+
+/** A help-chat answer (PRD 11.4): only approved content, live facts or a place; warning signs give "emergency". */
+@Serializable
+data class ChatReplyDto(
+    @SerialName("type") val type: String, // answer, emergency, refuse, help_desk
+    @SerialName("text") val text: String,
+    @SerialName("action") val action: ChatActionDto? = null,
+    @SerialName("outcome") val outcome: String? = null
+)
+
+@Serializable
+data class ChatActionDto(
+    @SerialName("type") val type: String, // place or screen
+    @SerialName("tag") val tag: String? = null,
+    @SerialName("screen") val screen: String? = null
+)
+
+/** A text the hospital's SMS gateway sent to (or received from) the patient's phone number. */
+@Serializable
+data class SmsDto(
+    @SerialName("direction") val direction: String, // in or out
+    @SerialName("kind") val kind: String,
+    @SerialName("body") val body: String,
+    @SerialName("created_at") val createdAt: String
 )

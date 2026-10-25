@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.sevasetu.patient.SevaApplication
+import app.sevasetu.patient.data.gateway.BackendException
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.service.QueueWatcherService
 import app.sevasetu.patient.ui.components.BigButton
@@ -122,6 +123,11 @@ fun MyTurnScreen(
                 }
                 if (updated.status == "emergency") {
                     onEmergencyClick(); break
+                }
+            } catch (e: BackendException) {
+                // Not found at the hospital (the demo was reset): drop the stale ticket instead of retrying forever.
+                if (e.status == 404 && app.visits.isConfirmed(visitId)) {
+                    app.visits.clear(); QueueWatcherService.stop(context); onBack(); break
                 }
             } catch (e: Exception) {
                 offline = true

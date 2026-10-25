@@ -1,5 +1,6 @@
 package app.sevasetu.patient.data.gateway
 
+import app.sevasetu.patient.data.model.ChatReplyDto
 import app.sevasetu.patient.data.model.ClockInfoDto
 import app.sevasetu.patient.data.model.DepartmentDto
 import app.sevasetu.patient.data.model.DoctorDto
@@ -8,6 +9,7 @@ import app.sevasetu.patient.data.model.JourneyEventDto
 import app.sevasetu.patient.data.model.MyJourneyDto
 import app.sevasetu.patient.data.model.MyTurnDto
 import app.sevasetu.patient.data.model.RegisterVisitParamDto
+import app.sevasetu.patient.data.model.SmsDto
 import app.sevasetu.patient.data.model.SymptomCheckDto
 import app.sevasetu.patient.data.model.UrgentFlagDto
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +98,18 @@ class RemoteBackend(
         decode(rpc("get_clock", JsonObject(emptyMap()))) ?: throw BackendException(200, "No clock")
 
     override suspend fun listHospitals(): List<HospitalDto> =
-        decode(get("/rest/v1/hospitals?select=id,name,address,lat,lng,services&order=id")) ?: emptyList()
+        decode(get("/rest/v1/hospitals?select=id,name,address,lat,lng,services,phone&order=id")) ?: emptyList()
+
+    override suspend fun chatAsk(hospitalId: String, lang: String, text: String, sessionId: String, visitId: String?): ChatReplyDto =
+        decode(rpc("chat_ask", buildJsonObject {
+            putJsonObject("p") {
+                put("hospital_id", hospitalId); put("lang", lang); put("text", text); put("session_id", sessionId)
+                if (visitId != null) put("visit_id", visitId)
+            }
+        })) ?: throw BackendException(200, "No answer")
+
+    override suspend fun getMySms(visitId: String): List<SmsDto> =
+        decode(rpc("get_my_sms", buildJsonObject { put("p_visit_id", visitId) })) ?: emptyList()
 
     override suspend fun listDepartments(): List<DepartmentDto> =
         decode(get("/rest/v1/departments?select=id,code,name,name_i18n&order=id")) ?: emptyList()

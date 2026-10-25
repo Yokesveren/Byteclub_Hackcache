@@ -20,6 +20,7 @@ const NAV_ICON: Record<string, keyof typeof ICONS> = {
   "/counter": "slip",
   "/flow": "map",
   "/followups": "phone",
+  "/messages": "chat",
   "/log": "log",
   "/demo": "clock",
 };
@@ -42,6 +43,7 @@ const ICONS = {
   steth: "M6 3v6a4 4 0 0 0 8 0V3M10 13v3a4 4 0 0 0 8 0v-2M18 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
   phone: "M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2",
   out: "M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10",
+  chat: "M4 5h16v11H9l-5 4zM8 9h8M8 12h5",
 };
 
 function Icon({ d }: { d: string }) {

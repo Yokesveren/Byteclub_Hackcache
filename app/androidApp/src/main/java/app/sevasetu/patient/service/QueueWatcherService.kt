@@ -51,10 +51,16 @@ class QueueWatcherService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val visit = SevaApplication.instance.visits.active.value
-        ServiceCompat.startForeground(
-            this, ONGOING_ID, ongoing(visit),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
-        )
+        try {
+            ServiceCompat.startForeground(
+                this, ONGOING_ID, ongoing(visit),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
+            )
+        } catch (e: Exception) {
+            // Android refuses a foreground service started from the background; My Turn keeps watching on screen.
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (job?.isActive != true) startWatching()
         return START_STICKY
     }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DownloadQr } from "./DownloadQr";
+import { HelpChat } from "./HelpChat";
 
 export const metadata: Metadata = {
   title: "Patient app · SevaSetu",
@@ -15,6 +16,7 @@ const FEATURES = [
   { title: "Find the room", note: "Scan the QR stickers on the walls. Step-by-step directions, stair-free routes, a new route after a wrong turn.", bg: "#edf3f8" },
   { title: "Works with no signal", note: "Emergency, maps, the symptom check and your last ticket live on the phone. Offline tokens sync later.", bg: "#ffffff" },
   { title: "Five languages", note: "Kashmiri, Urdu, Dogri, Hindi and English, with Listen to read any screen aloud.", bg: "#edf3f8" },
+  { title: "No data? Use SMS", note: "From any phone, text SLIP to the hospital number for your token and place, REG to register, HELP if you feel worse.", bg: "#ffffff" },
 ];
 
 export default function PatientApp() {
@@ -72,6 +74,7 @@ export default function PatientApp() {
             <span className="mt-1 block text-base font-bold opacity-80">{f.note}</span>
           </div>
         ))}
+        <HelpChat />
         <Link
           href="/board/H01"
           className="mt-3 flex items-center justify-between rounded-2xl bg-[#0b2a3c] p-6 text-white transition-transform hover:translate-x-1"

@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +65,7 @@ import app.sevasetu.patient.ui.components.ButtonType
 import app.sevasetu.patient.ui.components.CardShape
 import app.sevasetu.patient.ui.components.ListenButton
 import app.sevasetu.patient.ui.components.displayTime
+import app.sevasetu.patient.ui.sms.composeSms
 import app.sevasetu.patient.ui.theme.ColorEmergency
 import app.sevasetu.patient.ui.theme.Frame
 import app.sevasetu.patient.ui.theme.Ink
@@ -108,6 +110,7 @@ fun EmergencyScreen(
                 ?.let { Directions.steps(g, it, lang) }
         }.orEmpty()
     }
+    val hospitalPhone = app.directory.hospital(hospitalId)?.phone
     val emergencyName = graph?.nodes?.firstOrNull { it.id == graph.emergency }?.displayName(lang) ?: tr("Emergency (Casualty)")
 
     fun vibrate() {
@@ -258,11 +261,23 @@ fun EmergencyScreen(
                         icon = Icons.Default.NotificationsActive,
                         onClick = { raise("patient_app") }
                     )
-                    FlagState.QUEUED -> FlagStatus(
-                        Icons.Default.WifiOff, Color(0xFFFFF1C2), Color(0xFF5C3D00),
-                        tr("NOT YET RECEIVED BY STAFF"),
-                        tr("No connection yet. It will be sent the moment there is signal. Please tell a staff member now.")
-                    )
+                    FlagState.QUEUED -> {
+                        FlagStatus(
+                            Icons.Default.WifiOff, Color(0xFFFFF1C2), Color(0xFF5C3D00),
+                            tr("NOT YET RECEIVED BY STAFF"),
+                            tr("No connection yet. It will be sent the moment there is signal. Please tell a staff member now.")
+                        )
+                        // PRD 7.3: offline, the request also goes as an ordinary SMS where the phone can send one.
+                        hospitalPhone?.let { number ->
+                            Spacer(modifier = Modifier.height(12.dp))
+                            BigButton(
+                                text = tr("Also send by SMS"),
+                                type = ButtonType.SECONDARY,
+                                icon = Icons.Default.Sms,
+                                onClick = { composeSms(context, number, "HELP" + (visit?.token?.let { " $it" } ?: "")) }
+                            )
+                        }
+                    }
                     FlagState.SENT -> FlagStatus(
                         Icons.Default.Schedule, Color(0xFFDCECF7), Ink,
                         tr("SENT TO STAFF"),
