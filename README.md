@@ -1,4 +1,4 @@
-# SevaSetu
+# SevaSetu(opd)
 
 **A bridge between patients and their hospital.** SevaSetu is an offline-first OPD queue, indoor navigation and
 continuity-of-care system for government hospitals in Jammu and Kashmir. Patients register from their phone, wait
